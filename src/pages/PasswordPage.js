@@ -1,29 +1,23 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import axios from 'axios';
-
-class Password extends React.Component{
-
-
-    state = {
-
-        userId: 'haha1234',
-        password: '',
-        msg: '',
-        
-
-    }
+import Astronaut from '../cosmic_dust/Astronaut';
+import * as Astronauts from '../cosmic_dust/Astronaut';
 
 
-    handleChange = (e) => {
+const Password = () => {
 
-        this.setState({
-            [e.target.name] : e.target.value,
-        });
-
-    }
+    const [userId, setUserId] = useState('haha1234');
+    const [password, setPassword] = useState();
+    const [msg, setMsg] = useState('');
 
 
-    EnterPassword = (e) => {
+    useEffect(() => {
+
+
+    }, [])
+
+
+    const EnterPassword = (e) => {
 
         if(e.key == 'Enter'){
 
@@ -32,7 +26,7 @@ class Password extends React.Component{
 
             const passwordBox = {
     
-                password: this.state.password,
+                password: password,
     
             }
     
@@ -40,9 +34,8 @@ class Password extends React.Component{
             .then((response) => {
     
                 console.log(response.data)
-                this.setState({    
-                    msg: response.data,
-                })
+                setMsg(response.data)
+
 
                 if(response.data == "login"){
 
@@ -64,31 +57,30 @@ class Password extends React.Component{
     }
 
 
-    render(){
+    
+    return(
 
-
-
-        return(
-
+        <div>
+            
+            <Astronaut />
             <div>
 
-                <div>
 
-                    <h3>{this.state.userId}</h3> 
-                    <input type="text" name="password" id="password" onChange={this.handleChange} onKeyPress={this.EnterPassword} />
-                    <p>{this.state.msg}</p>
+                <h3>{userId}</h3> 
+                <input type="text" name="password" id="password" onChange={(e) => setPassword(e.target.value)} onKeyPress={EnterPassword} />
+                <p>{msg}</p>
 
-                </div>
+                <button type="button" onClick={(e)=> Astronauts.Baba()}>asdfasdfasf</button>
 
 
             </div>
 
-        )
 
-    }
+        </div>
+
+    )
+
 
 }
 
-
 export default Password;
-

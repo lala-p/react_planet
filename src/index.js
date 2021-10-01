@@ -2,13 +2,14 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
+import { CookiesProvider } from 'react-cookie';
 import Routes from './Routes';
 
 
 ReactDOM.render(
-  <React.StrictMode>
+  <CookiesProvider>
     <Routes />
-  </React.StrictMode>,
+  </CookiesProvider>,
   document.getElementById('root')
 );
 

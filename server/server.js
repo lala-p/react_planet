@@ -6,6 +6,9 @@ const crypto = require("crypto");
 const app = express();
 const port = 3001
 
+const main = require('./router/main');
+const command = require('./router/command');
+
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cors());
@@ -22,6 +25,11 @@ app.get('/', (req, res) => {
     res.send("!@!@!@!@!@!@!@!");
 
 });
+
+// ======================================================================
+
+app.use('/main', main);
+app.use('/command', command);
 
 // ======================================================================
 
@@ -63,34 +71,26 @@ app.post('/password', (req, res) => {
 
 // ======================================================================
 
+app.post('/getAstronaut', (req, res) => {
+
+    const readSetting = fs.readFileSync('./cosmic_dust/astronaut.json');
+
+    let haha = JSON.parse(readSetting) 
+    console.log(JSON.stringify(haha))
 
 
-app.get('/getText', (req, res) => {
-
-
-    const readTxt = fs.readFileSync('./cosmic_dust/astronaut.txt');
-   
-    console.log(readTxt.toString());
-    res.send(readTxt.toString());
-
+    //    haha.astronaut_id = "ccccccccc"
     
-});
-
-
-app.post('/saveText', (req, res) => {
-
-    if(req.body.text){
-
-        console.log(req.body.text)
-    }
     
-    fs.writeFileSync("./cosmic_dust/astronaut.txt", req.body.text, {encoding: 'utf8'});
+    
+    console.log(JSON.stringify(haha))
 
-    res.send("?!@?!?@#?!?@?#!?@# Hello, It's me.");
+    res.send(JSON.stringify(haha))
+
+})
 
 
-});
-
+// ======================================================================
 
 
 app.listen(port, () => {

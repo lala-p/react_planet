@@ -1,0 +1,8 @@
+{
+    "astronaut_id" : "aaaa",
+    "astronaut_nickname" : "bbbb",
+    "astronaut_password" : "43214321",
+    "meal_menu" : ["냉면", "물회", "맘스터치", "굶어"]
+    
+
+}

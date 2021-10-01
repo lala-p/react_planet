@@ -1,13 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useCookies } from 'react-cookie';
 
-import * as commandEvent from '../event/commandEvent';
+import * as CommandEvent from '../event/CommandEvent';
 
 const MainCommandTable = () => {
 
     const [userInput, setUserInput] = useState("")
     const [msgHistory, setMsgHistory] = useState([])
     const [guideSayArr, setGuideSayArr] = useState([])
-    
+    const [cookie, setCookie] = useCookies()    
+
     const tableRef = useRef(null)
 
     
@@ -18,8 +20,12 @@ const MainCommandTable = () => {
                 setMsgHistory([])
             }else{
                 console.log(userInput)
-                setMsgHistory(msgHistory.concat('me:' + e.target.value))
-                setGuideSayArr(commandEvent.cmd(userInput))    
+                setMsgHistory(msgHistory.concat('me:' + userInput))
+                console.log(msgHistory)    
+                const cmd = userInput.split(" "); 
+                console.log(cmd);
+                setGuideSayArr(CommandEvent.cmd(cmd))    
+            
             }
         }
 
@@ -62,8 +68,8 @@ const MainCommandTable = () => {
 
 
     const msgList = msgHistory.map((msg, index) => (<div> {msg.substr(0, 3) === 'me:' ? 
-                                                        <div key={index} style={{overflow: "hidden", wordWrap: "break-word", backgroundColor: "pink"}}>{msg.substr(3)}</div> : 
-                                                        <div key={index} style={{overflow: "hidden", wordWrap: "break-word", backgroundColor: "gray"}}>{msg.substr(3)}</div> } 
+                                                        <div key={index} style={{minHeight: '25px', overflow: "hidden", wordWrap: "break-word", backgroundColor: "pink"}}>&lt;me&gt; {msg.substr(3)}</div> : 
+                                                        <div dangerouslySetInnerHTML={{__html: msg.substr(3)}} key={index} style={{minHeight: '25px',overflow: "hidden", wordWrap: "break-word", backgroundColor: "pink"}}></div> } 
                                                     </div>))
 
     return(
