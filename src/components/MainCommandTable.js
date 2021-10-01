@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useCookies } from 'react-cookie';
 
-import * as CommandEvent from '../event/CommandEvent';
+import CommandEvent from '../event/CommandEvent';
+import { Command } from '../event/CommandEvent';
 
 const MainCommandTable = () => {
 
     const [userInput, setUserInput] = useState("")
     const [msgHistory, setMsgHistory] = useState([])
     const [guideSayArr, setGuideSayArr] = useState([])
-    const [cookie, setCookie] = useCookies()    
+    const [cookie, setCookie, removeCookie] = useCookies()    
 
     const tableRef = useRef(null)
 
@@ -24,7 +25,7 @@ const MainCommandTable = () => {
                 console.log(msgHistory)    
                 const cmd = userInput.split(" "); 
                 console.log(cmd);
-                setGuideSayArr(CommandEvent.cmd(cmd))    
+                setGuideSayArr(Command(cmd))    
             
             }
         }
@@ -68,13 +69,14 @@ const MainCommandTable = () => {
 
 
     const msgList = msgHistory.map((msg, index) => (<div> {msg.substr(0, 3) === 'me:' ? 
-                                                        <div key={index} style={{minHeight: '25px', overflow: "hidden", wordWrap: "break-word", backgroundColor: "pink"}}>&lt;me&gt; {msg.substr(3)}</div> : 
-                                                        <div dangerouslySetInnerHTML={{__html: msg.substr(3)}} key={index} style={{minHeight: '25px',overflow: "hidden", wordWrap: "break-word", backgroundColor: "pink"}}></div> } 
+                                                        <div key={index} style={{minHeight: '25px', overflow: "hidden", wordBreak: "break-all", backgroundColor: "pink"}}>&lt;{cookie['astronaut_id']}&gt; {msg.substr(3)}</div> : 
+                                                        <div dangerouslySetInnerHTML={{__html: msg.substr(3)}} key={index} style={{minHeight: '25px',overflow: "hidden", wordBreak: "break-all", backgroundColor: "pink"}}></div> } 
                                                     </div>))
 
     return(
 
         <div>
+            <CommandEvent />
 
             <div ref={tableRef} style={{display: "flex", width: "270px", height: "350px", backgroundColor: "coral", overflow: "auto", flexDirection: "column-reverse"}}>
                 <div>
