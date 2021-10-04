@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useCookies } from 'react-cookie';
 
 import CommandEvent from '../event/CommandEvent';
-import { Command } from '../event/CommandEvent';
+import { CommandInit, Command } from '../event/CommandEvent';
 
 const MainCommandTable = () => {
 
@@ -23,7 +23,12 @@ const MainCommandTable = () => {
                 console.log(userInput)
                 setMsgHistory(msgHistory.concat('me:' + userInput))
                 console.log(msgHistory)    
+
+
                 const cmd = userInput.split(" "); 
+
+                // split이 아니라 정규식으로 array 나누기
+                
                 console.log(cmd);
                 setGuideSayArr(Command(cmd))    
             
@@ -49,21 +54,23 @@ const MainCommandTable = () => {
     useEffect(() => {
 
         // node server가 켜져있지 않았을 때 명령어창에 erorr 띄우기 
+        CommandInit()
+        console.log("11111111111111")
 
     }, [])
-
 
     useEffect(() => {
 
         if(guideSayArr && guideSayArr.length != 0){            
             guideSaid()
         }
-
         
         setUserInput("")
 
         const scroll = tableRef.current.scrollHeight - tableRef.current.clientHeight;
         tableRef.current.scrollTo(0, scroll)
+
+        console.log("22222222222222222222222")
 
     }, [msgHistory, guideSayArr])
 
@@ -83,7 +90,7 @@ const MainCommandTable = () => {
                     {msgList}
                 </div>
             </div>
-            <input type="text" style={{width: "265px"}} onKeyPress={enterUserInput} value={userInput} onChange={(e)=> setUserInput(e.target.value)} />
+            <input type="text" style={{width: "265px"}} onKeyPress={(e) => enterUserInput(e)} value={userInput} onChange={(e)=> setUserInput(e.target.value)} />
 
         </div>
 

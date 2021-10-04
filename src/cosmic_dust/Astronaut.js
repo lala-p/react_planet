@@ -2,12 +2,11 @@ import React, { useEffect } from 'react';
 import axios from "axios";
 import { useCookies } from "react-cookie";
 
-let haha = "vava"
-
 const Astronaut = () => {
 
     const [cookies, setCookie, removeCookie] = useCookies()
 
+    
     useEffect(() => {
 
         let url = "http://localhost:3001/getAstronaut";
@@ -20,6 +19,7 @@ const Astronaut = () => {
                 astronaut_id       : response.data.astronaut_id,
                 astronaut_nickname : response.data.astronaut_nickname,
                 astronaut_password : response.data.astronaut_password,
+                meal_menu          : response.data.meal_menu,
 
             } 
 
@@ -27,7 +27,7 @@ const Astronaut = () => {
                 setCookie(key, astronaut[key], {path: '/', sameSite: 'Lax'}) 
             })
     
-            haha = "asdfasdfasdfasasdfasfasfasfasfasfafasdfasdfasdfasfdasdf12341234123412f"
+            // haha = "asdfasdfasdfasasdfasfasfasfasfasfafasdfasdfasdfasfdasdf12341234123412f"
 
         })
         .catch((error) => {
@@ -39,16 +39,6 @@ const Astronaut = () => {
 
    
     return <></>;
-
-}
-
-
-export const Baba = () => {
-
-    
-    let fafa = "@@"+haha;
-
-    console.log(fafa)
 
 }
 

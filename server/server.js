@@ -78,13 +78,6 @@ app.post('/getAstronaut', (req, res) => {
     let haha = JSON.parse(readSetting) 
     console.log(JSON.stringify(haha))
 
-
-    //    haha.astronaut_id = "ccccccccc"
-    
-    
-    
-    console.log(JSON.stringify(haha))
-
     res.send(JSON.stringify(haha))
 
 })

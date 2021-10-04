@@ -1,7 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import Astronaut from '../cosmic_dust/Astronaut';
-import * as Astronauts from '../cosmic_dust/Astronaut';
 
 
 const Password = () => {
@@ -9,12 +8,6 @@ const Password = () => {
     const [userId, setUserId] = useState('haha1234');
     const [password, setPassword] = useState();
     const [msg, setMsg] = useState('');
-
-
-    useEffect(() => {
-
-
-    }, [])
 
 
     const EnterPassword = (e) => {
@@ -63,14 +56,16 @@ const Password = () => {
         <div>
             
             <Astronaut />
+            
+            
             <div>
 
 
                 <h3>{userId}</h3> 
-                <input type="text" name="password" id="password" onChange={(e) => setPassword(e.target.value)} onKeyPress={EnterPassword} />
+                <input type="text" name="password" id="password" onChange={(e) => setPassword(e.target.value)} onKeyPress={() => EnterPassword} />
                 <p>{msg}</p>
 
-                <button type="button" onClick={(e)=> Astronauts.Baba()}>asdfasdfasf</button>
+                {/* <button type="button" onClick={(e)=> Astronauts.Baba()}>asdfasdfasf</button> */}
 
 
             </div>

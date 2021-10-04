@@ -6,7 +6,6 @@ import ToggleSwitch from 'react-switch';
 import MainBoard from '../components/MainBoard';
 import MainCommandTable from '../components/MainCommandTable';
 import MainGuide from '../components/MainGuide';
-import Astronaut from '../cosmic_dust/Astronaut';
 
 
 const MainPage = () => {
@@ -77,7 +76,7 @@ const MainPage = () => {
     
     return(
         <div>
-                <Astronaut />
+
 
                 <div>
 
@@ -105,8 +104,8 @@ const MainPage = () => {
                 </div>
 
 
-                <button type="button" onClick={getText}>text 가져오기</button>&nbsp;
-                <button type="button" onClick={saveText}>저장하기</button>
+                <button type="button" onClick={() => getText}>text 가져오기</button>&nbsp;
+                <button type="button" onClick={() => saveText}>저장하기</button>
 
         </div>
     )
