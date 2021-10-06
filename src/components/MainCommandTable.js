@@ -24,12 +24,11 @@ const MainCommandTable = () => {
                 setMsgHistory(msgHistory.concat('me:' + userInput))
                 console.log(msgHistory)    
 
+                const cmd = userInput.match(/[a-zA-z]+|{.+}/g); 
 
-                const cmd = userInput.split(" "); 
-
-                // split이 아니라 정규식으로 array 나누기
-                
                 console.log(cmd);
+
+                // undefined 처리하기
                 setGuideSayArr(Command(cmd))    
             
             }
@@ -55,7 +54,7 @@ const MainCommandTable = () => {
 
         // node server가 켜져있지 않았을 때 명령어창에 erorr 띄우기 
         CommandInit()
-        console.log("11111111111111")
+       
 
     }, [])
 
@@ -70,7 +69,6 @@ const MainCommandTable = () => {
         const scroll = tableRef.current.scrollHeight - tableRef.current.clientHeight;
         tableRef.current.scrollTo(0, scroll)
 
-        console.log("22222222222222222222222")
 
     }, [msgHistory, guideSayArr])
 

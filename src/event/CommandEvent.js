@@ -25,9 +25,6 @@ const CommandEvent = () => {
     }
 
 
-
-
-
     useEffect(() => {
         meal_menu = cookie.meal_menu
 
@@ -133,7 +130,7 @@ export const CommandInit = () => {
     cmdScript['show'] = {}
     // cmdScript['show']['meal_menu'] = () => getMealMenu()
     cmdScript['show meal_menu'] = () => getMealMenu()
-    cmdScript['show']['test'] = (haha) => alert(haha + " asdfasdfasfasdfasf!#@$")
+    cmdScript['show']['test'] = (haha) => haha;
 
     cmdScript['add'] = {}
     cmdScript['add']['meal_menu'] = () => addMealMenu()
@@ -148,19 +145,21 @@ export const CommandInit = () => {
 export const Command = (cmd) => {
 
 
-    let returnData = []
+    let returnData = [];
 
-    let cmdArr = cmd
+    let cmdArr = cmd;
 
 
     if(cmdArr.length == 1){
 
-        returnData = cmdScript[cmd[0]]
+        returnData = cmdScript[cmd[0]];
 
     }else{
 
-        const pr = /^\{.*\}$/g;
-        returnData = cmdScript[cmd[0]]
+        returnData = cmdScript[cmd[0]];
+
+        
+        const pr = /^{.*}$/g;
 
         for (let index = 1; index < cmdArr.length; index++) {
             
@@ -168,7 +167,12 @@ export const Command = (cmd) => {
 
                 // array로 만들어서 값 넘겨주기
 
-                returnData = returnData(cmdArr[index])      
+                let prameterArr = cmdArr[index];
+
+                prameterArr = prameterArr.replace(/{|}/g, "")
+                prameterArr = prameterArr.split(/,/g)
+
+                returnData = returnData(prameterArr)      
 
             }else{
 
