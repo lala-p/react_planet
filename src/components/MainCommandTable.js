@@ -7,39 +7,82 @@ import { CommandInit, Command } from '../event/CommandEvent';
 const MainCommandTable = () => {
 
     const [userInput, setUserInput] = useState("")
+    
+    const [cmdHistory, setCmdHistory] = useState([])
+    const [cmdAddr, setCmdAddr] = useState(-100)
+    
+    
     const [msgHistory, setMsgHistory] = useState([])
     const [guideSayArr, setGuideSayArr] = useState([])
+    
     const [cookie, setCookie, removeCookie] = useCookies()    
 
     const tableRef = useRef(null)
 
     
-    const enterUserInput = (e) => {
+    const keyDownHandler = (e) => {
+        switch (e.keyCode) {
+            case 13:
+                if (userInput == "clear") {
+                    setMsgHistory([])
+                } else {
+                    console.log(userInput)
+                    setMsgHistory(msgHistory.concat('me:' + userInput))
+                    
+                    const sendCmd = userInput.match(/[a-zA-z]+|{.+}/g);
+                    const cmd = Command(sendCmd)
 
-        if (e.key == 'Enter') {
-            if (userInput == "clear") {
-                setMsgHistory([])
-            } else {
-                console.log(userInput)
-                setMsgHistory(msgHistory.concat('me:' + userInput))
-                console.log(msgHistory)
-
-                const sendCmd = userInput.match(/[a-zA-z]+|{.+}/g);
-                const cmd = Command(sendCmd)
-
-                if (cmd !== undefined) {
-                    setGuideSayArr(cmd)
+                    if (cmd !== undefined) {
+                        setGuideSayArr(cmd)
+                    }
+                }
+                
+                if (userInput.length != 0 && userInput != cmdHistory[cmdHistory.length-1]) {
+                    setCmdHistory(cmdHistory.concat(userInput))
+                    setCmdAddr(cmdHistory.length+1)
 
                 }
 
-            }
+                break;
+            case 38:
+                if (cmdAddr != 0) {
+                    setCmdAddr(cmdAddr-1)
+                }
 
+                break;
+            case 40:
+                if (cmdAddr < cmdHistory.length) {
+                    setCmdAddr(cmdAddr+1)
+                }
 
+                break;
+            default:
+
+                break;
         }
 
-
+    
         
     }
+
+    useEffect(() => {
+
+        console.log("addr : "+ cmdAddr)
+
+        if (cmdAddr == cmdHistory.length) {
+            
+            setUserInput(cmdHistory[cmdHistory.length - 1])
+            
+        } else if (cmdAddr >= 0 || cmdAddr < cmdHistory.length) {
+
+            setUserInput(cmdHistory[cmdAddr])
+
+        }
+            // 이거 useEffect 말로 따로 함수로 구현하기
+    
+
+ 
+    }, [cmdAddr])
 
 
     const guideSaid = () => {
@@ -58,6 +101,7 @@ const MainCommandTable = () => {
     useEffect(() => {
 
         // node server가 켜져있지 않았을 때 명령어창에 erorr 띄우기 
+
         CommandInit()
        
 
@@ -74,7 +118,7 @@ const MainCommandTable = () => {
         const scroll = tableRef.current.scrollHeight - tableRef.current.clientHeight;
         tableRef.current.scrollTo(0, scroll)
 
-
+        console.log(msgHistory)
     }, [msgHistory, guideSayArr])
 
 
@@ -93,7 +137,7 @@ const MainCommandTable = () => {
                     {msgList}
                 </div>
             </div>
-            <input type="text" style={{width: "265px"}} onKeyPress={(e) => enterUserInput(e)} value={userInput} onChange={(e)=> setUserInput(e.target.value)} />
+            <input type="text" style={{width: "265px"}} onKeyDown={(e) => keyDownHandler(e)} value={userInput} onChange={(e)=> setUserInput(e.target.value)} />
 
         </div>
 
