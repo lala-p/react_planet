@@ -16,24 +16,29 @@ const MainCommandTable = () => {
     
     const enterUserInput = (e) => {
 
-        if(e.key == 'Enter'){
-            if(userInput == "clear"){
+        if (e.key == 'Enter') {
+            if (userInput == "clear") {
                 setMsgHistory([])
-            }else{
+            } else {
                 console.log(userInput)
                 setMsgHistory(msgHistory.concat('me:' + userInput))
-                console.log(msgHistory)    
+                console.log(msgHistory)
 
-                const cmd = userInput.match(/[a-zA-z]+|{.+}/g); 
+                const sendCmd = userInput.match(/[a-zA-z]+|{.+}/g);
+                const cmd = Command(sendCmd)
 
-                console.log(cmd);
+                if (cmd !== undefined) {
+                    setGuideSayArr(cmd)
 
-                // undefined 처리하기
-                setGuideSayArr(Command(cmd))    
-            
+                }
+
             }
+
+
         }
 
+
+        
     }
 
 

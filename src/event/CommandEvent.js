@@ -150,39 +150,46 @@ export const Command = (cmd) => {
     let cmdArr = cmd;
 
 
-    if(cmdArr.length == 1){
+    try {
 
-        returnData = cmdScript[cmd[0]];
+        if (cmdArr.length == 1) {
+            returnData = cmdScript[cmd[0]];
 
-    }else{
+        } else {
+            returnData = cmdScript[cmd[0]];
 
-        returnData = cmdScript[cmd[0]];
 
-        
-        const pr = /^{.*}$/g;
+            const pr = /^{.*}$/g;
 
-        for (let index = 1; index < cmdArr.length; index++) {
-            
-            if(pr.test(cmdArr[index])){
+            for (let index = 1; index < cmdArr.length; index++) {
 
-                // array로 만들어서 값 넘겨주기
+                if (pr.test(cmdArr[index])) {
 
-                let prameterArr = cmdArr[index];
+                    // array로 만들어서 값 넘겨주기
 
-                prameterArr = prameterArr.replace(/{|}/g, "")
-                prameterArr = prameterArr.split(/,/g)
+                    let prameterArr = cmdArr[index];
 
-                returnData = returnData(prameterArr)      
+                    prameterArr = prameterArr.replace(/{|}/g, "")
+                    prameterArr = prameterArr.split(/,/g)
 
-            }else{
+                    returnData = returnData(prameterArr)
 
-                returnData = returnData[cmdArr[index]]
+                } else {
 
+                    returnData = returnData[cmdArr[index]]
+
+                }
+
+                // alert(cmdArr[index]+ pr.test(cmdArr[index]) + " asdfasdfa")            
             }
-            
-            // alert(cmdArr[index]+ pr.test(cmdArr[index]) + " asdfasdfa")            
-        } 
-    
+
+        }
+
+
+    } catch (error) {
+
+        return undefined;
+
     }
 
 
