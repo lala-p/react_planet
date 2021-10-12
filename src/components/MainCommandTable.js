@@ -22,14 +22,14 @@ const MainCommandTable = () => {
     
     const keyDownHandler = (e) => {
         switch (e.keyCode) {
-            case 13:
+            case 13: // enter
                 if (userInput == "clear") {
                     setMsgHistory([])
                 } else {
                     console.log(userInput)
                     setMsgHistory(msgHistory.concat('me:' + userInput))
                     
-                    const sendCmd = userInput.match(/[a-zA-z]+|{.+}/g);
+                    const sendCmd = userInput.match(/[a-zA-z\.+\?+]+|\(.+\)/g);
                     const cmd = Command(sendCmd)
 
                     if (cmd !== undefined) {
@@ -41,17 +41,19 @@ const MainCommandTable = () => {
                     setCmdHistory(cmdHistory.concat(userInput))
                     setCmdAddr(cmdHistory.length+1)
 
+                }else{
+                    setCmdAddr(cmdHistory.length)
                 }
 
                 break;
-            case 38:
-                if (cmdAddr != 0) {
+            case 38: // arrow up
+                if (cmdAddr > 0) {
                     setCmdAddr(cmdAddr-1)
                 }
 
                 break;
-            case 40:
-                if (cmdAddr < cmdHistory.length) {
+            case 40: // arrow down
+                if (cmdAddr < cmdHistory.length-1) {
                     setCmdAddr(cmdAddr+1)
                 }
 
@@ -67,24 +69,16 @@ const MainCommandTable = () => {
 
     useEffect(() => {
 
-        console.log("addr : "+ cmdAddr)
+        console.log("addr : " + cmdAddr)
 
-        if (cmdAddr == cmdHistory.length) {
-            
-            setUserInput(cmdHistory[cmdHistory.length - 1])
-            
-        } else if (cmdAddr >= 0 || cmdAddr < cmdHistory.length) {
 
-            setUserInput(cmdHistory[cmdAddr])
+        setUserInput(cmdHistory[cmdAddr])
+        console.log(cmdHistory)
 
-        }
-            // 이거 useEffect 말로 따로 함수로 구현하기
-    
 
- 
     }, [cmdAddr])
 
-
+    
     const guideSaid = () => {
         setTimeout(()=>{
 
@@ -92,7 +86,7 @@ const MainCommandTable = () => {
             guideSayArr.shift()
         
             console.log(guideSayArr)
-            console.log("lnth: " + guideSayArr.length)
+            // console.log("lnth: " + guideSayArr.length)
     
         }, 250)    
     }
@@ -118,7 +112,7 @@ const MainCommandTable = () => {
         const scroll = tableRef.current.scrollHeight - tableRef.current.clientHeight;
         tableRef.current.scrollTo(0, scroll)
 
-        console.log(msgHistory)
+        // console.log(msgHistory)
     }, [msgHistory, guideSayArr])
 
 

@@ -19,11 +19,6 @@ const CommandEvent = () => {
 
     const [cookie, setCookie, removeCookie] = useCookies()
 
-    const setMealMenu = () => {
-
-        meal_menu = cookie.meal_menu
-    }
-
 
     useEffect(() => {
         meal_menu = cookie.meal_menu
@@ -44,14 +39,21 @@ const CommandEvent = () => {
 // ===================================================
 
 const wordFill = (str, len, word) => {
-    return str.length < len ? word+str : str;
+
+    let returnWord = str;
+
+    for (let index = str.length; index < len; index++) {
+        returnWord = word+returnWord;
+    }
+
+    return returnWord;
 }
 
 
 // ===================================================
 // return 현재 시간 
 // ex) PM 02:08:33
-export const getNow = () => {
+const getNow = () => {
     
     let getToday = new Date();
 
@@ -73,7 +75,7 @@ export const getNow = () => {
 // ===================================================
 // return 현재 날짜
 // ex) 2021-08-30 THU
-export const getToday = () => {
+const getToday = () => {
     
     let today = new Date();
 
@@ -85,24 +87,71 @@ export const getToday = () => {
     
     let returntoday = year + "-" + month + "-" + date + " "+ day;
 
-    meal_menu = ['asdf', 'rewq', 'asdf', 'vcxz']
 
     return [returntoday];
 }
 
 // ===================================================
+// input : get week (year, month, date)
+// return 특적 날짜의 요일 
+// ex) 2021-08-30 was... / THU
+const getWeek = (that_date) => {
+
+    let year  = that_date[0];
+    let month = that_date[1];
+    let date  = that_date[2];
+        
+    const that_day = new Date();
+    that_day.setFullYear(year)
+    that_day.setMonth(month-1)
+    that_day.setDate(date)
+    
+    year = wordFill(that_day.getFullYear().toString(), 4, '0')
+    month = wordFill((that_day.getMonth()+1).toString(), 2, '0')
+    date = wordFill(that_day.getDate().toString(), 2, '0')
+    
+    let script1 = ''
+    let script2 = week[that_day.getDay()]
+    
+    const now = new Date();
+    
+
+    if (now.getFullYear() <= that_day.getFullYear() && now.getMonth() <= that_day.getMonth() && now.getDate() < that_day.getDate()) {
+        script1 = `${year}-${month}-${date} is...`;
+
+    } else if (now.getFullYear() === that_day.getFullYear() && now.getMonth() === that_day.getMonth() && now.getDate() === that_day.getDate()) {
+        script1 = `${year}-${month}-${date} today is...`;
+
+    } else if (that_day.getFullYear() < 0) {
+        script1 = `B.C. &nbsp;${wordFill(Math.abs(that_day.getFullYear()).toString(), 4, '0')}-${month}-${date} was...`;
+
+    } else {
+        script1 = `${year}-${month}-${date} was...`;
+
+    }
+
+
+    const returnData = [script1, script2];
+
+    return returnData;
+}
+
+// ===================================================
 
 const getMealMenu = () => {
-
-
-
-    return meal_menu
+    return meal_menu;
 }
-
+// ===================================================
 const getMeal = () => {
 
-}
+    const ranInt = random.int(0, meal_menu.length-1)
+    let meal = meal_menu[ranInt]
+    meal = [meal]
 
+    return meal;
+
+}
+// ===================================================
 const addMealMenu = () => {
 
 }
@@ -124,12 +173,11 @@ export const CommandInit = () => {
     cmdScript['today'] = () => getToday()
 
     cmdScript['get'] = {}
-    cmdScript['get']['week'] = () => getMealMenu()
+    cmdScript['get']['week'] = (that_date) => getWeek(that_date)
     cmdScript['get']['meal'] = () => getMeal()
 
     cmdScript['show'] = {}
-    // cmdScript['show']['meal_menu'] = () => getMealMenu()
-    cmdScript['show meal_menu'] = () => getMealMenu()
+    cmdScript['show']['meal_menu'] = () => getMealMenu()
     cmdScript['show']['test'] = (haha) => haha;
 
     cmdScript['add'] = {}
@@ -158,18 +206,16 @@ export const Command = (cmd) => {
         } else {
             returnData = cmdScript[cmd[0]];
 
-
-            const pr = /^{.*}$/g;
+            console.log("cmd : "+cmd)
+            const pr = /^\(.*\)$/g;
 
             for (let index = 1; index < cmdArr.length; index++) {
 
                 if (pr.test(cmdArr[index])) {
 
-                    // array로 만들어서 값 넘겨주기
-
                     let prameterArr = cmdArr[index];
-
-                    prameterArr = prameterArr.replace(/{|}/g, "")
+                    
+                    prameterArr = prameterArr.replace(/\(|\)|\s/g, "")
                     prameterArr = prameterArr.split(/,/g)
 
                     returnData = returnData(prameterArr)
@@ -180,7 +226,7 @@ export const Command = (cmd) => {
 
                 }
 
-                // alert(cmdArr[index]+ pr.test(cmdArr[index]) + " asdfasdfa")            
+               
             }
 
         }
@@ -192,8 +238,6 @@ export const Command = (cmd) => {
 
     }
 
-
-    // returnData = cmdScript[cmd];
 
     return returnData;
 }
