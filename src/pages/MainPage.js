@@ -10,18 +10,10 @@ import { useCookies } from 'react-cookie';
 
 const MainPage = () => {
 
-    const [mainText, setMainText] = useState("");
-    const [removeSpace, setremoveSpace] = useState(false);
-
-
-    const [cookie, setCookie, removeCookie] = useCookies()    
-
 
     useEffect(() => {
 
         
-        
-
     }, [])
 
 
