@@ -4,11 +4,15 @@ import random from 'random';
 import { useCookies } from 'react-cookie';
 
 
-const week = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+const week = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
-const cmdScript = {}
+const cmdScript = {};
 
-let meal_menu = [];
+let astronaut_id = "";
+let astronaut_nickname = "";
+let astronaut_password = "";
+
+let meal_menu = null;
 
 
 const CommandEvent = () => {
@@ -21,15 +25,27 @@ const CommandEvent = () => {
 
 
     useEffect(() => {
-        meal_menu = cookie.meal_menu
-
-    }, [])
+        if (meal_menu) {
+            setCookie('meal_menu', meal_menu, {path: '/', sameSite: 'Lax'})
+        
+        }    
+    }, [meal_menu])
 
     useEffect(() => {
-    
-        setCookie('meal_menu', meal_menu, {path: '/', sameSite: 'Lax'})
+        if (astronaut_id) {
+            setCookie('astronaut_id', astronaut_id, {path: '/', sameSite: 'Lax'})
+        
+        }
+    }, [astronaut_id])
 
-    }, [meal_menu])
+
+    useEffect(() => {
+        astronaut_id = cookie.astronaut_id
+        meal_menu = cookie.meal_menu
+ 
+ 
+    }, [])
+    
 
 
     return <></>;
@@ -137,27 +153,55 @@ const getWeek = (that_date) => {
 }
 
 // ===================================================
-
+// return cookie에 저장된 meal_menu
 const getMealMenu = () => {
-    return meal_menu;
+
+    let script = [];
+
+    for (let index = 0; index < meal_menu.length; index++) {
+        script = script.concat('['+(index+1)+'] '+meal_menu[index])
+    }
+
+    return script;
 }
+
 // ===================================================
-const getMeal = () => {
+// return random으로 meal_menu 중 하나를 뽑음
+const randomMeal = () => {
 
     const ranInt = random.int(0, meal_menu.length-1)
     let meal = meal_menu[ranInt]
     meal = [meal]
 
     return meal;
-
 }
+
 // ===================================================
-const addMealMenu = () => {
+// return meal로 array를 받은 후, meal_menu 요소를 추가함.
+const addMealMenu = (meal) => {
+    
+    meal_menu = meal_menu.concat(meal)
 
+    const script = ['Completed.']
+    // axois로 node server에 값 보내기
+    return script;
 }
 
-const removeMealMenu = () => {
+// ===================================================
+// return meal로 array를 받은 후, meal_menu 요소를 삭제함.
+const removeMealMenu = (meal) => {
 
+    let menu = meal_menu;
+
+    for (let index = 0; index < meal.length; index++) {
+        menu.splice(menu.indexOf(meal[index]), 1)
+    }
+
+    meal_menu = menu 
+
+    const script = ['Completed.']
+    // axois로 node server에 값 보내기
+    return script;
 }
 
 export const CommandInit = () => {
@@ -174,17 +218,19 @@ export const CommandInit = () => {
 
     cmdScript['get'] = {}
     cmdScript['get']['week'] = (that_date) => getWeek(that_date)
-    cmdScript['get']['meal'] = () => getMeal()
-
+    
+    cmdScript['random'] = {}
+    cmdScript['random']['meal'] = () => randomMeal()
+    
     cmdScript['show'] = {}
     cmdScript['show']['meal_menu'] = () => getMealMenu()
     cmdScript['show']['test'] = (haha) => haha;
 
     cmdScript['add'] = {}
-    cmdScript['add']['meal_menu'] = () => addMealMenu()
+    cmdScript['add']['meal_menu'] = (meal) => addMealMenu(meal)
 
-    cmdScript['rm'] = {}
-    cmdScript['rm']['meal_menu'] = () => removeMealMenu()
+    cmdScript['remove'] = {}
+    cmdScript['remove']['meal_menu'] = (meal) => removeMealMenu(meal)
 
 
 }
@@ -215,8 +261,13 @@ export const Command = (cmd) => {
 
                     let prameterArr = cmdArr[index];
                     
-                    prameterArr = prameterArr.replace(/\(|\)|\s/g, "")
+                    prameterArr = prameterArr.replace(/\(|\)/g, "")
                     prameterArr = prameterArr.split(/,/g)
+
+
+                    for (let index = 0; index < prameterArr.length; index++) {  
+                        prameterArr[index] = prameterArr[index].replace(/^\s+|\s+$/gm,'')
+                    }
 
                     returnData = returnData(prameterArr)
 
@@ -237,7 +288,6 @@ export const Command = (cmd) => {
         return undefined;
 
     }
-
 
     return returnData;
 }
