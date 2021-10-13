@@ -11,13 +11,13 @@ const MainCommandTable = () => {
     const [cmdHistory, setCmdHistory] = useState([])
     const [cmdAddr, setCmdAddr] = useState(-100)
     
-    
     const [msgHistory, setMsgHistory] = useState([])
     const [guideSayArr, setGuideSayArr] = useState([])
     
     const [cookie, setCookie, removeCookie] = useCookies()    
 
     const tableRef = useRef(null)
+
 
     
     const keyDownHandler = (e) => {

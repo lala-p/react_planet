@@ -14,31 +14,74 @@ let astronaut_password = "";
 
 let meal_menu = null;
 
+let mainText = "";
+
+let onSave = false;
+let gaga = false;
+
 
 const CommandEvent = () => {
 
     const [astronautId, setAstronaut] = useState("??")
     // const [astronautId, setAstronaut] = useState("??")
 
-
     const [cookie, setCookie, removeCookie] = useCookies()
-
-
-    useEffect(() => {
-        if (meal_menu) {
-            setCookie('meal_menu', meal_menu, {path: '/', sameSite: 'Lax'})
-        
-        }    
-    }, [meal_menu])
-
+    //===========================================
     useEffect(() => {
         if (astronaut_id) {
             setCookie('astronaut_id', astronaut_id, {path: '/', sameSite: 'Lax'})
         
         }
     }, [astronaut_id])
+    //===========================================
+    useEffect(() => {
+        if (astronaut_nickname) {
+            setCookie('astronaut_nickname', astronaut_nickname, {path: '/', sameSite: 'Lax'})
+        
+        }
+    }, [astronaut_nickname])
+    //===========================================
+    useEffect(() => {
+        if (astronaut_password) {
+            setCookie('astronaut_password', astronaut_password, {path: '/', sameSite: 'Lax'})
+        
+        }
+    }, [astronaut_password])
+    //===========================================
+    useEffect(() => {
+        if (meal_menu) {
+            setCookie('meal_menu', meal_menu, {path: '/', sameSite: 'Lax'})
+        
+        }    
+    }, [meal_menu])
+    //===========================================
+    useEffect(() => {
+        if (mainText) {
+            setCookie('mainText', mainText, {path: '/', sameSite: 'Lax'})
+        }
+        gaga = false;
+    }, [gaga])
+
+    //===========================================
+
+    useEffect(() => {
+       if (onSave) {
+            mainText = cookie.mainText
+       }
+       console.log(cookie.mainText)
+       console.log(mainText)
+       onSave = false;
+
+    }, [onSave])
 
 
+    useEffect(() => {
+       console.log(cookie.mainText)
+       console.log(mainText)
+    }, [cookie.mainText])
+
+    //===========================================
+    
     useEffect(() => {
         astronaut_id = cookie.astronaut_id
         meal_menu = cookie.meal_menu
@@ -46,8 +89,6 @@ const CommandEvent = () => {
  
     }, [])
     
-
-
     return <></>;
 
 }
@@ -125,31 +166,31 @@ const getWeek = (that_date) => {
     year = wordFill(that_day.getFullYear().toString(), 4, '0')
     month = wordFill((that_day.getMonth()+1).toString(), 2, '0')
     date = wordFill(that_day.getDate().toString(), 2, '0')
-    
-    let script1 = ''
-    let script2 = week[that_day.getDay()]
+
+    let script = [];
+
+    script[0] = ''
+    script[1] = week[that_day.getDay()]
     
     const now = new Date();
     
 
     if (now.getFullYear() <= that_day.getFullYear() && now.getMonth() <= that_day.getMonth() && now.getDate() < that_day.getDate()) {
-        script1 = `${year}-${month}-${date} is...`;
+        script[0] = `${year}-${month}-${date} is...`;
 
     } else if (now.getFullYear() === that_day.getFullYear() && now.getMonth() === that_day.getMonth() && now.getDate() === that_day.getDate()) {
-        script1 = `${year}-${month}-${date} today is...`;
+        script[0] = `${year}-${month}-${date} today is...`;
 
     } else if (that_day.getFullYear() < 0) {
-        script1 = `B.C. &nbsp;${wordFill(Math.abs(that_day.getFullYear()).toString(), 4, '0')}-${month}-${date} was...`;
+        script[0] = `B.C. &nbsp;${wordFill(Math.abs(that_day.getFullYear()).toString(), 4, '0')}-${month}-${date} was...`;
 
     } else {
-        script1 = `${year}-${month}-${date} was...`;
+        script[0] = `${year}-${month}-${date} was...`;
 
     }
 
 
-    const returnData = [script1, script2];
-
-    return returnData;
+    return script;
 }
 
 // ===================================================
@@ -204,6 +245,34 @@ const removeMealMenu = (meal) => {
     return script;
 }
 
+const save = () => {
+
+
+    onSave = true;
+    const script = ['Save completed.']
+    alert(mainText)
+    return script;
+}
+
+
+const getText = () => {
+
+
+    const script = ['completed.']
+    gaga = true;
+    return script;
+}
+
+const update = () => {
+
+
+
+
+    const script = ['Update completed.']
+
+    return script;
+}
+
 export const CommandInit = () => {
 
 
@@ -216,7 +285,11 @@ export const CommandInit = () => {
     cmdScript['now'] = () => getNow()
     cmdScript['today'] = () => getToday()
 
+    cmdScript['save'] = () => save()
+    cmdScript['update'] = () => update()
+
     cmdScript['get'] = {}
+    cmdScript['get']['text'] = () => getText()
     cmdScript['get']['week'] = (that_date) => getWeek(that_date)
     
     cmdScript['random'] = {}
@@ -291,6 +364,8 @@ export const Command = (cmd) => {
 
     return returnData;
 }
+
+
 
 
 export default CommandEvent;
