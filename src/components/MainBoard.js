@@ -11,7 +11,7 @@ const MainBoard = () => {
 
 
     return(
-
+        
         <div>
 
             <div>

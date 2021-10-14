@@ -1,8 +1,7 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 
 import CommandEvent from '../event/CommandEvent';
-import { CommandInit, Command } from '../event/CommandEvent';
 
 const MainCommandTable = () => {
 
@@ -17,7 +16,7 @@ const MainCommandTable = () => {
     const [cookie, setCookie, removeCookie] = useCookies()    
 
     const tableRef = useRef(null)
-
+    const commandRef = useRef()
 
     
     const keyDownHandler = (e) => {
@@ -30,8 +29,8 @@ const MainCommandTable = () => {
                     setMsgHistory(msgHistory.concat('me:' + userInput))
                     
                     const sendCmd = userInput.match(/[a-zA-z\.+\?+]+|\(.+\)/g);
-                    const cmd = Command(sendCmd)
-
+                    const cmd = commandRef.current.command(sendCmd)
+                    
                     if (cmd !== undefined) {
                         setGuideSayArr(cmd)
                     }
@@ -69,12 +68,9 @@ const MainCommandTable = () => {
 
     useEffect(() => {
 
-        console.log("addr : " + cmdAddr)
-
-
         setUserInput(cmdHistory[cmdAddr])
+        console.log("addr : " + cmdAddr)
         console.log(cmdHistory)
-
 
     }, [cmdAddr])
 
@@ -96,7 +92,7 @@ const MainCommandTable = () => {
 
         // node server가 켜져있지 않았을 때 명령어창에 erorr 띄우기 
 
-        CommandInit()
+        // commandRef.current.commandInit()
        
 
     }, [])
@@ -124,7 +120,7 @@ const MainCommandTable = () => {
     return(
 
         <div>
-            <CommandEvent />
+            <CommandEvent ref={commandRef}/>
 
             <div ref={tableRef} style={{display: "flex", width: "270px", height: "350px", backgroundColor: "coral", overflow: "auto", flexDirection: "column-reverse"}}>
                 <div>
@@ -132,6 +128,9 @@ const MainCommandTable = () => {
                 </div>
             </div>
             <input type="text" style={{width: "265px"}} onKeyDown={(e) => keyDownHandler(e)} value={userInput} onChange={(e)=> setUserInput(e.target.value)} />
+
+            <button onClick={() => {commandRef.current.sayHaha()}}>haha</button>
+            <button onClick={() => {commandRef.current.sayLulu()}}>lulu</button>
 
         </div>
 

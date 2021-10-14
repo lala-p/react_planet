@@ -90,11 +90,11 @@ const MainPage = () => {
 
                 </div>
 
-                <div style={{float: "left"}}>
+                {/* <div style={{float: "left"}}>
 
                     <MainBoard></MainBoard>
 
-                </div>
+                </div> */}
 
 
                 {/* <button type="button" onClick={() => getText}>text 가져오기</button>&nbsp;
