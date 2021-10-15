@@ -3,13 +3,21 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import reportWebVitals from './reportWebVitals';
 import { CookiesProvider } from 'react-cookie';
+import { Provider } from 'react-redux';
+
 import Routes from './Routes';
 
+import createStore from './store';
+import reducers from './reducers';
+
+const store = createStore(reducers);
 
 ReactDOM.render(
-  <CookiesProvider>
-    <Routes />
-  </CookiesProvider>,
+  <Provider store={store}>
+    <CookiesProvider>
+      <Routes />
+    </CookiesProvider>
+  </Provider>,
   document.getElementById('root')
 );
 

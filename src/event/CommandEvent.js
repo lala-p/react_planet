@@ -236,21 +236,17 @@ const CommandEvent = forwardRef((props, ref) => {
                     if (pr.test(cmdArr[index])) {
 
                         let prameterArr = cmdArr[index];
-                        
                         prameterArr = prameterArr.replace(/\(|\)/g, "")
                         prameterArr = prameterArr.split(/,/g)
-
 
                         for (let index = 0; index < prameterArr.length; index++) {  
                             prameterArr[index] = prameterArr[index].replace(/^\s+|\s+$/gm,'')
                         }
 
                         returnData = returnData(prameterArr)
-
+                        
                     } else {
-
                         returnData = returnData[cmdArr[index]]
-
                     }
 
                     

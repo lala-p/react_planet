@@ -90,10 +90,10 @@ const MainPage = () => {
 
                 </div>
 
-                {/* <div style={{float: "left"}}>
+                {/* <div style={{float: "left"}}> */}
 
                     <MainBoard></MainBoard>
-
+{/* 
                 </div> */}
 
 
