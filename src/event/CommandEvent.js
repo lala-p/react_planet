@@ -1,25 +1,33 @@
 import React, { useState, useEffect, forwardRef, useImperativeHandle } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
 import random from 'random';
 import { useCookies } from 'react-cookie';
+
+import * as mainTextAction from '../actions/mainText';
 
 
 const week = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 
-let astronaut_id = "";
-let astronaut_nickname = "";
-let astronaut_password = "";
+// let astronaut_id = "";
+// let astronaut_nickname = "";
+// let astronaut_password = "";
 
-let meal_menu = null;
+// let meal_menu = null;
 
-let mainText = "";
+// let mainText = "";
 
-let onSave = false;
-let gaga = false;
+// let onSave = false;
+// let gaga = false;
 
 
 const CommandEvent = forwardRef((props, ref) => {
+
+    const dispatch = useDispatch();
+    const selectMainText = useSelector((state) => state.mainText.mainText);
+
+    const [mainText, setMainText] = useState("asdasdasd")
 
     const [cmdScript, setCmdScript] = useState({})
 
@@ -29,9 +37,7 @@ const CommandEvent = forwardRef((props, ref) => {
 
     const [mealMenu, setMealMenu] = useState(['11111','222222','33333'])
 
-    const [mainText, setMainText] = useState("")
-
-
+    const [onSave, setOnSave] = useState(false);
 
     const wordFill = (str, len, word) => {
 
@@ -44,6 +50,35 @@ const CommandEvent = forwardRef((props, ref) => {
         return returnWord;
     }
 
+
+    const save = () => {
+
+        setOnSave(true)
+        const script = ['Save Completed.'] 
+        
+        return script;
+        
+    }
+
+    const getMainText = () => {
+  
+        let url = "http://localhost:3001/main/getText";
+
+        axios.get(url)
+        .then((response) => {
+
+            console.log(response.data)
+            dispatch(mainTextAction.setMainText(response.data))
+
+        })
+        .catch((error) => {
+            console.log(error)
+        })
+
+        const script = ['aaCompleted.'] 
+        
+        return script;
+    }
 
     // ===================================================
     // return 현재 시간 
@@ -196,6 +231,10 @@ const CommandEvent = forwardRef((props, ref) => {
 
         script['get'] = {}
         script['get']['week'] = (that_date) => getWeek(that_date)
+        script['get']['text'] = () => getMainText()
+
+        script['save'] = {}
+        script['save']['text'] = () => save()
 
         script['random'] = {}
         script['random']['meal'] = () => randomMeal()
@@ -283,6 +322,28 @@ const CommandEvent = forwardRef((props, ref) => {
         commandInit()
 
     }, [])
+
+    useEffect(() => {
+
+        if (onSave) {
+            let url = "http://localhost:3001/main/saveText";
+            
+            const textBox = {
+                text: selectMainText,
+            }
+
+            axios
+            .post(url, textBox)
+            .then((response) => {
+                console.log("저장 완료!@!");
+                setOnSave(false)
+            })
+            .catch((error) => {
+                console.log(error)
+            })
+        }
+
+    }, [onSave])
 
     
     return <></>;

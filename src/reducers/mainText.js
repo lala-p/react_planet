@@ -1,22 +1,23 @@
+import produce from 'immer';
+
 import * as mainTextAction from '../actions/mainText';
 
 
 const initialStates = {
 
-    mainText: "asdfasdfasdfasdf123123123123aaaaaaaaabbbbbb",
+    mainText: "",
 
 }
 
 
 const reducers = (state = initialStates, actions) => {
-    const { type } = actions
     
-    switch (type) {
+    switch (actions.type) {
         case mainTextAction.SET_MAIN_TEXT: {
-            return {
-                ...state,
-                mainText: actions.payload,
-            }
+            return produce(state, draft => {
+                draft.mainText = actions.payload;
+            });
+
         }
             
         default: {

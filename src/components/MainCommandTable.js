@@ -31,7 +31,7 @@ const MainCommandTable = () => {
                     const sendCmd = userInput.match(/[a-zA-z\.+\?+]+|\(.+\)/g);
                     const cmd = commandRef.current.command(sendCmd)
                     
-                    if (cmd !== undefined) {
+                    if (cmd !== undefined && typeof cmd == "function") {
                         setGuideSayArr(cmd)
                     }
                 }
