@@ -30,8 +30,8 @@ const MainCommandTable = () => {
                     
                     const sendCmd = userInput.match(/[a-zA-z\.+\?+]+|\(.+\)/g);
                     const cmd = commandRef.current.command(sendCmd)
-                    
-                    if (cmd !== undefined && typeof cmd == "function") {
+            
+                    if (cmd !== undefined) {
                         setGuideSayArr(cmd)
                     }
                 }
@@ -78,9 +78,11 @@ const MainCommandTable = () => {
     const guideSaid = () => {
         setTimeout(()=>{
 
-            setMsgHistory(msgHistory.concat('gu:'+guideSayArr[0]))
-            guideSayArr.shift()
-        
+            if (Array.isArray(guideSayArr)) {
+                setMsgHistory(msgHistory.concat('gu:' + guideSayArr[0]))
+                guideSayArr.shift()
+            }
+
             console.log(guideSayArr)
             // console.log("lnth: " + guideSayArr.length)
     

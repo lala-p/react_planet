@@ -75,7 +75,7 @@ const CommandEvent = forwardRef((props, ref) => {
             console.log(error)
         })
 
-        const script = ['aaCompleted.'] 
+        const script = ['Completed.'] 
         
         return script;
     }
