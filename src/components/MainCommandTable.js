@@ -1,10 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
+import { useSelector, useDispatch } from 'react-redux';
+import axios from 'axios';
 
+
+import * as mainTextAction from '../actions/mainText';
 import CommandEvent from '../event/CommandEvent';
 
 const MainCommandTable = () => {
 
+    const dispatch = useDispatch();
     const [userInput, setUserInput] = useState("")
     
     const [cmdHistory, setCmdHistory] = useState([])
@@ -17,8 +22,14 @@ const MainCommandTable = () => {
 
     const tableRef = useRef(null)
     const commandRef = useRef()
-
     
+    const pingTime = useSelector((state) => state.mainText.time);
+    const pingConnect = useSelector((state) => state.mainText.connect);
+
+
+    const [on, setOn] = useState(false)
+
+
     const keyDownHandler = (e) => {
         switch (e.keyCode) {
             case 13: // enter
@@ -90,14 +101,45 @@ const MainCommandTable = () => {
     }
 
 
+    const setBase = () => {
+
+
+        setOn(true)
+
+    }
+
     useEffect(() => {
 
-        // node server가 켜져있지 않았을 때 명령어창에 erorr 띄우기 
+        let url = "http://localhost:3001/";
 
-        // commandRef.current.commandInit()
-       
+        axios.get(url)
+        .then((response) => {
 
+            console.log(response.data)
+            dispatch(mainTextAction.checkConnect(new Date(), true))
+            setBase()
+
+        })
+        .catch((error) => {
+            console.log(error)
+            dispatch(mainTextAction.checkConnect(new Date(), false))
+            setOn(true)
+        })
+    
     }, [])
+
+    useEffect(() => {
+
+        if (pingTime) {
+            if (pingConnect) {
+                setGuideSayArr(['connect'])
+            } else {
+                setGuideSayArr(['connect failed'])
+            }
+        }
+
+        
+    }, [pingTime])
 
     useEffect(() => {
 
@@ -124,10 +166,31 @@ const MainCommandTable = () => {
         <div>
             <CommandEvent ref={commandRef}/>
 
+
+            
             <div ref={tableRef} style={{display: "flex", width: "270px", height: "350px", backgroundColor: "coral", overflow: "auto", flexDirection: "column-reverse"}}>
+                
+                {on ? 
+                    <div>
+                        {msgList}
+                    </div>
+                    :
                 <div>
-                    {msgList}
+                
+                    loading....
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />
+                    <br />            
                 </div>
+                    
+                    
+                    }
+     
             </div>
             <input type="text" style={{width: "265px"}} onKeyDown={(e) => keyDownHandler(e)} value={userInput} onChange={(e)=> setUserInput(e.target.value)} />
 

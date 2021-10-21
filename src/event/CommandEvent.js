@@ -10,18 +10,6 @@ import * as mainTextAction from '../actions/mainText';
 const week = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
 
 
-// let astronaut_id = "";
-// let astronaut_nickname = "";
-// let astronaut_password = "";
-
-// let meal_menu = null;
-
-// let mainText = "";
-
-// let onSave = false;
-// let gaga = false;
-
-
 const CommandEvent = forwardRef((props, ref) => {
 
     const dispatch = useDispatch();
@@ -48,6 +36,26 @@ const CommandEvent = forwardRef((props, ref) => {
         }
 
         return returnWord;
+    }
+
+
+    const ping = () => {
+
+        let url = "http://localhost:3001/";
+
+        axios.get(url)
+        .then((response) => {
+
+            console.log(response.data)
+            dispatch(mainTextAction.checkConnect(new Date(), true))
+
+        })
+        .catch((error) => {
+            console.log(error)
+            dispatch(mainTextAction.checkConnect(new Date(), false))
+        })
+
+        return undefined;
     }
 
 
@@ -228,6 +236,8 @@ const CommandEvent = forwardRef((props, ref) => {
 
         script['now'] = () => getNow()
         script['today'] = () => getToday()
+
+        script['ping'] = () => ping()
 
         script['get'] = {}
         script['get']['week'] = (that_date) => getWeek(that_date)
