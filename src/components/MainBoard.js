@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import ToggleSwitch from 'react-switch';
 
@@ -21,13 +21,26 @@ const MainBoard = () => {
 
     }
 
+    const keyDownHandler = (e) => {
+        switch (e.keyCode) {
+            case 9:
+                e.preventDefault();
+                setboardText(boardText+'\t')
+                dispatch(mainTextAction.setMainText(boardText+'\t'))
+                break;
+        
+            default:
+                break;
+        }
+    }
+
     
     return(
         
         <div>
 
             <div>
-                <textarea name="mainText" cols="150" rows="40" onChange={onChange} value={selectMainText}></textarea>
+                <textarea name="mainText" cols="150" rows="40" onKeyDown={keyDownHandler} onChange={onChange} value={selectMainText}></textarea>
                 <br />
                 removeSpace &nbsp; &nbsp; 
                 <ToggleSwitch onChange={(checked) => setremoveSpace(checked)} checked={removeSpace} />
