@@ -16,8 +16,7 @@ const reducers = (state = initialStates, actions) => {
         case mainTextAction.SET_MAIN_TEXT: {
             return produce(state, draft => {
                 draft.mainText = actions.payload;
-            });
-
+            })
         }
             
         default: {
