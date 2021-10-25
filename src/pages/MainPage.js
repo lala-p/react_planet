@@ -1,109 +1,66 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import TextareaAutosize from 'react-textarea-autosize';
-import ToggleSwitch from 'react-switch';
+import { useSelector, useDispatch } from 'react-redux';
+
+import * as modeAction from '../actions/mode';
 
 import MainBoard from '../components/MainBoard';
+import MemoBox from '../components/MemoBox';
 import MainCommandTable from '../components/MainCommandTable';
 import MainGuide from '../components/MainGuide';
-import { useCookies } from 'react-cookie';
 
 const MainPage = () => {
 
+    const dispatch = useDispatch();
+    const currentMode = useSelector((state) => state.mode.currentMode);
+    
 
     useEffect(() => {
-
 
         
     }, [])
 
 
-    // const getText = () =>{
+    const modeHandler = () => {
 
-    //     let url = "http://localhost:3001/getText";
+        switch (currentMode) {
+            case 0:
+                return <MainBoard></MainBoard>
 
+            case 1: 
+                return <MemoBox></MemoBox>
+            default:
+                break;
+        }
 
-    //     axios.get(url)
-    //     .then((response) => {
-
-    //         console.log(response.data)
-    //         setMainText(response.data)
-
-    //     })
-    //     .catch((error) => {
-    //         console.log(error)
-    //     })
+    }
 
 
-    // }
-
-
-    // const saveText = () =>{
-
-
-    //     console.log("저장 중...");
-
-    //     let url = "http://localhost:3001/saveText";
-
-    //     const textBox = {
-    //         text: mainText,
-    //     }
-
-
-    //     axios.post(url, textBox)
-    //     .then((response) => {
-
-    //         console.log("저장 완료!@!");
-                        
-    //     })
-    //     .catch((error) => {
-    //         console.log(error)
-    //     })
-
-
-
-    // }
-
-
-
-
-
-    
     return(
-        <div>
-
-
-                <div style={{width: "300px",float: "left"}}>
-
-                    <div>
-
-                        {/* MainGuide */}
-                        <MainGuide></MainGuide>
-
-                    </div>
-
-                    <div>
-
-                        <MainCommandTable></MainCommandTable>
-                        {/* MainCommandTable */}
-
-                    </div>
-
+        <div style={{display: "flex", width: "100%"}}>
+            <div style={{width: "350px"}}>
+                <div>
+                    {/* MainGuide */}
+                    <MainGuide></MainGuide>
+                </div>
+                <div>
+                    {/* MainCommandTable */}
+                    <MainCommandTable></MainCommandTable>
                 </div>
 
-                {/* <div style={{float: "left"}}> */}
+                현재 currentMode = {currentMode}
+                <br />
+            </div>
 
-                    <MainBoard></MainBoard>
-{/* 
-                </div> */}
-
-
-                {/* <button type="button" onClick={() => getText}>text 가져오기</button>&nbsp;
-                <button type="button" onClick={() => saveText}>저장하기</button> */}
-
+            <div><button onClick={()=> dispatch(modeAction.rangeControl(-1))}>&lt;</button></div>
+            <div style={{display: "flex"}}>
+                {modeHandler()}
+            </div>
+            <div><button onClick={()=> dispatch(modeAction.rangeControl(1))}>&gt;</button></div>
+            
         </div>
-    )
 
+
+    )
 }
 
 export default MainPage;

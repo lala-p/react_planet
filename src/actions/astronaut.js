@@ -48,11 +48,3 @@ export const deleteMealMenu = (menu) => {
     }
 };
 
-
-
-// export const setMainText = (text) => {
-//     return {
-//         type: SET_MAIN_TEXT,
-//         payload: text,
-//     }  
-// };

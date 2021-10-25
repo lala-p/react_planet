@@ -6,12 +6,13 @@ import axios from 'axios';
 import random from 'random';
 
 import * as mainTextAction from '../actions/mainText';
-
+import * as modeAction from '../actions/mode';
 
 const MainCommandTable = () => {
 
     const dispatch = useDispatch();
     const selectMainText    = useSelector((state) => state.mainText.mainText);
+    const mode              = useSelector((state) => state.mode.mode)
 
     // const astronautId       = useSelector((state) => state.astronaut.astronautId)
     // const astronautNickname = useSelector((state) => state.astronaut.astronautNickname)
@@ -31,12 +32,12 @@ const MainCommandTable = () => {
 
     const [msgHistory, setMsgHistory] = useState([])
     const [cmdHistory, setCmdHistory] = useState([])
-    const [guideSayArr, setGuideSayArr] = useState([])
+    const [guideSay, setGuideSay] = useState([])
     const [cmdAddr, setCmdAddr] = useState(-100)
     
     const tableRef = useRef(null)    
 
-    const [on, setOn] = useState(false)
+    const [loading, setLoading] = useState(true)
 
     const [cmdScript, setCmdScript] = useState({})
 
@@ -61,14 +62,14 @@ const MainCommandTable = () => {
         axios.get(url)
         .then((response) => {
             console.log(response.data)
-            setGuideSayArr(['connect'])
+            setGuideSay(['connect'])
         })
         .catch((error) => {
             console.log(error)
-            setGuideSayArr(['connect failed'])
+            setGuideSay(['connect failed'])
         })
         .finally(() => {
-            setOn(true)
+            setLoading(false)
         })
 
         return undefined;
@@ -89,11 +90,11 @@ const MainCommandTable = () => {
             .post(url, textBox)
             .then((response) => {
                 console.log("저장 완료!@!");
-                setGuideSayArr(['Save Completed.'])
+                setGuideSay(['Save Completed.'])
             })
             .catch((error) => {
                 console.log(error)
-                setGuideSayArr(['Save failed.'])
+                setGuideSay(['Save failed.'])
             })
 
         
@@ -113,14 +114,33 @@ const MainCommandTable = () => {
 
             console.log(response.data)
             dispatch(mainTextAction.setMainText(response.data)) 
-            setGuideSayArr(['!@!'])
+            setGuideSay(['!@!'])
         })
         .catch((error) => {
             console.log(error)
-            setGuideSayArr(['failed.'])
+            setGuideSay(['failed.'])
         })
         
         return script;
+    }
+    // ===================================================
+    // mainContent에 있는 component 바꾸기/ mode 바꾸기
+    const setMode = (changeMode) => {
+
+        let notExist = true;
+
+        for (let index = 0; index < mode.length; index++) {
+            if (changeMode[0] == mode[index]) {
+                dispatch(modeAction.setMode(index))
+                notExist = false
+                return undefined;
+            }
+        }
+
+        if (notExist) {
+            const script = [changeMode[0]+' mode does not exist.']
+            return script;
+        }
     }
     // ===================================================
     // return 현재 시간 
@@ -274,6 +294,9 @@ const MainCommandTable = () => {
         script['get']['week'] = (that_date) => getWeek(that_date)
         script['get']['text'] = () => getMainText()
 
+        script['set'] = {}
+        script['set']['mode'] = (mode) => setMode(mode)
+
         script['save'] = {}
         script['save']['text'] = () => save()
 
@@ -352,7 +375,7 @@ const MainCommandTable = () => {
                     const cmd = command(sendCmd)
             
                     if (cmd !== undefined) {
-                        setGuideSayArr(cmd)
+                        setGuideSay(cmd)
                     }
                 }
                 
@@ -385,12 +408,12 @@ const MainCommandTable = () => {
     
     const guideSaid = () => {
         setTimeout(()=>{
-            if (Array.isArray(guideSayArr)) {
-                setMsgHistory(msgHistory.concat('gu:' + guideSayArr[0]))
-                guideSayArr.shift()
+            if (Array.isArray(guideSay)) {
+                setMsgHistory(msgHistory.concat('gu:' + guideSay[0]))
+                guideSay.shift()
             }
-            console.log(guideSayArr)
-            // console.log("lnth: " + guideSayArr.length)
+            console.log(guideSay)
+            // console.log("lnth: " + guideSay.length)
         }, 250)    
     }
 
@@ -411,7 +434,7 @@ const MainCommandTable = () => {
 
 
     useEffect(() => {
-        if(guideSayArr && guideSayArr.length != 0){            
+        if(guideSay && guideSay.length != 0){            
             guideSaid()
         }
         setUserInput("")
@@ -419,7 +442,7 @@ const MainCommandTable = () => {
         const scroll = tableRef.current.scrollHeight - tableRef.current.clientHeight;
         tableRef.current.scrollTo(0, scroll)
 
-    }, [msgHistory, guideSayArr])
+    }, [msgHistory, guideSay])
 
 
 
@@ -432,13 +455,9 @@ const MainCommandTable = () => {
 
         <div>
             
-            <div ref={tableRef} style={{display: "flex", width: "270px", height: "350px", backgroundColor: "coral", overflow: "auto", flexDirection: "column-reverse"}}>
+            <div ref={tableRef} style={{display: "flex", width: "320px", height: "350px", backgroundColor: "coral", overflow: "auto", flexDirection: "column-reverse"}}>
                 
-            {on ? 
-                <div>
-                    {msgList}
-                </div>
-                :
+            {loading ? 
                 <div>
                     Loading....
                     <br />
@@ -450,6 +469,12 @@ const MainCommandTable = () => {
                     <br />
                     <br />            
                 </div>                    
+                :
+
+                <div>
+                    {msgList}
+                </div>
+                
             }
      
             </div>
