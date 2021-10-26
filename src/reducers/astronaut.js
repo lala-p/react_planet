@@ -8,46 +8,39 @@ const initialStates = {
     astronautId       : "",
     astronautNickname : "",
     astronautPassword : "",
-    mealMenu          : [],
+    mealMenu          : ['김밥', '하하'],
     week              : ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
 
 }
 
 
-const reducers = (state = initialStates, actions) => {
-    
+const reducers = (state = initialStates, actions) => {    
     switch (actions.type) {
-
         case astronautAction.SET_ASTRONAUT_ID: {
             return produce(state, draft => {
                 draft.astronautId = actions.payload;
             })
         }
-
         case astronautAction.SET_ASTRONAUT_NICKNAME: {
             return produce(state, draft => {
                 draft.astronautNickname = actions.payload;
             })
         }
-
         case astronautAction.SET_ASTRONAUT_PASSWORD: {
             return produce(state, draft => {
                 draft.astronautPassword = actions.payload;
             })
         }
-
         case astronautAction.SET_MEALMENU: {
             return produce(state, draft => {
                 draft.mealMenu = actions.payload;
             })
         }
-
         case astronautAction.ADD_MEALMENU: {
             return produce(state, draft => {
                 draft.mealMenu = draft.mealMenu.concat(actions.payload)
             })
         }
-        
         case astronautAction.DELETE_MEALMENU: {
             return produce(state, draft => {
 

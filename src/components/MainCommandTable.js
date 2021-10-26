@@ -6,37 +6,36 @@ import axios from 'axios';
 import random from 'random';
 
 import * as mainTextAction from '../actions/mainText';
+import * as astronautAction from '../actions/astronaut';
+import * as historyAction from '../actions/history';
 import * as modeAction from '../actions/mode';
 
 const MainCommandTable = () => {
 
     const dispatch = useDispatch();
     const selectMainText    = useSelector((state) => state.mainText.mainText);
+    
+    const astronautId       = useSelector((state) => state.astronaut.astronautId)
+    const astronautNickname = useSelector((state) => state.astronaut.astronautNickname)
+    const astronautPassword = useSelector((state) => state.astronaut.astronautPassword)
+    const mealMenu          = useSelector((state) => state.astronaut.mealMenu)
+    const week              = useSelector((state) => state.astronaut.week)
+
+    const msgHistory        = useSelector((state) => state.history.msgHistory)
+    const guideScript       = useSelector((state) => state.history.guideScript)
+    const guideTempo        = useSelector((state) => state.history.guideTempo)
+
     const mode              = useSelector((state) => state.mode.mode)
 
-    // const astronautId       = useSelector((state) => state.astronaut.astronautId)
-    // const astronautNickname = useSelector((state) => state.astronaut.astronautNickname)
-    // const astronautPassword = useSelector((state) => state.astronaut.astronautPassword)
-    // const mealMenu          = useSelector((state) => state.astronaut.mealMenu)
-
-    // reducers 적용하기
-
-    
-    const [mealMenu, setMealMenu] = useState(['11111','222222','33333'])
-
-    const week = useSelector((state) => state.astronaut.week)
 
     const [cookie, setCookie, removeCookie] = useCookies()    
 
     const [userInput, setUserInput] = useState("")
 
-    const [msgHistory, setMsgHistory] = useState([])
     const [cmdHistory, setCmdHistory] = useState([])
-    const [guideSay, setGuideSay] = useState([])
     const [cmdAddr, setCmdAddr] = useState(-100)
     
     const tableRef = useRef(null)    
-
     const [loading, setLoading] = useState(true)
 
     const [cmdScript, setCmdScript] = useState({})
@@ -58,15 +57,15 @@ const MainCommandTable = () => {
     const ping = () => {
 
         let url = "http://localhost:3001/";
-
+        
         axios.get(url)
         .then((response) => {
             console.log(response.data)
-            setGuideSay(['connect'])
+            dispatch(historyAction.addMsgHistory('gu:connect'))
         })
         .catch((error) => {
             console.log(error)
-            setGuideSay(['connect failed'])
+            dispatch(historyAction.addMsgHistory('gu:connect failed'))
         })
         .finally(() => {
             setLoading(false)
@@ -77,8 +76,8 @@ const MainCommandTable = () => {
     // ===================================================
     // axios post => server cosmic_dust/planet 덮어씌우기
     const save = () => {
-
-        const script = ['Saveing...'] 
+        
+        dispatch(historyAction.addMsgHistory('gu:Saving...'))
 
         let url = "http://localhost:3001/main/saveText";
 
@@ -90,39 +89,43 @@ const MainCommandTable = () => {
             .post(url, textBox)
             .then((response) => {
                 console.log("저장 완료!@!");
-                setGuideSay(['Save Completed.'])
+                dispatch(historyAction.addMsgHistory('gu:Save Completed.'))
             })
             .catch((error) => {
                 console.log(error)
-                setGuideSay(['Save failed.'])
+                dispatch(historyAction.addMsgHistory('gu:Save failed.'))
             })
 
-        
-        return script;
+            
+        return undefined;
         
     }
     // ===================================================
     // axios get => return server cosmic_dust/planet
     const getMainText = () => {
 
-        const script = ['loading...'] 
-
+        dispatch(historyAction.addMsgHistory('gu:loading...'))
+        const script = ['loading...']
         let url = "http://localhost:3001/main/getText";
 
         axios.get(url)
         .then((response) => {
 
             console.log(response.data)
-            dispatch(mainTextAction.setMainText(response.data)) 
-            setGuideSay(['!@!'])
+            // setsetGuideScript(['!@!'])
+            // setMsgHistory(msgHistory.concat('gu:!@!'))
+            dispatch(mainTextAction.setMainText(response.data))
+            dispatch(historyAction.addMsgHistory('gu:!@!@!@!@!@!')) 
         })
         .catch((error) => {
             console.log(error)
-            setGuideSay(['failed.'])
+            dispatch(historyAction.addMsgHistory('gu:failed'))
+            // setsetGuideScript(['failed.'])
         })
-        
-        return script;
+
+        return undefined;
     }
+
     // ===================================================
     // mainContent에 있는 component 바꾸기/ mode 바꾸기
     const setMode = (changeMode) => {
@@ -251,31 +254,21 @@ const MainCommandTable = () => {
     // return meal로 array를 받은 후, mealMenu 요소를 추가함.
     const addMealMenu = (meal) => {
         
-        setMealMenu(mealMenu.concat(meal))
+        dispatch(astronautAction.addMealMenu(meal))
         const script = ['Completed.']
 
         return script;
-
-        // reducers 적용하기 
     }
 
     // ===================================================
     // return meal로 array를 받은 후, mealMenu 요소를 삭제함.
     const deleteMealMenu = (meal) => {
 
-        let menu = mealMenu;
-
-        for (let index = 0; index < meal.length; index++) {
-            menu.splice(menu.indexOf(meal[index]), 1)
-        }
-        setMealMenu(menu) 
+        dispatch(astronautAction.deleteMealMenu(meal))
         const script = ['Completed.']
 
         return script;
-
-        // reducers 적용하기
     }
-
 
     const commandInit = () => {
 
@@ -320,19 +313,18 @@ const MainCommandTable = () => {
 
     const command = (cmd) => {
 
-        let returnData = [];
-
+        let returnData = null;
         let cmdArr = cmd;
-        try {
 
+        try {
             if (cmdArr.length == 1) {
-                returnData = cmdScript[cmd[0]];
+                returnData = cmdScript[cmd[0]]();
             } else {
                 returnData = cmdScript[cmd[0]];
                 console.log("cmd : "+cmd)
                 const pr = /^\(.*\)$/g;
 
-                for (let index = 1; index < cmdArr.length; index++) {
+                for (let index = 1; index < cmdArr.length; index++) {            
                     if (pr.test(cmdArr[index])) {
                         let prameterArr = cmdArr[index];
                         prameterArr = prameterArr.replace(/\(|\)/g, "")
@@ -340,13 +332,16 @@ const MainCommandTable = () => {
 
                         for (let index = 0; index < prameterArr.length; index++) {  
                             prameterArr[index] = prameterArr[index].replace(/^\s+|\s+$/gm,'')
-                        }
+                        }   
                         returnData = returnData(prameterArr)
-
+                        return returnData;            
+                    
                     } else {
                         returnData = returnData[cmdArr[index]]
                     }
                 }
+                
+                returnData = returnData()
             }
 
         } catch (error) {
@@ -354,7 +349,6 @@ const MainCommandTable = () => {
         }  
 
         return returnData;
-    
     }
 
     const keyDownHandler = (e) => {
@@ -365,17 +359,16 @@ const MainCommandTable = () => {
                 break;
             case 13: // enter
                 if (userInput == "clear") {
-                    setMsgHistory([])
+                    dispatch(historyAction.clearMsgHistory())
                 } else {
                     console.log(userInput)
-                    setMsgHistory(msgHistory.concat('me:' + userInput))
+                    dispatch(historyAction.addMsgHistory('me:' + userInput))
                     
                     const sendCmd = userInput.match(/[a-zA-z\.+\?+]+|\(.+\)/g);
-                
                     const cmd = command(sendCmd)
-            
+
                     if (cmd !== undefined) {
-                        setGuideSay(cmd)
+                        dispatch(historyAction.setGuideScript(cmd))
                     }
                 }
                 
@@ -395,7 +388,7 @@ const MainCommandTable = () => {
 
                 break;
             case 40: // arrow down
-                if (cmdAddr < cmdHistory.length-1) {
+                if (cmdAddr < cmdHistory.length) {
                     setCmdAddr(cmdAddr+1)
                 }
 
@@ -406,44 +399,48 @@ const MainCommandTable = () => {
         }    
     }
     
-    const guideSaid = () => {
-        setTimeout(()=>{
-            if (Array.isArray(guideSay)) {
-                setMsgHistory(msgHistory.concat('gu:' + guideSay[0]))
-                guideSay.shift()
-            }
-            console.log(guideSay)
-            // console.log("lnth: " + guideSay.length)
-        }, 250)    
-    }
 
     useEffect(() => {
-
-        commandInit()
         ping()
-
     }, [])
 
     useEffect(() => {
 
-        setUserInput(cmdHistory[cmdAddr])
-        console.log("addr : " + cmdAddr)
-        console.log(cmdHistory)
+        if (cmdAddr == cmdHistory.length) {
+            setUserInput("")
+        }else {
+            setUserInput(cmdHistory[cmdAddr])
+        }
+        
 
     }, [cmdAddr])
 
 
+    const guideSay = (say) => {
+        setTimeout(() => {
+            dispatch(historyAction.addMsgHistory('gu:' + say))
+            dispatch(historyAction.shiftGuideScript())
+        }, guideTempo)            
+
+    }
+
     useEffect(() => {
-        if(guideSay && guideSay.length != 0){            
-            guideSaid()
+
+        if(guideScript && guideScript.length != 0){            
+            guideSay(guideScript[0])
         }
-        setUserInput("")
+
+    }, [guideScript])
+
+    useEffect(() => {
+        
+        commandInit()
 
         const scroll = tableRef.current.scrollHeight - tableRef.current.clientHeight;
         tableRef.current.scrollTo(0, scroll)
+        setUserInput("")
 
-    }, [msgHistory, guideSay])
-
+    }, [msgHistory])
 
 
     const msgList = msgHistory.map((msg, index) => (<div> {msg.substr(0, 3) === 'me:' ? 
@@ -456,7 +453,6 @@ const MainCommandTable = () => {
         <div>
             
             <div ref={tableRef} style={{display: "flex", width: "320px", height: "350px", backgroundColor: "coral", overflow: "auto", flexDirection: "column-reverse"}}>
-                
             {loading ? 
                 <div>
                     Loading....
@@ -470,7 +466,6 @@ const MainCommandTable = () => {
                     <br />            
                 </div>                    
                 :
-
                 <div>
                     {msgList}
                 </div>
@@ -479,8 +474,8 @@ const MainCommandTable = () => {
      
             </div>
             <input type="text" style={{width: "265px"}} onKeyDown={(e) => keyDownHandler(e)} value={userInput} onChange={(e)=> setUserInput(e.target.value)} />
-        </div>
 
+        </div>
     )
 
 }
