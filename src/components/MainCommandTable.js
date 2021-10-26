@@ -13,7 +13,7 @@ import * as modeAction from '../actions/mode';
 const MainCommandTable = () => {
 
     const dispatch = useDispatch();
-    const selectMainText    = useSelector((state) => state.mainText.mainText);
+    const selectMainText = useSelector((state) => state.mainText.mainText);
     
     const astronautId       = useSelector((state) => state.astronaut.astronautId)
     const astronautNickname = useSelector((state) => state.astronaut.astronautNickname)
@@ -21,11 +21,11 @@ const MainCommandTable = () => {
     const mealMenu          = useSelector((state) => state.astronaut.mealMenu)
     const week              = useSelector((state) => state.astronaut.week)
 
-    const msgHistory        = useSelector((state) => state.history.msgHistory)
-    const guideScript       = useSelector((state) => state.history.guideScript)
-    const guideTempo        = useSelector((state) => state.history.guideTempo)
+    const msgHistory  = useSelector((state) => state.history.msgHistory)
+    const guideScript = useSelector((state) => state.history.guideScript)
+    const guideTempo  = useSelector((state) => state.history.guideTempo)
 
-    const mode              = useSelector((state) => state.mode.mode)
+    const mode = useSelector((state) => state.mode.mode)
 
 
     const [cookie, setCookie, removeCookie] = useCookies()    
@@ -96,9 +96,7 @@ const MainCommandTable = () => {
                 dispatch(historyAction.addMsgHistory('gu:Save failed.'))
             })
 
-            
         return undefined;
-        
     }
     // ===================================================
     // axios get => return server cosmic_dust/planet
@@ -180,6 +178,7 @@ const MainCommandTable = () => {
 
         today = year + "-" + month + "-" + date + " "+ day;
         today = [today]
+
         return today;
     }
 
@@ -221,7 +220,6 @@ const MainCommandTable = () => {
 
         } else {
             script[0] = `${year}-${month}-${date} was...`;
-
         }
 
         return script;
@@ -269,7 +267,7 @@ const MainCommandTable = () => {
 
         return script;
     }
-
+    // ===================================================
     const commandInit = () => {
 
         const script = {}
@@ -310,7 +308,7 @@ const MainCommandTable = () => {
         setCmdScript(script)
     }
 
-
+    // ===================================================
     const command = (cmd) => {
 
         let returnData = null;
@@ -351,9 +349,10 @@ const MainCommandTable = () => {
         return returnData;
     }
 
+    // ===================================================
     const keyDownHandler = (e) => {
         switch (e.keyCode) {
-            case 9: 
+            case 9: // tab
                 e.preventDefault();
                  setUserInput(userInput+'\t')
                 break;
@@ -398,7 +397,14 @@ const MainCommandTable = () => {
                 break;
         }    
     }
-    
+ 
+    // ===================================================
+     const guideSay = (say) => {
+        setTimeout(() => {
+            dispatch(historyAction.addMsgHistory('gu:' + say))
+            dispatch(historyAction.shiftGuideScript())
+        }, guideTempo)
+    }
 
     useEffect(() => {
         ping()
@@ -408,21 +414,11 @@ const MainCommandTable = () => {
 
         if (cmdAddr == cmdHistory.length) {
             setUserInput("")
-        }else {
+        } else {
             setUserInput(cmdHistory[cmdAddr])
         }
-        
-
+    
     }, [cmdAddr])
-
-
-    const guideSay = (say) => {
-        setTimeout(() => {
-            dispatch(historyAction.addMsgHistory('gu:' + say))
-            dispatch(historyAction.shiftGuideScript())
-        }, guideTempo)            
-
-    }
 
     useEffect(() => {
 
