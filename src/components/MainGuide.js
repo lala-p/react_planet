@@ -9,7 +9,7 @@ const MainGuide = () => {
 
         <div>
 
-            <div style={{backgroundColor: "blue"}}>
+            <div style={{backgroundColor: "blue", height: "320px"}}>
 
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                 <br />

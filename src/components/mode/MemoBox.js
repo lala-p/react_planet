@@ -9,7 +9,7 @@ const MemoBoard = () => {
 
     return(
 
-        <div>
+        <div style={{height: "900px", overflow: "scroll"}}>
 
             {test}
             <button onClick={()=> setTest('asdfasdfadfsfdasdf')}>click</button> 

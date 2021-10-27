@@ -8,7 +8,7 @@ const initialStates = {
     mode: [
         'board', 
         'memobox', 
-    
+        'help',
     ],
     currentMode: 0,
 
@@ -16,7 +16,7 @@ const initialStates = {
 
 
 const reducers = (state = initialStates, actions) => {
-    
+
     switch (actions.type) {
         case modeAction.SET_MODE: {
             return produce(state, draft => {

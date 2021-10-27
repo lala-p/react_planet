@@ -9,6 +9,7 @@ import * as mainTextAction from '../actions/mainText';
 import * as astronautAction from '../actions/astronaut';
 import * as historyAction from '../actions/history';
 import * as modeAction from '../actions/mode';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 const MainCommandTable = () => {
 
@@ -27,17 +28,17 @@ const MainCommandTable = () => {
 
     const mode = useSelector((state) => state.mode.mode)
 
-
     const [cookie, setCookie, removeCookie] = useCookies()    
 
+    const tableRef = useRef(null)    
+    const inputRef = useRef(null)
     const [userInput, setUserInput] = useState("")
+    const [loading, setLoading] = useState(true)
+    const [readOnly, setReadOnly] = useState(false)
 
     const [cmdHistory, setCmdHistory] = useState([])
     const [cmdAddr, setCmdAddr] = useState(-100)
     
-    const tableRef = useRef(null)    
-    const [loading, setLoading] = useState(true)
-
     const [cmdScript, setCmdScript] = useState({})
 
     // ===================================================
@@ -56,6 +57,8 @@ const MainCommandTable = () => {
     // 서버 연결 확인하기
     const ping = () => {
 
+        setReadOnly(true)
+        
         let url = "http://localhost:3001/";
         
         axios.get(url)
@@ -69,6 +72,7 @@ const MainCommandTable = () => {
         })
         .finally(() => {
             setLoading(false)
+            setReadOnly(false)
         })
 
         return undefined;
@@ -76,7 +80,8 @@ const MainCommandTable = () => {
     // ===================================================
     // axios post => server cosmic_dust/planet 덮어씌우기
     const save = () => {
-        
+
+        setReadOnly(true)
         dispatch(historyAction.addMsgHistory('gu:Saving...'))
 
         let url = "http://localhost:3001/main/saveText";
@@ -95,6 +100,9 @@ const MainCommandTable = () => {
                 console.log(error)
                 dispatch(historyAction.addMsgHistory('gu:Save failed.'))
             })
+            .finally(() => {
+                setReadOnly(false)
+            })
 
         return undefined;
     }
@@ -102,23 +110,24 @@ const MainCommandTable = () => {
     // axios get => return server cosmic_dust/planet
     const getMainText = () => {
 
+        setReadOnly(true)
         dispatch(historyAction.addMsgHistory('gu:loading...'))
-        const script = ['loading...']
+        
         let url = "http://localhost:3001/main/getText";
 
         axios.get(url)
         .then((response) => {
 
             console.log(response.data)
-            // setsetGuideScript(['!@!'])
-            // setMsgHistory(msgHistory.concat('gu:!@!'))
             dispatch(mainTextAction.setMainText(response.data))
             dispatch(historyAction.addMsgHistory('gu:!@!@!@!@!@!')) 
         })
         .catch((error) => {
             console.log(error)
             dispatch(historyAction.addMsgHistory('gu:failed'))
-            // setsetGuideScript(['failed.'])
+        })
+        .finally(() => {
+                setReadOnly(false)
         })
 
         return undefined;
@@ -380,18 +389,20 @@ const MainCommandTable = () => {
                 }
 
                 break;
+            case 27: // esc
+                inputRef.current.blur()
+                break;
             case 38: // arrow up
                 if (cmdAddr > 0) {
                     setCmdAddr(cmdAddr-1)
                 }
-
                 break;
             case 40: // arrow down
                 if (cmdAddr < cmdHistory.length) {
                     setCmdAddr(cmdAddr+1)
                 }
-
                 break;
+
             default:
 
                 break;
@@ -403,9 +414,18 @@ const MainCommandTable = () => {
         setTimeout(() => {
             dispatch(historyAction.addMsgHistory('gu:' + say))
             dispatch(historyAction.shiftGuideScript())
+            setReadOnly(false)
         }, guideTempo)
     }
 
+    // ===================================================
+    // 단축키 설정 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+    useHotkeys('enter', () => {
+        inputRef.current.focus()
+    })
+
+    // ===================================================
+    // useEffect -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     useEffect(() => {
         ping()
     }, [])
@@ -424,6 +444,7 @@ const MainCommandTable = () => {
 
         if(guideScript && guideScript.length != 0){            
             guideSay(guideScript[0])
+            setReadOnly(true)
         }
 
     }, [guideScript])
@@ -448,7 +469,7 @@ const MainCommandTable = () => {
 
         <div>
             
-            <div ref={tableRef} style={{display: "flex", width: "320px", height: "350px", backgroundColor: "coral", overflow: "auto", flexDirection: "column-reverse"}}>
+            <div ref={tableRef} style={{display: "flex", width: "320px", height: "550px", backgroundColor: "coral", overflow: "auto", flexDirection: "column-reverse"}}>
             {loading ? 
                 <div>
                     Loading....
@@ -469,8 +490,16 @@ const MainCommandTable = () => {
             }
      
             </div>
-            <input type="text" style={{width: "265px"}} onKeyDown={(e) => keyDownHandler(e)} value={userInput} onChange={(e)=> setUserInput(e.target.value)} />
-
+            {readOnly ? 
+                <input ref={inputRef} type="text" style={{width: "310px"}} value={userInput} readOnly />
+                :
+                <input ref={inputRef} type="text" style={{width: "310px"}} onKeyDown={(e) => keyDownHandler(e)} value={userInput} onChange={(e)=> setUserInput(e.target.value)} />
+            }
+            {readOnly ? 
+                <div>readOnly true</div>    
+            :
+                <div>readOnly false</div>
+            }       
         </div>
     )
 

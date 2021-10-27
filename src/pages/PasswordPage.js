@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import axios from 'axios';
 import Astronaut from '../cosmic_dust/Astronaut';
+import { useHotkeys } from 'react-hotkeys-hook';
 
 
 const Password = () => {
