@@ -14,7 +14,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 const MainCommandTable = () => {
 
     const dispatch = useDispatch();
-    const selectMainText = useSelector((state) => state.mainText.mainText);
+    const mainText = useSelector((state) => state.mainText.mainText);
     
     const astronautId       = useSelector((state) => state.astronaut.astronautId)
     const astronautNickname = useSelector((state) => state.astronaut.astronautNickname)
@@ -87,7 +87,7 @@ const MainCommandTable = () => {
         let url = "http://localhost:3001/main/saveText";
 
         const textBox = {
-            text: selectMainText,
+            text: mainText,
         }
 
         axios
