@@ -27,13 +27,13 @@ const MainBoard = () => {
         switch (e.keyCode) {
             case 9: // tab
                 e.preventDefault();
-                setboardText(boardText+'\t')
-                dispatch(mainTextAction.setMainText(boardText+'\t'))
+                setboardText(boardText + '\t')
+                dispatch(mainTextAction.setMainText(boardText + '\t'))
                 break;
             case 27: // esc
                 boardRef.current.blur()
                 break;
-                
+
             default:
                 break;
         }
@@ -55,9 +55,10 @@ const MainBoard = () => {
                 removeSpace &nbsp; &nbsp; 
                 <ToggleSwitch onChange={(checked) => setremoveSpace(checked)} checked={removeSpace} />
                 
-                <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.replace(/\r?\n|\r/g, "").length}자</h1>
-                <h2>asdfasdfadf</h2>
-            </div>
+                <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.length}자</h1>
+                {/* <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.replace(/\r?\n|\r/g, "").length}자</h1> 
+                줄바꿈 포함 */}
+                </div>
             {document.activeElement == boardRef.current?
                 <div>true</div>
                 :

@@ -36,7 +36,7 @@ const MemoBoard = () => {
         const box = dayOfMemo.map((memo) => {
 
             let text = memo
-            
+
             let date = text.match(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
             date = date[0].replace(/(=|\s)/g, "")
             text = text.replace(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
