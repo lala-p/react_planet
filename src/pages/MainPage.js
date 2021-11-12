@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHotkeys } from 'react-hotkeys-hook';
 
@@ -16,19 +16,19 @@ const MainPage = () => {
     const dispatch = useDispatch();
     const currentMode = useSelector((state) => state.mode.currentMode);
 
+
     const modeHandler = () => {
 
         switch (currentMode) {
             case 0:
-                return <MainBoard></MainBoard>
+                return null
             case 1: 
                 return <MemoTable></MemoTable>
-
+                
             default:
                 return <Help></Help>
 
         }
-
     }
 
     useHotkeys('shift+up', ()=> dispatch(modeAction.rangeControl(-1)))
@@ -38,17 +38,15 @@ const MainPage = () => {
 
     }, [])
 
-    
 
     return(
         <div style={{display: "flex", paddingTop: "20px", paddingLeft:"20px"}}>
             <div style={{width: "320px"}}>
                 <div>
-                    {/* MainGuide */}
+                    
                     <MainGuide></MainGuide>
                 </div>
                 <div>
-                    {/* MainCommandTable */}
                     <MainCommandTable></MainCommandTable>
                 </div>
 
@@ -61,7 +59,10 @@ const MainPage = () => {
 
             <div><button onClick={()=> dispatch(modeAction.rangeControl(-1))} style={{height: "100%"}}>&lt;</button></div>
             &nbsp;&nbsp;&nbsp;
-            <div style={{display: "flex", width: "1400px"}}>
+            <div style={{display: "flex", width: "1400px"}}>   
+                <div style={currentMode != 0 ? {display: "none"} : null}>
+                    <MainBoard></MainBoard>
+                </div>
                 {modeHandler()}
             </div>
             &nbsp;&nbsp;&nbsp;

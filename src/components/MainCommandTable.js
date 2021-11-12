@@ -59,9 +59,9 @@ const MainCommandTable = () => {
         () => {
 
             setReadOnly(true)
-
+            
             let url = "http://localhost:3001/";
-
+    
             axios
                 .get(url)
                 .then((response) => {
@@ -359,7 +359,7 @@ const MainCommandTable = () => {
                     returnData = cmdScript[cmd[0]]();
                 } else {
                     returnData = cmdScript[cmd[0]];
-                    console.log("cmd : " + cmd)
+                    // console.log("cmd : " + cmd)
                     const pr = /^\(.*\)$/g;
 
                     for (let index = 1; index < cmdArr.length; index++) {
