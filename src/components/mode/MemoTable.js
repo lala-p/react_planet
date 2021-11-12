@@ -68,15 +68,17 @@ const MemoBoard = () => {
 
             let text = memo
 
+            const week = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
             let date = ""
             let plan = []
             let etc = []
 
             if (text) {
-
+                
                 date = text.match(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
+                text = text.replace(date)
                 date = date[0].replace(/(=|\s)/g, "")
-                text = text.replace(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
+                
 
                 etc = text.split(/\+{1}/g)
                 etc.shift()
@@ -93,13 +95,20 @@ const MemoBoard = () => {
                 <div style={{width: "260px", height: "150px", margin: "5px"}}>
                 { text ?
                     <div style={{width: "100%", height: "100%", backgroundColor: "skyblue"}}>
-                        <b>{date}</b>
-                         <br />
-                         <ol>
-                             {planBox(plan)}
-                         </ol>
-                         <br /><br /> 
-                         {etcBox(etc)}                   
+                        <div style={{width: "240px", height: "125px", margin: "auto", paddingTop: "10px", overflow: "hidden"}}>
+                            <table style={{width: "100%"}}>
+                                <tr>
+                                    <td><b>{date}</b></td>
+                                    <td style={{textAlign: "right"}}>{week[new Date(date).getDay()]}</td>
+                                </tr>
+                            </table>
+                            <br />
+                            <ol>
+                                {planBox(plan)}
+                            </ol>
+                            <br />
+                            {etcBox(etc)}                   
+                        </div>
                     </div>   
                 :
                     <div style={{width: "100%", height: "100%"}}>
@@ -118,7 +127,7 @@ const MemoBoard = () => {
         const box = dayOfPlan.map((plan) => {
             return (
                 <li>
-                    {plan}
+                    <pre>{plan}</pre>
                 </li>
             ) 
         })
@@ -129,9 +138,9 @@ const MemoBoard = () => {
     const etcBox = (dayOfEtc) => {
         const box = dayOfEtc.map((etc) => {
             return (
-                <div>
+                <pre style={{wordBreak: "nowrap"}}>
                     {"+ " + etc}
-                </div>
+                </pre>
             )
         })
 
@@ -171,8 +180,10 @@ const MemoBoard = () => {
             <div style={{width: "1370px", height: "900px", overflow: "scroll", margin: "auto"}}>
             { week.length == 0 ? 
                 <div>???</div>
-                : 
-                weekBox(week)
+                :
+                <div style={{display: "flex", flexDirection: "column-reverse"}}>
+                    {weekBox(week)}
+                </div>
             }
             </div>
         </div>
