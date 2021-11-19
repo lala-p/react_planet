@@ -21,6 +21,13 @@ const MainBoard = () => {
         setboardText(e.target.value)
         dispatch(mainTextAction.setMainText(e.target.value))
 
+        if (selectMainText.length >= 165000) {
+
+            alert("165,000!@!")
+
+        }
+
+
     }
 
     const keyDownHandler = (e) => {

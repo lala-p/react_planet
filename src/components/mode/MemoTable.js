@@ -1,16 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
+
+import * as memoAction from '../../actions/memo';
 
 
 const MemoBoard = () => {
 
+    const dispatch = useDispatch();
     const mainText = useSelector((state) => state.mainText.mainText);
-    const [noneLineBreakText, setNoneLineBreakText] = useState("")
+    const weekBoxLineUp = useSelector((state) => state.memo.weekBoxLineUp);
+    const memoBoxLineUp = useSelector((state) => state.memo.memoBoxLineUp);
+    const memoBoxReverse = useSelector((state) => state.memo.memoBoxReverse)
 
+    const [noneLineBreakText, setNoneLineBreakText] = useState("")
     const [week, setWeek] = useState([])
     
-    const [mode, setMode] = useState(0)
-
 
 
     const weekBox = useCallback(
@@ -18,19 +22,16 @@ const MemoBoard = () => {
             const box = text.map((thatWeek) => {
 
                 let memo = []
-                
-                switch (mode) {
-                    case 0:
-                        memo = thatWeek.split(/\-{35}/g)
-                        memo.pop()
 
+                memo = thatWeek.split(/\-{35}/g)
+                memo.pop()
+
+                switch (memoBoxLineUp) {
+                    case 0:
                         break;
                     case 1:
                         let weekday = [false, false, false, false, false]
         
-                        memo = thatWeek.split(/\-{35}/g)
-                        memo.pop()
-
                         for (let index = 0; index < memo.length; index++) {
 
                             let date = memo[index].match(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
@@ -39,12 +40,19 @@ const MemoBoard = () => {
                             weekday[day-1] = memo[index]
 
                         }
-
+                            
                         memo = weekday
                         
+                        break;
                     default:
                         break;
+                        
                 }
+
+                if (memoBoxReverse) {
+                    memo = memo.reverse()
+                }
+
                     
                 return (
                     <div>
@@ -60,7 +68,7 @@ const MemoBoard = () => {
             console.log(box.length)
 
             return box;
-        }, [noneLineBreakText, mode]
+        }, [noneLineBreakText, memoBoxLineUp, memoBoxReverse]
     ) 
 
     const memoBox = (dayOfMemo) => {
@@ -78,7 +86,7 @@ const MemoBoard = () => {
                 date = text.match(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
                 text = text.replace(date)
                 date = date[0].replace(/(=|\s)/g, "")
-                
+
 
                 etc = text.split(/\+{1}/g)
                 etc.shift()
@@ -97,10 +105,12 @@ const MemoBoard = () => {
                     <div style={{width: "100%", height: "100%", backgroundColor: "skyblue"}}>
                         <div style={{width: "240px", height: "125px", margin: "auto", paddingTop: "10px", overflow: "hidden"}}>
                             <table style={{width: "100%"}}>
-                                <tr>
-                                    <td><b>{date}</b></td>
-                                    <td style={{textAlign: "right"}}>{week[new Date(date).getDay()]}</td>
-                                </tr>
+                                <tbody>
+                                    <tr>
+                                        <td><b>{date}</b></td>
+                                        <td style={{textAlign: "right"}}>{week[new Date(date).getDay()]}</td>
+                                    </tr>
+                                </tbody>
                             </table>
                             <br />
                             <ol>
@@ -171,17 +181,53 @@ const MemoBoard = () => {
     }, [noneLineBreakText])
 
 
+    const weekBoxLineUpStyle = () => {
+
+        let style = {}
+
+        switch (weekBoxLineUp) {
+            case 0:
+                style = {
+                    display: "flex",
+                    flexDirection: "column-reverse",
+                }     
+
+                break;
+            case 1:
+                style = {
+                    display: "flex",
+                    flexDirection: "column",
+                }     
+                
+                break;
+
+            default:
+                break;
+        }    
+    
+        return style
+    }
+
+    
     return(
         <div>
-            <button onClick={()=>{setMode(0); console.log(0)}}>순서대로</button>
-            <button onClick={()=>{setMode(1); console.log(1)}}>캘린더</button>
+            주 : &nbsp;&nbsp;
+            <button onClick={()=>{dispatch(memoAction.setWeekBoxLineUp(0))}}>최근 날짜부터</button>
+            <button onClick={()=>{dispatch(memoAction.setWeekBoxLineUp(1))}}>오래된 것부터</button>
+            &nbsp;
+            일 :&nbsp;&nbsp;
+            <button onClick={()=>{dispatch(memoAction.setMemoBoxLineUp(0))}}>순서대로</button>
+            <button onClick={()=>{dispatch(memoAction.setMemoBoxLineUp(1))}}>캘린더</button> &nbsp; / &nbsp; 
+            <button onClick={()=>{dispatch(memoAction.setMemoBoxReverse(false))}}>원래대로</button>
+            <button onClick={()=>{dispatch(memoAction.setMemoBoxReverse(true))}}>reverse</button>
+
             <br />
 
             <div style={{width: "1370px", height: "900px", overflow: "scroll", margin: "auto"}}>
             { week.length == 0 ? 
                 <div>???</div>
                 :
-                <div style={{display: "flex", flexDirection: "column-reverse"}}>
+                <div style={weekBoxLineUpStyle()}>
                     {weekBox(week)}
                 </div>
             }

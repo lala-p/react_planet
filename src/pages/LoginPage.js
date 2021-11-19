@@ -3,8 +3,6 @@ import { useHistory } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import axios from 'axios';
 
-// import Astronaut from '../cosmic_dust/Astronaut';
-
 
 const Password = () => {
 
@@ -65,14 +63,14 @@ const Password = () => {
 
 
     useEffect(() => {
-
+        
+        userIdRef.current.focus()
 
     }, [])
 
     return(
 
         <div>
-            {/* <Astronaut /> */}
             <div>
 
                 <h3>Login</h3>

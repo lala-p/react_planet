@@ -522,11 +522,14 @@ const MainCommandTable = () => {
             }
      
             </div>
-            {readOnly ? 
-                <input ref={inputRef} type="text" style={{width: "310px"}} value={userInput} readOnly />
+            {/* {readOnly ? 
+                <input ref={inputRef} type="text" style={{width: "310px", height: "30px"}} value={userInput} readOnly />
                 :
-                <input ref={inputRef} type="text" style={{width: "310px"}} onKeyDown={keyDownHandler} value={userInput} onChange={(e)=> setUserInput(e.target.value)} />
-            }
+                <input ref={inputRef} type="text" style={{width: "310px", height: "30px"}} onKeyDown={keyDownHandler} value={userInput} onChange={(e)=> setUserInput(e.target.value)} readOnly={readOnly ? readOnly : null} />
+            } */}
+
+            <input ref={inputRef} type="text" style={{width: "310px", height: "25px"}} onKeyDown={keyDownHandler} value={userInput} onChange={(e)=> setUserInput(e.target.value)} readOnly={readOnly ? readOnly : null} />
+
             {readOnly ? 
                 <div>readOnly true</div>    
             :
