@@ -8,16 +8,18 @@ const MemoBoard = () => {
 
     const dispatch = useDispatch();
     const mainText = useSelector((state) => state.mainText.mainText);
+
     const weekBoxLineUp = useSelector((state) => state.memo.weekBoxLineUp);
     const memoBoxLineUp = useSelector((state) => state.memo.memoBoxLineUp);
     const memoBoxReverse = useSelector((state) => state.memo.memoBoxReverse)
 
+    const week = useSelector((state) => state.astronaut.week)
+
     const [noneLineBreakText, setNoneLineBreakText] = useState("")
-    const [week, setWeek] = useState([])
+    const [weekText, setWeekText] = useState([])
     
 
-
-    const weekBox = useCallback(
+    const weekTextBox = useCallback(
         (text) => {
             const box = text.map((thatWeek) => {
 
@@ -30,18 +32,18 @@ const MemoBoard = () => {
                     case 0:
                         break;
                     case 1:
-                        let weekday = [false, false, false, false, false]
+                        let oneweek = [false, false, false, false, false]
         
                         for (let index = 0; index < memo.length; index++) {
 
                             let date = memo[index].match(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
                             date = date[0].replace(/(=|\s)/g, "")
                             let day = new Date(date).getDay()
-                            weekday[day-1] = memo[index]
+                            oneweek[day-1] = memo[index]
 
                         }
                             
-                        memo = weekday
+                        memo = oneweek
                         
                         break;
                     default:
@@ -50,7 +52,7 @@ const MemoBoard = () => {
                 }
 
                 if (memoBoxReverse) {
-                    memo = memo.reverse()
+                    memo.reverse()
                 }
 
                     
@@ -76,7 +78,6 @@ const MemoBoard = () => {
 
             let text = memo
 
-            const week = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
             let date = ""
             let plan = []
             let etc = []
@@ -169,14 +170,14 @@ const MemoBoard = () => {
 
     useEffect(() => {
 
-        const weekLine = /(?<=-{35})-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-(?=\={3}\s\d{4}\/\d{2}\/\d{2}\s\={20})/g
-        let weekArr = []
+        const weekTextLine = /(?<=-{35})-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-(?=\={3}\s\d{4}\/\d{2}\/\d{2}\s\={20})/g
+        let weekTextArr = []
 
         if (noneLineBreakText.length != 0) {
-            weekArr = noneLineBreakText.split(weekLine)
+            weekTextArr = noneLineBreakText.split(weekTextLine)
         }
 
-        setWeek(weekArr)
+        setWeekText(weekTextArr)
 
     }, [noneLineBreakText])
 
@@ -224,11 +225,11 @@ const MemoBoard = () => {
             <br />
 
             <div style={{width: "1370px", height: "900px", overflow: "scroll", margin: "auto"}}>
-            { week.length == 0 ? 
+            { weekText.length == 0 ? 
                 <div>???</div>
                 :
                 <div style={weekBoxLineUpStyle()}>
-                    {weekBox(week)}
+                    {weekTextBox(weekText)}
                 </div>
             }
             </div>

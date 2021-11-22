@@ -14,7 +14,7 @@ const MainBoard = () => {
 
     const boardRef = useRef(null) 
     const [boardText, setboardText] = useState("")
-    const [removeSpace, setremoveSpace] = useState(false)
+    const [removeSpace, setRemoveSpace] = useState(false)
 
     const onChange = (e) => {
 
@@ -62,7 +62,7 @@ const MainBoard = () => {
                 </textarea>    
                 <br />
                 removeSpace &nbsp; &nbsp; 
-                <ToggleSwitch onChange={(checked) => setremoveSpace(checked)} checked={removeSpace} />
+                <ToggleSwitch onChange={(checked) => setRemoveSpace(checked)} checked={removeSpace} />
                 
                 <h1>총  {removeSpace ? selectMainText.replace(/\s/ig, "").length : selectMainText.length}자</h1>
                 {/* <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.replace(/\r?\n|\r/g, "").length}자</h1> 
