@@ -2,14 +2,14 @@ import { combineReducers } from "redux";
 
 import mainText from './mainText';
 import astronaut from './astronaut';
-import history from './history';
+import message from './message';
 import mode from './mode';
 import memo from './memo';
 
 const rootReducer = combineReducers({
     mainText,
     astronaut,
-    history,
+    message,
     mode,
     memo,
     

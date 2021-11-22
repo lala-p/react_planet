@@ -17,14 +17,14 @@ router.get('/getText', (req, res) => {
     console.log(readTxt.toString());
     res.send(readTxt.toString());
 
-    
+
 });
 
 
 router.post('/saveText', (req, res) => {
 
     if(req.body.text){
-
+    
         console.log(req.body.text)
     }
     

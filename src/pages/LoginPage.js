@@ -70,9 +70,8 @@ const Password = () => {
 
     return(
 
-        <div>
+        <div className="LoginPage">
             <div>
-
                 <h3>Login</h3>
                 <input ref={userIdRef} type="text" id="userId" value={userId} onChange={(e) => setUserId(e.target.value)} onKeyDown={EnterUserId} placeholder="ID" />
                 <br />                

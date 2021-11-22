@@ -1,7 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import * as memoAction from '../../actions/memo';
+import ReactModal from 'react-modal';
+
+import * as memoAction from '../actions/memo';
 
 
 const MemoBoard = () => {
@@ -18,6 +20,8 @@ const MemoBoard = () => {
     const [noneLineBreakText, setNoneLineBreakText] = useState("")
     const [weekText, setWeekText] = useState([])
     
+    const [open, setOpen] = useState(false)
+    const [memoText, setMemoText] = useState("")
 
     const weekTextBox = useCallback(
         (text) => {
@@ -88,7 +92,6 @@ const MemoBoard = () => {
                 text = text.replace(date)
                 date = date[0].replace(/(=|\s)/g, "")
 
-
                 etc = text.split(/\+{1}/g)
                 etc.shift()
                 for (let index = 0; index < etc.length; index++) {
@@ -103,7 +106,12 @@ const MemoBoard = () => {
             return (
                 <div style={{width: "260px", height: "150px", margin: "5px"}}>
                 { text ?
-                    <div style={{width: "100%", height: "100%", backgroundColor: "skyblue"}}>
+                    <div style={{width: "100%", height: "100%", backgroundColor: "skyblue"}} 
+                        onClick={()=>{
+                            setMemoText(date+plan+etc)
+                            setOpen(true)
+                        }}
+                    >
                         <div style={{width: "240px", height: "125px", margin: "auto", paddingTop: "10px", overflow: "hidden"}}>
                             <table style={{width: "100%"}}>
                                 <tbody>
@@ -118,7 +126,7 @@ const MemoBoard = () => {
                                 {planBox(plan)}
                             </ol>
                             <br />
-                            {etcBox(etc)}                   
+                            {etcBox(etc)}
                         </div>
                     </div>   
                 :
@@ -211,28 +219,41 @@ const MemoBoard = () => {
 
     
     return(
-        <div>
-            주 : &nbsp;&nbsp;
-            <button onClick={()=>{dispatch(memoAction.setWeekBoxLineUp(0))}}>최근 날짜부터</button>
-            <button onClick={()=>{dispatch(memoAction.setWeekBoxLineUp(1))}}>오래된 것부터</button>
-            &nbsp;
-            일 :&nbsp;&nbsp;
-            <button onClick={()=>{dispatch(memoAction.setMemoBoxLineUp(0))}}>순서대로</button>
-            <button onClick={()=>{dispatch(memoAction.setMemoBoxLineUp(1))}}>캘린더</button> &nbsp; / &nbsp; 
-            <button onClick={()=>{dispatch(memoAction.setMemoBoxReverse(false))}}>원래대로</button>
-            <button onClick={()=>{dispatch(memoAction.setMemoBoxReverse(true))}}>reverse</button>
+        <div className="MemoTable">
+            <div>
+                주 : &nbsp;&nbsp;
+                <button onClick={()=>{dispatch(memoAction.setWeekBoxLineUp(0))}}>최근 날짜부터</button>
+                <button onClick={()=>{dispatch(memoAction.setWeekBoxLineUp(1))}}>오래된 것부터</button>
+                &nbsp;
+                일 :&nbsp;&nbsp;
+                <button onClick={()=>{dispatch(memoAction.setMemoBoxLineUp(0))}}>순서대로</button>
+                <button onClick={()=>{dispatch(memoAction.setMemoBoxLineUp(1))}}>캘린더</button> &nbsp; / &nbsp; 
+                <button onClick={()=>{dispatch(memoAction.setMemoBoxReverse(false))}}>원래대로</button>
+                <button onClick={()=>{dispatch(memoAction.setMemoBoxReverse(true))}}>reverse</button>
 
-            <br />
+                <br />
 
-            <div style={{width: "1370px", height: "900px", overflow: "scroll", margin: "auto"}}>
-            { weekText.length == 0 ? 
-                <div>???</div>
-                :
-                <div style={weekBoxLineUpStyle()}>
-                    {weekTextBox(weekText)}
+                <div style={{width: "1370px", height: "900px", overflow: "scroll", margin: "auto"}}>
+                { weekText.length == 0 ? 
+                    <div>???</div>
+                    :
+                    <div style={weekBoxLineUpStyle()}>
+                        {weekTextBox(weekText)}
+                    </div>
+                }
                 </div>
-            }
             </div>
+            
+            <ReactModal
+                isOpen={open}
+                onRequestClose={()=>setOpen(false)}
+                contentLabel="asdfasdf"
+                ariaHideApp={false}
+            >
+                {memoText}
+
+            </ReactModal>
+
         </div>
     )
 

@@ -1,5 +1,5 @@
 import React from 'react';
-
+import '../css/components/Help.scss';
 
 const Help = () => {
 
@@ -7,7 +7,8 @@ const Help = () => {
 
     return(
 
-        <div>
+        <div className="Help">
+            <p>!@!@!@!@!@!@!@!@! <b>asdasdasdasd</b> </p>
             1. <br />
             2. <br />
             3. <br />
@@ -17,6 +18,7 @@ const Help = () => {
             7. <br />
             8. <br />
             9. <br />
+            <b>asdasdasdasd</b>
         
         </div>
 

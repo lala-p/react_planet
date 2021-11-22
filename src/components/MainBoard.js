@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import ToggleSwitch from 'react-switch';
 
-import * as mainTextAction from '../../actions/mainText';
+import * as mainTextAction from '../actions/mainText';
 
 
 const MainBoard = () => {
@@ -53,28 +53,29 @@ const MainBoard = () => {
     })
 
     return(
-        
-        <div>
+        <div className="MainBoard">
             <div>
-                <textarea ref={boardRef} cols="150" rows="40" onKeyDown={keyDownHandler} onChange={onChange}>
-                    {selectMainText} 
-                    {/* textarea value 안에 넣으면 ctrl+z할 때 한글자씩 지워짐. */}
-                </textarea>    
-                <br />
-                removeSpace &nbsp; &nbsp; 
-                <ToggleSwitch onChange={(checked) => setRemoveSpace(checked)} checked={removeSpace} />
-                
-                <h1>총  {removeSpace ? selectMainText.replace(/\s/ig, "").length : selectMainText.length}자</h1>
-                {/* <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.replace(/\r?\n|\r/g, "").length}자</h1> 
-                줄바꿈 포함 */}
-                </div>
-            {document.activeElement == boardRef.current?
-                <div>true</div>
-                :
-                <div>false</div>
-            }
+                <div>
+                    <textarea ref={boardRef} cols="150" rows="40" onKeyDown={keyDownHandler} onChange={onChange}>
+                        {selectMainText} 
+                        {/* textarea value 안에 넣으면 ctrl+z할 때 한글자씩 지워짐. */}
+                    </textarea>    
+                    <br />
+                    removeSpace &nbsp; &nbsp; 
+                    <ToggleSwitch onChange={(checked) => setRemoveSpace(checked)} checked={removeSpace} />
+                    
+                    <h1>총  {removeSpace ? selectMainText.replace(/\s/ig, "").length : selectMainText.length}자</h1>
+                    {/* <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.replace(/\r?\n|\r/g, "").length}자</h1> 
+                    줄바꿈 포함 */}
+                    </div>
+                {document.activeElement == boardRef.current?
+                    <div>true</div>
+                    :
+                    <div>false</div>
+                }
 
 
+            </div>
         </div>
 
     )

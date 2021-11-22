@@ -7,7 +7,7 @@ import random from 'random';
 
 import * as mainTextAction from '../actions/mainText';
 import * as astronautAction from '../actions/astronaut';
-import * as historyAction from '../actions/history';
+import * as messageAction from '../actions/message';
 import * as modeAction from '../actions/mode';
 import { useHotkeys } from 'react-hotkeys-hook';
 
@@ -22,9 +22,9 @@ const MainCommandTable = () => {
     const mealMenu          = useSelector((state) => state.astronaut.mealMenu)
     const week              = useSelector((state) => state.astronaut.week)
 
-    const msgHistory  = useSelector((state) => state.history.msgHistory)
-    const guideScript = useSelector((state) => state.history.guideScript)
-    const guideTempo  = useSelector((state) => state.history.guideTempo)
+    const msgHistory  = useSelector((state) => state.message.msgHistory)
+    const guideScript = useSelector((state) => state.message.guideScript)
+    const guideTempo  = useSelector((state) => state.message.guideTempo)
 
     const mode = useSelector((state) => state.mode.mode)
 
@@ -66,11 +66,11 @@ const MainCommandTable = () => {
                 .get(url)
                 .then((response) => {
                     console.log(response.data)
-                    dispatch(historyAction.addMsgHistory('gu:connect'))
+                    dispatch(messageAction.addMsgHistory('gu:connect'))
                 })
                 .catch((error) => {
                     console.log(error)
-                    dispatch(historyAction.addMsgHistory('gu:connect failed'))
+                    dispatch(messageAction.addMsgHistory('gu:connect failed'))
                 })
                 .finally(() => {
                     setLoading(false)
@@ -86,7 +86,7 @@ const MainCommandTable = () => {
         () => {
 
             setReadOnly(true)
-            dispatch(historyAction.addMsgHistory('gu:Saving...'))
+            dispatch(messageAction.addMsgHistory('gu:Saving...'))
 
             let url = "http://localhost:3001/main/saveText";
 
@@ -98,11 +98,11 @@ const MainCommandTable = () => {
                 .post(url, textBox)
                 .then((response) => {
                     console.log("저장 완료!@!");
-                    dispatch(historyAction.addMsgHistory('gu:Save Completed.'))
+                    dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
                 })
                 .catch((error) => {
                     console.log(error)
-                    dispatch(historyAction.addMsgHistory('gu:Save failed.'))
+                    dispatch(messageAction.addMsgHistory('gu:Save failed.'))
                 })
                 .finally(() => {
                     setReadOnly(false)
@@ -117,7 +117,7 @@ const MainCommandTable = () => {
         () => {
 
             setReadOnly(true)
-            dispatch(historyAction.addMsgHistory('gu:loading...'))
+            dispatch(messageAction.addMsgHistory('gu:loading...'))
 
             let url = "http://localhost:3001/main/getText";
 
@@ -127,11 +127,11 @@ const MainCommandTable = () => {
 
                     console.log(response.data)
                     dispatch(mainTextAction.setMainText(response.data))
-                    dispatch(historyAction.addMsgHistory('gu:!@!@!@!@!@!'))
+                    dispatch(messageAction.addMsgHistory('gu:!@!@!@!@!@!'))
                 })
                 .catch((error) => {
                     console.log(error)
-                    dispatch(historyAction.addMsgHistory('gu:failed'))
+                    dispatch(messageAction.addMsgHistory('gu:failed'))
                 })
                 .finally(() => {
                     setReadOnly(false)
@@ -398,16 +398,16 @@ const MainCommandTable = () => {
                 break;
             case 13: // enter
                 if (userInput == "clear") {
-                    dispatch(historyAction.clearMsgHistory())
+                    dispatch(messageAction.clearMsgHistory())
                 } else {
                     console.log(userInput)
-                    dispatch(historyAction.addMsgHistory('me:' + userInput))
+                    dispatch(messageAction.addMsgHistory('me:' + userInput))
 
                     const sendCmd = userInput.match(/[a-zA-z\.+\?+]+|\(.+\)/g);
                     const cmd = command(sendCmd)
 
                     if (cmd !== undefined) {
-                        dispatch(historyAction.setGuideScript(cmd))
+                        dispatch(messageAction.setGuideScript(cmd))
                     }
                 }
 
@@ -442,8 +442,8 @@ const MainCommandTable = () => {
     // ===================================================
     const guideSay = (say) => {
         setTimeout(() => {
-            dispatch(historyAction.addMsgHistory('gu:' + say))
-            dispatch(historyAction.shiftGuideScript())
+            dispatch(messageAction.addMsgHistory('gu:' + say))
+            dispatch(messageAction.shiftGuideScript())
             setReadOnly(false)
         }, guideTempo)
     }
@@ -498,43 +498,39 @@ const MainCommandTable = () => {
     ))
 
     return(
-
-        <div>
-            
-            <div ref={tableRef} style={{display: "flex", width: "320px", height: "550px", backgroundColor: "coral", overflow: "auto", flexDirection: "column-reverse"}}>
-            {loading ? 
-                <div>
-                    Loading....
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />
-                    <br />            
-                </div>                    
-                :
-                <div>
-                    {msgList}
+        <div className="MainCommandTable">
+            <div>
+                <div ref={tableRef} style={{display: "flex", width: "320px", height: "550px", backgroundColor: "coral", overflow: "auto", flexDirection: "column-reverse"}}>
+                {loading ? 
+                    <div>
+                        Loading....
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />
+                        <br />            
+                    </div>                    
+                    :
+                    <div>
+                        {msgList}
+                    </div>
+                    
+                }
+        
                 </div>
-                
-            }
-     
-            </div>
-            {/* {readOnly ? 
-                <input ref={inputRef} type="text" style={{width: "310px", height: "30px"}} value={userInput} readOnly />
+
+                <input ref={inputRef} type="text" style={{width: "310px", height: "25px"}} onKeyDown={keyDownHandler} value={userInput} onChange={(e)=> setUserInput(e.target.value)} readOnly={readOnly ? readOnly : null} />
+
+                {readOnly ? 
+                    <div>readOnly true</div>    
                 :
-                <input ref={inputRef} type="text" style={{width: "310px", height: "30px"}} onKeyDown={keyDownHandler} value={userInput} onChange={(e)=> setUserInput(e.target.value)} readOnly={readOnly ? readOnly : null} />
-            } */}
+                    <div>readOnly false</div>
+                }       
+            </div>
 
-            <input ref={inputRef} type="text" style={{width: "310px", height: "25px"}} onKeyDown={keyDownHandler} value={userInput} onChange={(e)=> setUserInput(e.target.value)} readOnly={readOnly ? readOnly : null} />
-
-            {readOnly ? 
-                <div>readOnly true</div>    
-            :
-                <div>readOnly false</div>
-            }       
         </div>
     )
 

@@ -4,18 +4,17 @@ import { useHotkeys } from 'react-hotkeys-hook';
 
 import * as modeAction from '../actions/mode';
 
-import MainBoard from '../components/mode/MainBoard';
-import MemoTable from '../components/mode/MemoTable';
+import MainBoard from '../components/MainBoard';
+import MemoTable from '../components/MemoTable';
 import MainCommandTable from '../components/MainCommandTable';
 import MainGuide from '../components/MainGuide';
-import Help from '../components/mode/Help';
+import Help from '../components/Help';
 
 
 const MainPage = () => {
 
     const dispatch = useDispatch();
     const currentMode = useSelector((state) => state.mode.currentMode);
-
 
     const modeHandler = () => {
 
@@ -40,39 +39,38 @@ const MainPage = () => {
 
 
     return(
-        <div style={{display: "flex", paddingTop: "20px", paddingLeft:"20px"}}>
-            <div style={{width: "320px"}}>
-                <div>
-                    
-                    <MainGuide></MainGuide>
-                </div>
-                <div>
-                    <MainCommandTable></MainCommandTable>
-                </div>
+        <div className="MainPage">
+            <div style={{display: "flex", paddingTop: "20px", paddingLeft:"20px"}}>
+                <div style={{width: "320px"}}>
+                    <div>
+                        
+                        <MainGuide></MainGuide>
+                    </div>
+                    <div>
+                        <MainCommandTable></MainCommandTable>
+                    </div>
 
-                현재 currentMode = {currentMode}
-                <br />
-            </div>
-            &nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;
-
-            <div><button onClick={()=> dispatch(modeAction.rangeControl(-1))} style={{height: "100%"}}>&lt;</button></div>
-            &nbsp;&nbsp;&nbsp;
-            <div style={{display: "flex", width: "1400px"}}>   
-                <div style={currentMode != 0 ? {display: "none"} : null}>
-                    <MainBoard></MainBoard>
+                    현재 currentMode = {currentMode}
+                    <br />
                 </div>
-                {modeHandler()}
+                &nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;
+
+                <div><button onClick={()=> dispatch(modeAction.rangeControl(-1))} style={{height: "100%"}}>&lt;</button></div>
+                &nbsp;&nbsp;&nbsp;
+                <div style={{display: "flex", width: "1400px"}}>   
+                    <div style={currentMode != 0 ? {display: "none"} : null}>
+                        <MainBoard></MainBoard>
+                    </div>
+                    {modeHandler()}
+                </div>
+                &nbsp;&nbsp;&nbsp;
+                <div><button onClick={()=> dispatch(modeAction.rangeControl(1))} style={{height: "100%"}}>&gt;</button></div>
+                
             </div>
-            &nbsp;&nbsp;&nbsp;
-            <div><button onClick={()=> dispatch(modeAction.rangeControl(1))} style={{height: "100%"}}>&gt;</button></div>
-            
         </div>
-
-
     )
 }
 
 export default MainPage;
-
