@@ -36,18 +36,18 @@ const MemoBoard = () => {
                     case 0:
                         break;
                     case 1:
-                        let oneweek = [false, false, false, false, false]
+                        let oneWeek = [false, false, false, false, false]
         
                         for (let index = 0; index < memo.length; index++) {
 
                             let date = memo[index].match(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
                             date = date[0].replace(/(=|\s)/g, "")
                             let day = new Date(date).getDay()
-                            oneweek[day-1] = memo[index]
+                            oneWeek[day-1] = memo[index]
 
                         }
                             
-                        memo = oneweek
+                        memo = oneWeek
                         
                         break;
                     default:
@@ -59,7 +59,7 @@ const MemoBoard = () => {
                     memo.reverse()
                 }
 
-                    
+
                 return (
                     <div>
                         <div style={{display: "flex", width: "1350px", backgroundColor: "green"}}>
@@ -77,30 +77,82 @@ const MemoBoard = () => {
         }, [noneLineBreakText, memoBoxLineUp, memoBoxReverse]
     ) 
 
+
+    const getMemo = (text) => {
+
+        let text_copy = text
+
+        let memo = {
+            date: '',
+            day: '',
+            plan: [],
+            etc: [],
+        }
+
+        memo['date'] = text_copy.match(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
+        text_copy = text_copy.replace(memo['date'], "")
+        memo['date'] = memo['date'][0].replace(/(=|\s)/g, "")
+
+        memo['day'] = week[new Date(memo['date']).getDay()]
+
+        memo['etc'] = text_copy.split(/\n\+{1}/g)
+        memo['etc'].shift()
+        for (let index = 0; index < memo['etc'].length; index++) {
+            text_copy = text_copy.replace('\n+' + memo['etc'][index], "")
+        }
+
+        memo['plan'] = text_copy.split(/\d{1,2}\.{1}\s{1}/g)
+        memo['plan'].shift()
+
+    
+
+        return memo;
+
+    }
+
+
+    const memo = (memo) => {
+        
+        let text = memo
+        let m = null
+
+        if (text) {
+            m = getMemo(text)
+        }
+
+        return (
+            <div style={{width: "260px", height: "150px", margin: "5px"}}>
+            { text ?
+                <div>
+                    <div>
+                        {m['date']} - {m['day']}
+                    </div>
+                    <br />
+                    <ol>
+                        {planBox(m['plan'])}
+                    </ol>
+                    <br />
+                    {etcBox(m['etc'])}
+                </div>
+            :
+                <div style={{width: "100%", height: "100%"}}>
+                    empty
+                </div>    
+            }
+
+            </div>            
+        )
+
+    }
+
     const memoBox = (dayOfMemo) => {
         const box = dayOfMemo.map((memo) => {
 
             let text = memo
-
-            let date = ""
-            let plan = []
-            let etc = []
+            let m = null
 
             if (text) {
-                
-                date = text.match(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
-                text = text.replace(date)
-                date = date[0].replace(/(=|\s)/g, "")
-
-                etc = text.split(/\+{1}/g)
-                etc.shift()
-                for (let index = 0; index < etc.length; index++) {
-                    text = text.replace('+' + etc[index], "")
-                }
-
-                plan = text.split(/\d{1}\.{1}/g)
-                plan.shift()
-
+                m = getMemo(text)
             }
 
             return (
@@ -108,7 +160,7 @@ const MemoBoard = () => {
                 { text ?
                     <div style={{width: "100%", height: "100%", backgroundColor: "skyblue"}} 
                         onClick={()=>{
-                            setMemoText(date+plan+etc)
+                            setMemoText(memo)
                             setOpen(true)
                         }}
                     >
@@ -116,17 +168,17 @@ const MemoBoard = () => {
                             <table style={{width: "100%"}}>
                                 <tbody>
                                     <tr>
-                                        <td><b>{date}</b></td>
-                                        <td style={{textAlign: "right"}}>{week[new Date(date).getDay()]}</td>
+                                        <td><b>{m['date']}</b></td>
+                                        <td style={{textAlign: "right"}}>{m['day']}</td>
                                     </tr>
                                 </tbody>
                             </table>
                             <br />
-                            <ol>
-                                {planBox(plan)}
+                            <ol style={{paddingLeft: "20px"}}>
+                                {planBox(m['plan'])}
                             </ol>
                             <br />
-                            {etcBox(etc)}
+                            {etcBox(m['etc'])}
                         </div>
                     </div>   
                 :
@@ -142,18 +194,6 @@ const MemoBoard = () => {
         return box;
     }
 
-    const planBox = (dayOfPlan) => {
-        const box = dayOfPlan.map((plan) => {
-            return (
-                <li>
-                    <pre>{plan}</pre>
-                </li>
-            ) 
-        })
-        
-        return box;
-    }
-
     const etcBox = (dayOfEtc) => {
         const box = dayOfEtc.map((etc) => {
             return (
@@ -166,11 +206,121 @@ const MemoBoard = () => {
         return box;
     }
 
-   
+
+    const planBox = (dayOfPlan) => {
+        const box = dayOfPlan.map((plan) => {
+
+            let planText = plan
+        
+            let o = planText.match(/\s{1}O{1}/g)   
+            if (o == null) {
+                // o = []
+            } else {
+                o = o[0]
+                planText = planText.replace(o, "")
+            }
+            
+
+            let x = planText.match(/\s{1}X{1}/g)
+            
+            if (x != null) {
+                x = x[0]
+                planText = planText.replace(x, "")
+            }
+
+            let conclusion = planText. split(/=>/g)
+            conclusion.shift()
+            console.log(conclusion)
+            for (let index = 0; index < conclusion.length; index++) {
+                planText = planText.replace(/=>/g, "")
+                planText = planText.replace(conclusion[index], "")
+            }
+
+
+
+            let a = planText.split(/\t{3}-{1}/g)
+        
+            if (a != null) {
+                a.shift()
+                for (let index = 0; index < a.length; index++) {
+                    planText = planText.replace(/\t{3,}-{1}/g, "")
+                    planText = planText.replace(a[index], "")
+                }
+            }
+
+            return (
+                <li style={{width: "800px"}}> 
+                    {planText}{oBox(o)}{xBox(x)}
+                    {a == null ? null : aBox(a)}
+                    {conclusionBox(conclusion)}
+                </li>
+            ) 
+        })
+        
+        return box;
+    }
+
+    const oBox = (o) => {
+        return (
+            <span>
+            { o != null ? 
+                <span style={{color: "blue"}}>
+                    <b>O</b>
+                </span>
+                :
+                null
+            }
+            </span>
+        )
+    }
+
+    const xBox = (x) => {
+        return (
+            <span>
+            { x != null ? 
+                <span style={{color: "red"}}>
+                    <b>X</b>
+                </span>
+                :
+                null
+            }
+            </span>
+        )
+    }
+    
+    const aBox = (aList) => {
+        const box = aList.map((a) => {
+
+            return (
+                <div>
+                { aList != null ?
+                    <p style={{color: "orange"}}>- {a}</p>
+                :
+                    null
+                }
+                </div>
+            )
+        })
+
+        return box;
+    } 
+
+    const conclusionBox = (conclusion) => {
+        const box = conclusion.map((c) => {
+            return (
+                <div style={{backgroundColor: "salmon"}}>
+                    =&gt; {c}
+                </div>
+            )
+        })
+
+        return box;
+    }
+
     useEffect(() => {
         
         let text = mainText
-        text = text.replace(/\n/g,"")
+        text = text.replace(/\n/g, "")
         setNoneLineBreakText(text)
     
     }, [mainText])
@@ -214,7 +364,7 @@ const MemoBoard = () => {
                 break;
         }    
     
-        return style
+        return style;
     }
 
     
@@ -250,8 +400,7 @@ const MemoBoard = () => {
                 contentLabel="asdfasdf"
                 ariaHideApp={false}
             >
-                {memoText}
-
+                {memo(memoText)}
             </ReactModal>
 
         </div>
