@@ -80,6 +80,13 @@ const MainCommandTable = () => {
             return undefined;
         }, [msgHistory]
     )
+
+    const update = useCallback(
+        () => {
+            dispatch(mainTextAction.setUpdateTime(new Date()))
+        }, [msgHistory]
+    )
+
     // ===================================================
     // axios post => server cosmic_dust/planet 덮어씌우기
     const save = useCallback(
@@ -132,6 +139,9 @@ const MainCommandTable = () => {
                 .catch((error) => {
                     console.log(error)
                     dispatch(messageAction.addMsgHistory('gu:failed'))
+                    const sec = new Date().getSeconds().toString()
+                    dispatch(mainTextAction.setMainText(sec))
+                
                 })
                 .finally(() => {
                     setReadOnly(false)
@@ -318,6 +328,7 @@ const MainCommandTable = () => {
             script['today'] = () => getToday()
 
             script['ping'] = () => ping()
+            script['update'] = () => update()
 
             script['get'] = {}
             script['get']['week'] = (that_date) => getWeek(that_date)

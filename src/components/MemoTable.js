@@ -95,7 +95,7 @@ const MemoBoard = () => {
 
         memo['day'] = week[new Date(memo['date']).getDay()]
 
-        memo['etc'] = text_copy.split(/\n\+{1}/g)
+        memo['etc'] = text_copy.split(/\+{1}/g)
         memo['etc'].shift()
         for (let index = 0; index < memo['etc'].length; index++) {
             text_copy = text_copy.replace('\n+' + memo['etc'][index], "")
@@ -230,7 +230,7 @@ const MemoBoard = () => {
 
             let conclusion = planText. split(/=>/g)
             conclusion.shift()
-            console.log(conclusion)
+            
             for (let index = 0; index < conclusion.length; index++) {
                 planText = planText.replace(/=>/g, "")
                 planText = planText.replace(conclusion[index], "")
@@ -328,7 +328,9 @@ const MemoBoard = () => {
 
     useEffect(() => {
 
-        const weekTextLine = /(?<=-{35})-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-(?=\={3}\s\d{4}\/\d{2}\/\d{2}\s\={20})/g
+        const weekTextLine = /(?<=-{35})\s*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\s*(?=\={3}\s\d{4}\/\d{2}\/\d{2}\s\={20})/g
+        // const weekTextLine = /-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-/g
+        
         let weekTextArr = []
 
         if (noneLineBreakText.length != 0) {
