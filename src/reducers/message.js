@@ -8,6 +8,7 @@ const initialStates = {
     msgHistory: [],
     guideScript: [],
     guideTempo: 250,
+    readOnly: false,
 
 }
 
@@ -39,7 +40,11 @@ const reducers = (state = initialStates, actions) => {
                 draft.guideTempo = actions.payload
             })
         }
-
+        case messageAction.SET_READ_ONLY: {
+            return produce(state, draft => {
+                draft.readOnly = actions.payload
+            })
+        }
 
         default: {
             return {

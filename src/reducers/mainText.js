@@ -5,11 +5,13 @@ import * as mainTextAction from '../actions/mainText';
 
 const initialStates = {
 
-    mainText: "",
-    updateTime: "",
+    mainText: false,
+    saveTime: false,
+    updateTime: false,
+    textLength: 0,
+    removeSpaceTextLength: 0,
 
 }
-
 
 const reducers = (state = initialStates, actions) => {
     
@@ -19,10 +21,25 @@ const reducers = (state = initialStates, actions) => {
                 draft.mainText = actions.payload
             })
         }
+        case mainTextAction.SET_SAVE_TIME: {
+            return produce(state, draft => {
+                draft.saveTime = actions.payload
+            })
+        }
         case mainTextAction.SET_UPDATE_TIME: {
             return produce(state, draft => {
                 draft.updateTime = actions.payload
             })
+        }
+        case mainTextAction.SET_TEXT_LENGTH: {
+            return produce(state, draft => {
+                draft.textLength = actions.payload
+            })            
+        }
+        case mainTextAction.SET_REMOVE_SPACE_TEXT_LENGTH: {
+            return produce(state, draft => {
+                draft.removeSpaceTextLength = actions.payload
+            })            
         }
             
         default: {

@@ -14,8 +14,9 @@ import { useHotkeys } from 'react-hotkeys-hook';
 const MainCommandTable = () => {
 
     const dispatch = useDispatch();
-    const mainText = useSelector((state) => state.mainText.mainText);
-    
+    const mainText = useSelector((state) => state.mainText.mainText)
+    const saveTime = useSelector((state) => state.mainText.saveTime)
+
     const astronautId       = useSelector((state) => state.astronaut.astronautId)
     const astronautNickname = useSelector((state) => state.astronaut.astronautNickname)
     const astronautPassword = useSelector((state) => state.astronaut.astronautPassword)
@@ -25,6 +26,7 @@ const MainCommandTable = () => {
     const msgHistory  = useSelector((state) => state.message.msgHistory)
     const guideScript = useSelector((state) => state.message.guideScript)
     const guideTempo  = useSelector((state) => state.message.guideTempo)
+    const readOnly    = useSelector((state) => state.message.readOnly)    
 
     const mode = useSelector((state) => state.mode.mode)
 
@@ -34,7 +36,6 @@ const MainCommandTable = () => {
     const inputRef = useRef(null)
     const [userInput, setUserInput] = useState("")
     const [loading, setLoading] = useState(true)
-    const [readOnly, setReadOnly] = useState(false)
 
     const [cmdHistory, setCmdHistory] = useState([])
     const [cmdAddr, setCmdAddr] = useState(-100)
@@ -58,7 +59,7 @@ const MainCommandTable = () => {
     const ping = useCallback(
         () => {
 
-            setReadOnly(true)
+            dispatch(messageAction.setReadOnly(true))
             
             let url = "http://localhost:3001/";
     
@@ -74,7 +75,7 @@ const MainCommandTable = () => {
                 })
                 .finally(() => {
                     setLoading(false)
-                    setReadOnly(false)
+                    dispatch(messageAction.setReadOnly(false))
                 })
 
             return undefined;
@@ -91,39 +92,18 @@ const MainCommandTable = () => {
     // axios post => server cosmic_dust/planet 덮어씌우기
     const save = useCallback(
         () => {
-
-            setReadOnly(true)
-            dispatch(messageAction.addMsgHistory('gu:Saving...'))
-
-            let url = "http://localhost:3001/main/saveText";
-
-            const textBox = {
-                text: mainText,
-            }
-
-            axios
-                .post(url, textBox)
-                .then((response) => {
-                    console.log("저장 완료!@!");
-                    dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
-                })
-                .catch((error) => {
-                    console.log(error)
-                    dispatch(messageAction.addMsgHistory('gu:Save failed.'))
-                })
-                .finally(() => {
-                    setReadOnly(false)
-                })
-
+            // dispatch(messageAction.setReadOnly(true))
+            dispatch(mainTextAction.setSaveTime(new Date()))
             return undefined;
         }, [msgHistory]
     )
+
     // ===================================================
     // axios get => return server cosmic_dust/planet
     const getMainText = useCallback(
         () => {
 
-            setReadOnly(true)
+            dispatch(messageAction.setReadOnly(true))
             dispatch(messageAction.addMsgHistory('gu:loading...'))
 
             let url = "http://localhost:3001/main/getText";
@@ -144,7 +124,7 @@ const MainCommandTable = () => {
                 
                 })
                 .finally(() => {
-                    setReadOnly(false)
+                    dispatch(messageAction.setReadOnly(false))
                 })
 
             return undefined;
@@ -455,7 +435,7 @@ const MainCommandTable = () => {
         setTimeout(() => {
             dispatch(messageAction.addMsgHistory('gu:' + say))
             dispatch(messageAction.shiftGuideScript())
-            setReadOnly(false)
+            dispatch(messageAction.setReadOnly(false))
         }, guideTempo)
     }
 
@@ -485,7 +465,7 @@ const MainCommandTable = () => {
 
         if (guideScript && guideScript.length != 0) {
             guideSay(guideScript[0])
-            setReadOnly(true)
+            dispatch(messageAction.setReadOnly(true))
         }
 
     }, [guideScript])

@@ -3,7 +3,7 @@ export const CLEAR_MSG_HISTORY  = 'CLEAR_MSG_HISTORY';
 export const SET_GUIDE_SCRIPT   = 'SET_GUIDE_SCRIPT';
 export const SHIFT_GUIDE_SCRIPT = 'SHIFT_GUIDE_SCRIPT'  
 export const SET_GUIDE_TEMPO    = 'SET_GUIDE_TEMPO';
-
+export const SET_READ_ONLY      = 'SET_READ_ONLY';
 
 
 export const addMsgHistory = (msg) => {
@@ -36,6 +36,13 @@ export const setGuideTempo = (speed) => {
     return {
         type: SET_GUIDE_TEMPO,
         payload: speed,
+    }
+};
+
+export const setReadOnly = (readOnly) => {
+    return {
+        type: SET_READ_ONLY,
+        payload: readOnly,
     }
 };
 
