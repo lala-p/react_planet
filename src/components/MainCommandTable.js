@@ -92,8 +92,8 @@ const MainCommandTable = () => {
     // axios post => server cosmic_dust/planet 덮어씌우기
     const save = useCallback(
         () => {
-            // dispatch(messageAction.setReadOnly(true))
             dispatch(mainTextAction.setSaveTime(new Date()))
+
             return undefined;
         }, [msgHistory]
     )

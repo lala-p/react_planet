@@ -10,6 +10,7 @@ const initialStates = {
     updateTime: false,
     textLength: 0,
     removeSpaceTextLength: 0,
+    fontSize: 14,
 
 }
 
@@ -41,7 +42,11 @@ const reducers = (state = initialStates, actions) => {
                 draft.removeSpaceTextLength = actions.payload
             })            
         }
-            
+        case mainTextAction.SET_FONT_SIZE: {
+            return produce(state, draft => {
+                draft.fontSize = actions.payload
+            })            
+        }    
         default: {
             return {
                 ...state
