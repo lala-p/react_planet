@@ -3,7 +3,8 @@ export const SET_SAVE_TIME                = 'SET_SAVE_TIME';
 export const SET_UPDATE_TIME              = 'SET_UPDATE_TIME';
 export const SET_TEXT_LENGTH              = 'SET_TEXT_LENGTH';
 export const SET_REMOVE_SPACE_TEXT_LENGTH = 'SET_REMOVE_SPACE_TEXT_LENGTH'; 
-export const SET_FONT_SIZE = 'SET_FONT_SIZE';
+export const SET_FONT_SIZE                = 'SET_FONT_SIZE';
+export const SET_MEMO_DATA                = 'SET_MEMO_DATA'; 
 
 
 export const setMainText = (text) => {
@@ -46,4 +47,11 @@ export const setFontSize = (size) => {
         type: SET_FONT_SIZE,
         payload: size,
     }    
+}
+
+export const setMemoData = (data) => {
+    return {
+        type: SET_MEMO_DATA,
+        payload: data,
+    }
 }

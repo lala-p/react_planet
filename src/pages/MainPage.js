@@ -23,7 +23,6 @@ const MainPage = () => {
                 return null
             case 1: 
                 return <MemoTable></MemoTable>
-                
             default:
                 return <Help></Help>
 

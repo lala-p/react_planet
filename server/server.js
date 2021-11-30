@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const fs = require("fs");
 const crypto = require("crypto");
+const nodemailer = require('nodemailer');
 
 const app = express();
 const port = 3001
@@ -15,8 +16,6 @@ app.use(cors());
 
 
 app.get('/', (req, res) => {
-
-
 
     const hashPassword = crypto.createHash('sha512').update('PASSWORD').digest('hex');
 

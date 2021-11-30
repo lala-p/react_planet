@@ -11,7 +11,7 @@ const initialStates = {
     textLength: 0,
     removeSpaceTextLength: 0,
     fontSize: 14,
-
+    memoData: [],
 }
 
 const reducers = (state = initialStates, actions) => {
@@ -47,6 +47,13 @@ const reducers = (state = initialStates, actions) => {
                 draft.fontSize = actions.payload
             })            
         }    
+        case mainTextAction.SET_MEMO_DATA: {
+            return produce(state, draft => {
+                draft.memoData = actions.payload
+            })            
+        }
+
+
         default: {
             return {
                 ...state

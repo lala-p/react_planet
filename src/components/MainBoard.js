@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useHistory } from 'react-router-dom';
@@ -10,6 +10,7 @@ import axios from 'axios';
 import * as mainTextAction from '../actions/mainText';
 import * as messageAction from '../actions/message';
 
+import { findVer01 } from '../find/ver_01';
 
 const MainBoard = () => {
 
@@ -29,48 +30,6 @@ const MainBoard = () => {
     
     const [mountComplete, setMountComplete] = useState(false)
     const [removeSpace, setRemoveSpace] = useState(false)
-
-
-    useEffect(() => {
-        if (mountComplete) {
-            if (saveTime && !readOnly) {
-                if (mainText != editorRef.current.getValue()) { 
-                    
-                    dispatch(messageAction.setReadOnly(true))
-                    dispatch(messageAction.addMsgHistory('gu:Saving...'))
-
-                    dispatch(mainTextAction.setMainText(editorRef.current.getValue()))
-                    dispatch(mainTextAction.setTextLength(editorRef.current.getValue().length))
-                    dispatch(mainTextAction.setRemoveSpaceTextLength(editorRef.current.getValue().replace(/\s/ig, "").length))
-
-                    let url = "http://localhost:3001/main/saveText";
-
-                    const dataBox = {
-                        text: editorRef.current.getValue(),
-                    }
-
-                    axios
-                        .post(url, dataBox)
-                        .then((response) => {
-                            dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
-                        })
-                        .catch((error) => {
-                            console.log(error)
-                            dispatch(messageAction.addMsgHistory('gu:Save failed.'))
-                        })
-                        .finally(() => {
-                            console.log(mainText)
-                            dispatch(messageAction.setReadOnly(false))
-                        })
-                    
-                
-                } else {
-                    console.log("same!@!")
-                }
-            }
-
-        }
-    }, [saveTime])
 
 
     const eMount = (editor, monaco) => {
@@ -180,6 +139,105 @@ const MainBoard = () => {
         fontSize: fontSize,
     })
 
+    const getMemoData = useCallback(
+        (text) => {
+            let weekTextArr = []
+
+            if (text.length != 0) {
+                weekTextArr = text.split(findVer01['baseLine']['weekLine'])
+            }
+
+            for (let index = 0; index < weekTextArr.length; index++) {
+                let memoText = weekTextArr[index]
+                let memoArr = memoText.split(findVer01['baseLine']['dateEndLine'])
+                memoArr.pop()
+
+                for (let index2 = 0; index2 < memoArr.length; index2++) {
+
+                    let memo_copy = memoArr[index2]
+
+                    let memoData = {
+                        date: "",
+                        day: -1,
+                        plan: [],
+                        etc: [],
+                    }
+
+                    let date = ""
+                    let day = ""
+                    let plan = []
+                    let etc = []
+
+                    date = memo_copy.match(findVer01['date'])
+                    memoData['date'] = date[0]
+
+                    day = new Date(date).getDay()
+                    memoData['day'] = day
+
+                    etc = memo_copy.split(findVer01['baseLine']['etcLine'])
+                    etc.shift()
+                    memoData['etc'] = etc
+                    for (let index3 = 0; index3 < etc.length; index3++) {
+                        memo_copy = memo_copy.replace('+' + memoData['etc'][index3], "")
+                    }
+
+                    plan = memo_copy.split(findVer01['baseLine']['planLine'])
+                    plan.shift()
+                    memoData['plan'] = plan
+
+                    memoArr[index2] = memoData
+                }
+                weekTextArr[index] = memoArr
+            }
+
+            dispatch(mainTextAction.setMemoData(weekTextArr))
+
+        }, [saveTime]
+    )
+
+    useEffect(() => {
+        if (mountComplete) {
+            if (saveTime && !readOnly) {
+                if (mainText != editorRef.current.getValue()) { 
+                    
+                    dispatch(messageAction.setReadOnly(true))
+                    dispatch(messageAction.addMsgHistory('gu:Saving...'))
+
+                    dispatch(mainTextAction.setMainText(editorRef.current.getValue()))
+                    dispatch(mainTextAction.setTextLength(editorRef.current.getValue().length))
+                    dispatch(mainTextAction.setRemoveSpaceTextLength(editorRef.current.getValue().replace(/\s/g, "").length))
+                    getMemoData(editorRef.current.getValue())
+
+
+                    let url = "http://localhost:3001/main/saveText";
+
+                    const dataBox = {
+                        text: editorRef.current.getValue(),
+                    }
+
+                    axios
+                        .post(url, dataBox)
+                        .then((response) => {
+                            dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
+                        })
+                        .catch((error) => {
+                            console.log(error)
+                            dispatch(messageAction.addMsgHistory('gu:Save failed.'))
+                        })
+                        .finally(() => {
+                            console.log(mainText)
+                            dispatch(messageAction.setReadOnly(false))
+                        })
+                    
+                
+                } else {
+                    console.log("same!@!")
+                }
+            }
+
+        }
+    }, [saveTime])
+
 
     // ===================================================
     // 단축키 설정 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -187,6 +245,7 @@ const MainBoard = () => {
         editorRef.current.focus()    
     })
 
+    
     return(
         <div className="MainBoard">
             <div>

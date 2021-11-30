@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import ReactModal from 'react-modal';
@@ -8,6 +8,7 @@ import * as memoAction from '../actions/memo';
 const MemoBoard = () => {
 
     const dispatch = useDispatch();
+    const mainText = useSelector((state) => state.mainText.mainText);
     const memoData = useSelector((state) => state.mainText.memoData)
 
     const weekBoxLineUp = useSelector((state) => state.memo.weekBoxLineUp);
@@ -16,48 +17,53 @@ const MemoBoard = () => {
 
     const week = useSelector((state) => state.astronaut.week)
 
+    const [noneLineBreakText, setNoneLineBreakText] = useState("")
+    const [weekText, setWeekText] = useState([])
     
     const [open, setOpen] = useState(false)
-    const [memoData2, setMemoData2] = useState(false)
+    const [memoText, setMemoText] = useState("")
 
     const weekTextBox = useCallback(
-        (data) => {
-            const box = data.map((memo) => {
+        (text) => {
+            const box = text.map((thatWeek) => {
 
-                let lineUp = []
+                let memo = []
 
-                for (let index = 0; index < memo.length; index++) {
-                    lineUp.push(memo[index])
-                }
+                memo = thatWeek.split(/\-{35}/g)
+                memo.pop()
 
                 switch (memoBoxLineUp) {
                     case 0:
                         break;
                     case 1:
-
                         let oneWeek = [false, false, false, false, false]
+        
+                        for (let index = 0; index < memo.length; index++) {
 
-                        for (let index = 0; index < lineUp.length; index++) {
-                            oneWeek[lineUp[index]['day']-1] = lineUp[index]                        
+                            let date = memo[index].match(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
+                            date = date[0].replace(/(=|\s)/g, "")
+                            let day = new Date(date).getDay()
+                            oneWeek[day-1] = memo[index]
+
                         }
                             
-                        lineUp = oneWeek
+                        memo = oneWeek
                         
-                        break; 
-                    
-                    
-                        default: 
-                        break;     
+                        break;
+                    default:
+                        break;
+                        
                 }
 
                 if (memoBoxReverse) {
-                    lineUp.reverse()
+                    memo.reverse()
                 }
+
 
                 return (
                     <div>
                         <div style={{display: "flex", width: "1350px", backgroundColor: "green"}}>
-                            {memoBox(lineUp)}
+                            {memoBox(memo)}
                         </div>
                         <hr />
                         <br />
@@ -68,23 +74,72 @@ const MemoBoard = () => {
             console.log(box.length)
 
             return box;
-        }, [memoData, memoBoxLineUp, memoBoxReverse]
+        }, [noneLineBreakText, memoBoxLineUp, memoBoxReverse]
     ) 
 
+
+    const getMemo = (text) => {
+
+        let text_copy = text
+
+        let memo = {
+            date: '',
+            day: '',
+            plan: [],
+            etc: [],
+        }
+
+        memo['date'] = text_copy.match(/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g)
+        text_copy = text_copy.replace(memo['date'], "")
+        memo['date'] = memo['date'][0].replace(/(=|\s)/g, "")
+
+        memo['day'] = week[new Date(memo['date']).getDay()]
+
+        memo['etc'] = text_copy.split(/\+{1}/g)
+        memo['etc'].shift()
+        for (let index = 0; index < memo['etc'].length; index++) {
+            text_copy = text_copy.replace('\n+' + memo['etc'][index], "")
+        }
+
+        memo['plan'] = text_copy.split(/\d{1,2}\.{1}\s{1}/g)
+        memo['plan'].shift()
+
+    
+
+        return memo;
+
+    }
+
+
     const memo = (memo) => {
+        
+        let text = memo
+        let m = null
+
+        if (text) {
+            m = getMemo(text)
+        }
+
         return (
             <div style={{width: "260px", height: "150px", margin: "5px"}}>
+            { text ?
                 <div>
                     <div>
-                        {memo['date']} - {week[memo['day']]}
+                        {m['date']} - {m['day']}
                     </div>
                     <br />
                     <ol>
-                        {planBox(memo['plan'])}
+                        {planBox(m['plan'])}
                     </ol>
                     <br />
-                    {etcBox(memo['etc'])}
+                    {etcBox(m['etc'])}
                 </div>
+            :
+                <div style={{width: "100%", height: "100%"}}>
+                    empty
+                </div>    
+            }
+
             </div>            
         )
 
@@ -92,12 +147,20 @@ const MemoBoard = () => {
 
     const memoBox = (dayOfMemo) => {
         const box = dayOfMemo.map((memo) => {
+
+            let text = memo
+            let m = null
+
+            if (text) {
+                m = getMemo(text)
+            }
+
             return (
                 <div style={{width: "260px", height: "150px", margin: "5px"}}>
-                { memo ?
+                { text ?
                     <div style={{width: "100%", height: "100%", backgroundColor: "skyblue"}} 
                         onClick={()=>{
-                            setMemoData2(memo)
+                            setMemoText(memo)
                             setOpen(true)
                         }}
                     >
@@ -105,34 +168,31 @@ const MemoBoard = () => {
                             <table style={{width: "100%"}}>
                                 <tbody>
                                     <tr>
-                                        <td><b>{memo['date']}</b></td>
-                                        <td style={{textAlign: "right"}}>{week[memo['day']]}</td>
+                                        <td><b>{m['date']}</b></td>
+                                        <td style={{textAlign: "right"}}>{m['day']}</td>
                                     </tr>
                                 </tbody>
                             </table>
                             <br />
                             <ol style={{paddingLeft: "20px"}}>
-                                {planBox(memo['plan'])}
+                                {planBox(m['plan'])}
                             </ol>
                             <br />
-                            {etcBox(memo['etc'])}
+                            {etcBox(m['etc'])}
                         </div>
                     </div>   
-
                 :
                     <div style={{width: "100%", height: "100%"}}>
                         empty
                     </div>    
-                                
                 }
-                
+
                 </div>            
             )
         })
 
         return box;
     }
-
 
     const etcBox = (dayOfEtc) => {
         const box = dayOfEtc.map((etc) => {
@@ -149,7 +209,9 @@ const MemoBoard = () => {
 
     const planBox = (dayOfPlan) => {
         const box = dayOfPlan.map((plan) => {
+
             let planText = plan
+        
             let o = planText.match(/\s{1}O{1}/g)   
             if (o == null) {
                 // o = []
@@ -255,6 +317,30 @@ const MemoBoard = () => {
         return box;
     }
 
+    useEffect(() => {
+        
+        let text = mainText
+        text = text.replace(/\n/g, "")
+        setNoneLineBreakText(text)
+    
+    }, [mainText])
+
+
+    useEffect(() => {
+
+        const weekTextLine = /(?<=-{35})\s*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\s*(?=\={3}\s\d{4}\/\d{2}\/\d{2}\s\={20})/g
+        // const weekTextLine = /-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-/g
+        
+        let weekTextArr = []
+
+        if (noneLineBreakText.length != 0) {
+            weekTextArr = noneLineBreakText.split(/(?<=-{35})\s*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\s*(?=\={3}\s\d{4}\/\d{2}\/\d{2}\s\={20})/g)
+        }
+
+        setWeekText(weekTextArr)
+
+    }, [noneLineBreakText])
+
 
     const weekBoxLineUpStyle = () => {
 
@@ -282,6 +368,7 @@ const MemoBoard = () => {
     
         return style;
     }
+
     
     return(
         <div className="MemoTable">
@@ -299,28 +386,24 @@ const MemoBoard = () => {
                 <br />
 
                 <div style={{width: "1370px", height: "900px", overflow: "scroll", margin: "auto"}}>
-                { memoData ? 
-                    <div style={weekBoxLineUpStyle()}>
-                        {weekTextBox(memoData)}
-                    </div>
-                    :
+                { weekText.length == 0 ? 
                     <div>???</div>
+                    :
+                    <div style={weekBoxLineUpStyle()}>
+                        {weekTextBox(weekText)}
+                    </div>
                 }
                 </div>
             </div>
-        { memoData2 ?  
+            
             <ReactModal
                 isOpen={open}
                 onRequestClose={()=>setOpen(false)}
                 contentLabel="asdfasdf"
                 ariaHideApp={false}
             >
-                {memo(memoData2)}
+                {memo(memoText)}
             </ReactModal>
-
-        :
-            null
-        }
 
         </div>
     )
