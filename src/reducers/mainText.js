@@ -11,7 +11,7 @@ const initialStates = {
     textLength: 0,
     removeSpaceTextLength: 0,
     fontSize: 14,
-    memoData: [],
+    weekDataList: [],
 }
 
 const reducers = (state = initialStates, actions) => {
@@ -47,9 +47,9 @@ const reducers = (state = initialStates, actions) => {
                 draft.fontSize = actions.payload
             })            
         }    
-        case mainTextAction.SET_MEMO_DATA: {
+        case mainTextAction.SET_WEEK_DATA_LIST: {
             return produce(state, draft => {
-                draft.memoData = actions.payload
+                draft.weekDataList = actions.payload
             })            
         }
 

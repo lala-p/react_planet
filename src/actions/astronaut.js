@@ -4,7 +4,7 @@ export const SET_ASTRONAUT_PASSWORD = 'SET_ASTRONAUT_PASSWORD';
 export const SET_MEALMENU           = 'SET_MEALMENU';
 export const ADD_MEALMENU           = 'ADD_MEALMENU';
 export const DELETE_MEALMENU        = 'DELETE_MEALMENU';
-
+export const SET_ONE_WEEK           = 'SET_ONE_WEEK';
 
 export const setAstronautId = (id) => {
     return {
@@ -48,3 +48,9 @@ export const deleteMealMenu = (menu) => {
     }
 };
 
+export const setOneWeek = (oneWeek) => {
+    return {
+        type: SET_ONE_WEEK,
+        payload: oneWeek, 
+    }
+};

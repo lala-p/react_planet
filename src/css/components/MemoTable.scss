@@ -1,1 +1,78 @@
 @import '../base.scss';
+
+.plan-box {
+    .plan-state-box {
+        background-color: red;
+    }
+
+    .plan-info-box {
+        background-color: orange;
+    }
+
+    .plan-conclusion-box {
+        background-color: yellow;
+    }
+}
+
+.MemoTable {
+
+    .week-data-box-container {
+    
+        display: flex;
+        width: 84rem;
+        height: 53rem;
+        overflow: scroll;
+        margin: auto;
+        
+        .week-data-box {
+            .box-container {
+                display: flex;
+                height: 10rem;
+                align-items: center;
+                background-color: green;
+                
+                .day-memo-box {
+                    width: 15rem;
+                    height: 9rem;
+                    margin-left: 0.7rem;
+                    background-color: skyblue;
+                
+                
+                
+                }
+            
+
+            }
+
+            .line {
+                height: 1.5rem;
+                background-color: steelblue;
+            }
+
+        }    
+
+    }
+
+    // .day-data-modal{
+    //     content: {
+    //         top: 10rem;
+    //         left: 1rem;
+    //         right: auto;
+    //         bottom: auto;
+    //         margin-right: 1rem;
+    //         transform: translate(1rem, 1rem);            
+    //         backgroundColor: 'blue';
+    //     }
+    // }
+
+    .desc {
+        display: flex;
+        flex-direction: column-reverse;
+    }
+
+    .asc {
+        display: flex;
+        flex-direction: column;
+    }
+
+}

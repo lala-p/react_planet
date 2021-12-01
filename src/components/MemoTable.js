@@ -1,21 +1,54 @@
-import React, { useCallback, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import ReactModal from 'react-modal';
 
 import * as memoAction from '../actions/memo';
 
+
+// memo 
+// memoBox 
+
+// etcListBox 
+// planListBox 
+
+// planStateBox
+// planInfoBox
+// planConclusionBox
+
+
+// oBox 
+// xBox 
+// aBox 
+// conclusionBox
+
+// const memo = (list) => {
+//     const box = dataList.map((data) => {
+
+//         return (
+//             <div></div>
+//         )
+//     })
+
+//     return box;
+// }
+
+
+
+
+
+
+
 const MemoBoard = () => {
 
     const dispatch = useDispatch();
-    const memoData = useSelector((state) => state.mainText.memoData)
+    const weekDataList = useSelector((state) => state.mainText.weekDataList)
 
     const weekBoxLineUp = useSelector((state) => state.memo.weekBoxLineUp);
     const memoBoxLineUp = useSelector((state) => state.memo.memoBoxLineUp);
     const memoBoxReverse = useSelector((state) => state.memo.memoBoxReverse)
 
     const week = useSelector((state) => state.astronaut.week)
-
     
     const [open, setOpen] = useState(false)
     const [memoData2, setMemoData2] = useState(false)
@@ -34,19 +67,17 @@ const MemoBoard = () => {
                     case 0:
                         break;
                     case 1:
-
                         let oneWeek = [false, false, false, false, false]
-
+                        
                         for (let index = 0; index < lineUp.length; index++) {
                             oneWeek[lineUp[index]['day']-1] = lineUp[index]                        
                         }
-                            
                         lineUp = oneWeek
                         
                         break; 
                     
-                    
-                        default: 
+        
+                    default: 
                         break;     
                 }
 
@@ -68,7 +99,7 @@ const MemoBoard = () => {
             console.log(box.length)
 
             return box;
-        }, [memoData, memoBoxLineUp, memoBoxReverse]
+        }, [weekDataList, memoBoxLineUp, memoBoxReverse]
     ) 
 
     const memo = (memo) => {
@@ -166,14 +197,13 @@ const MemoBoard = () => {
                 planText = planText.replace(x, "")
             }
 
-            let conclusion = planText. split(/=>/g)
+            let conclusion = planText.split(/=>/g)
             conclusion.shift()
             
             for (let index = 0; index < conclusion.length; index++) {
                 planText = planText.replace(/=>/g, "")
                 planText = planText.replace(conclusion[index], "")
             }
-
 
 
             let a = planText.split(/\t{3}-{1}/g)
@@ -299,9 +329,9 @@ const MemoBoard = () => {
                 <br />
 
                 <div style={{width: "1370px", height: "900px", overflow: "scroll", margin: "auto"}}>
-                { memoData ? 
+                { weekDataList ? 
                     <div style={weekBoxLineUpStyle()}>
-                        {weekTextBox(memoData)}
+                        {weekTextBox(weekDataList)}
                     </div>
                     :
                     <div>???</div>

@@ -10,6 +10,7 @@ const initialStates = {
     astronautPassword : "",
     mealMenu          : ['김밥', '하하'],
     week              : ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"],
+    oneWeek           : {1: false, 2: false, 3: false, 4: false, 5: false},
 
 }
 
@@ -51,6 +52,11 @@ const reducers = (state = initialStates, actions) => {
             }
             
             draft.mealMenu = menu
+            })
+        }
+        case astronautAction.SET_ONE_WEEK: {
+            return produce(state, draft => {
+                draft.oneWeek = actions.payload
             })
         }
 

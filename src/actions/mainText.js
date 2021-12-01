@@ -4,7 +4,7 @@ export const SET_UPDATE_TIME              = 'SET_UPDATE_TIME';
 export const SET_TEXT_LENGTH              = 'SET_TEXT_LENGTH';
 export const SET_REMOVE_SPACE_TEXT_LENGTH = 'SET_REMOVE_SPACE_TEXT_LENGTH'; 
 export const SET_FONT_SIZE                = 'SET_FONT_SIZE';
-export const SET_MEMO_DATA                = 'SET_MEMO_DATA'; 
+export const SET_WEEK_DATA_LIST           = 'SET_WEEK_DATA_LIST'; 
 
 
 export const setMainText = (text) => {
@@ -49,9 +49,9 @@ export const setFontSize = (size) => {
     }    
 }
 
-export const setMemoData = (data) => {
+export const setWeekDataList = (dataList) => {
     return {
-        type: SET_MEMO_DATA,
-        payload: data,
+        type: SET_WEEK_DATA_LIST,
+        payload: dataList,
     }
 }

@@ -5,7 +5,8 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import * as modeAction from '../actions/mode';
 
 import MainBoard from '../components/MainBoard';
-import MemoTable from '../components/MemoTable';
+// import MemoTable from '../components/MemoTable';
+import MemoTable2 from '../components/MemoTable2';
 import MainCommandTable from '../components/MainCommandTable';
 import MainGuide from '../components/MainGuide';
 import Help from '../components/Help';
@@ -22,7 +23,7 @@ const MainPage = () => {
             case 0:
                 return null
             case 1: 
-                return <MemoTable></MemoTable>
+                return <MemoTable2></MemoTable2>
             default:
                 return <Help></Help>
 

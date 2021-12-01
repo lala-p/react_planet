@@ -108,7 +108,6 @@ const MainBoard = () => {
             ],
             colors: {
                 'editor.foreground': '#FFFFFF',
-                // 'editor.background': '#202124',
             }
         });
         monaco.editor.setTheme('planet-theme')
@@ -139,59 +138,127 @@ const MainBoard = () => {
         fontSize: fontSize,
     })
 
-    const getMemoData = useCallback(
+    const dispatchWeekDataList = useCallback(
         (text) => {
-            let weekTextArr = []
+            let weekTextList = []
 
             if (text.length != 0) {
-                weekTextArr = text.split(findVer01['baseLine']['weekLine'])
+                weekTextList = text.split(findVer01['global']['baseLine']['weekLine'])
             }
 
-            for (let index = 0; index < weekTextArr.length; index++) {
-                let memoText = weekTextArr[index]
-                let memoArr = memoText.split(findVer01['baseLine']['dateEndLine'])
-                memoArr.pop()
+            let weekDataList = new Array(weekTextList.length)
 
-                for (let index2 = 0; index2 < memoArr.length; index2++) {
+            for (let index = 0; index < weekTextList.length; index++) {
+                let weekText = weekTextList[index]
+                let dayTextList = weekText.split(findVer01['global']['baseLine']['dateEndLine'])
+                dayTextList.pop()
 
-                    let memo_copy = memoArr[index2]
+                let dayDataList = new Array(dayTextList.length)
 
-                    let memoData = {
+                for (let index2 = 0; index2 < dayTextList.length; index2++) {
+                    let dayText = dayTextList[index2]
+
+                    let dayData = {
                         date: "",
                         day: -1,
-                        plan: [],
+                        planList: [],
                         etc: [],
+                        graffiti: "", 
                     }
 
-                    let date = ""
-                    let day = ""
-                    let plan = []
-                    let etc = []
+                    let date = dayText.match(findVer01['global']['find']['date'])
+                    dayData['date'] = date[0]
 
-                    date = memo_copy.match(findVer01['date'])
-                    memoData['date'] = date[0]
+                    let day = new Date(date).getDay()
+                    dayData['day'] = day
 
-                    day = new Date(date).getDay()
-                    memoData['day'] = day
-
-                    etc = memo_copy.split(findVer01['baseLine']['etcLine'])
+                    let etc = dayText.split(findVer01['global']['rules']['etc'])
                     etc.shift()
-                    memoData['etc'] = etc
+                    dayData['etc'] = etc
                     for (let index3 = 0; index3 < etc.length; index3++) {
-                        memo_copy = memo_copy.replace('+' + memoData['etc'][index3], "")
+                        dayText = dayText.replace('+' + etc[index3], "")
                     }
 
-                    plan = memo_copy.split(findVer01['baseLine']['planLine'])
-                    plan.shift()
-                    memoData['plan'] = plan
+                    let graffiti = dayText.split(findVer01['global']['rules']['graffiti'])
+                    graffiti.shift()
+                    dayText = dayText.replace(findVer01['global']['rules']['graffiti'], "")
+                    for (let index4 = 0; index4 < graffiti.length; index4++) {
+                        dayText = dayText.replace(graffiti[index4])
+                    }
 
-                    memoArr[index2] = memoData
+                    // let graffiti = dayText.match(findVer01['global']['find']['graffiti'])
+                    // if (graffiti) {
+                    //     dayData['graffiti'] = graffiti[0]
+                    //     dayText = dayText.replace(findVer01['global']['find']['graffiti'], "")
+                    //     dayText = dayText.replace(graffiti[0], "") 
+
+                    // } else {
+                    //     dayData['graffiti'] = []
+                    // }
+
+
+                    let planTextList = dayText.split(findVer01['global']['rules']['plan'])
+                    planTextList.shift()
+
+                    let planDataList = new Array(planTextList.length)
+                    for (let index5 = 0; index5 < planTextList.length; index5++) {
+                        let planText = planTextList[index5]
+                        
+                        let planData = {
+                            plan: "",
+                            state: 0,
+                            info: [],
+                            conclusion: [], 
+                        }
+
+                        let info = planText.split(findVer01['global']['rules']['info'])
+                        info.shift()
+                        planData['info'] = info 
+                        planText = planText.replace(findVer01['global']['rules']['info'], "")
+                        for (let index6 = 0; index6 < info.length; index6++) {
+                            planText = planText.replace(info[index6], "")
+                        }
+                                                
+                        
+                        let conclusion = planText.split(findVer01['global']['rules']['conclusion'])
+                        conclusion.shift()
+                        planData['conclusion'] = conclusion
+                        planText = planText.replace(findVer01['global']['rules']['conclusion'], "")
+                        for (let index7 = 0; index7 < conclusion.length; index7++) {
+                            planText = planText.replace(conclusion[index7], "")
+                        }
+                                                
+                        let state = 0
+                        if (findVer01['global']['find']['planSuccess'].test(planText)) {
+                            state = 1
+                            planText = planText.replace(findVer01['global']['find']['planSuccess'], "")
+                        } else if (findVer01['global']['find']['planFailed'].test(planText)) {
+                            state = 2
+                            planText = planText.replace(findVer01['global']['find']['planFailed'], "")
+                        } 
+                        else if (findVer01['global']['find']['planDelay'].test(planText)) {
+                            state = 3
+                            planText = planText.replace(findVer01['global']['find']['planDelay'], "")
+                        } else if (findVer01['global']['find']['planSomeday'].test(planText)) {
+                            state = 4
+                            planText = planText.replace(findVer01['global']['find']['planSomeday'], "")
+                        }
+                        
+                        planData['state'] = state
+                        planData['plan'] = planText
+
+                        planDataList[index5] = planData
+                    }
+
+                    dayData['planList'] = planDataList
+                    dayDataList[index2] = dayData
                 }
-                weekTextArr[index] = memoArr
+                weekDataList[index] = dayDataList
             }
 
-            dispatch(mainTextAction.setMemoData(weekTextArr))
-
+            console.log(weekDataList)
+            dispatch(mainTextAction.setWeekDataList(weekDataList))
+    
         }, [saveTime]
     )
 
@@ -206,17 +273,17 @@ const MainBoard = () => {
                     dispatch(mainTextAction.setMainText(editorRef.current.getValue()))
                     dispatch(mainTextAction.setTextLength(editorRef.current.getValue().length))
                     dispatch(mainTextAction.setRemoveSpaceTextLength(editorRef.current.getValue().replace(/\s/g, "").length))
-                    getMemoData(editorRef.current.getValue())
+                    dispatchWeekDataList(editorRef.current.getValue())
 
 
                     let url = "http://localhost:3001/main/saveText";
 
-                    const dataBox = {
+                    const planTextBox = {
                         text: editorRef.current.getValue(),
                     }
 
                     axios
-                        .post(url, dataBox)
+                        .post(url, planTextBox)
                         .then((response) => {
                             dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
                         })
@@ -225,7 +292,6 @@ const MainBoard = () => {
                             dispatch(messageAction.addMsgHistory('gu:Save failed.'))
                         })
                         .finally(() => {
-                            console.log(mainText)
                             dispatch(messageAction.setReadOnly(false))
                         })
                     
