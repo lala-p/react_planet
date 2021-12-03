@@ -31,7 +31,7 @@ const CommandEvent = () => {
     const mode = useSelector((state) => state.mode.mode)
 
     const [commandList, setCommandList] = useState({})
-
+    
     // ===================================================
     // 서버 연결 확인하기
     const pingCmd = useCallback(
@@ -56,6 +56,8 @@ const CommandEvent = () => {
         }, [commandCounter['ping']]
     )
 
+    // ===================================================
+    // ?????????
     const updateCmd = useCallback(
         () => {
             dispatch(mainTextAction.setUpdateTime(new Date()))
@@ -185,7 +187,6 @@ const CommandEvent = () => {
         () => {
 
             let that_date = runCommandData['parameter']
-            console.log(runCommandData['parameter'])
 
             let year  = that_date[0];
             let month = that_date[1];
@@ -338,6 +339,8 @@ const CommandEvent = () => {
         }, [runCommandData]
     )
 
+    
+
     const IsCommand = (command) => {
 
         let commandType = command.match(/[a-zA-z\.+\?+]+|\(.+\)/g)
@@ -376,9 +379,10 @@ const CommandEvent = () => {
     useEffect(() => {
         if (runCommandData['commandType'] != undefined) {
             commandInit()
+            console.log("commandInit")
         }
 
-    }, [runCommandData])
+    }, [commandCounter])
 
 
     useEffect(() => {

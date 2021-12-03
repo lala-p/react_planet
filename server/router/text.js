@@ -6,3 +6,7 @@ const router = express.Router();
 router.use(express.urlencoded({ extended: true }));
 router.use(express.json());
 router.use(cors());
+
+
+
+module.exports = router;

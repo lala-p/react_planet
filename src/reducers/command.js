@@ -61,16 +61,13 @@ const reducers = (state = initialStates, actions) => {
                 draft.sendCommand['command'] = actions.payload1
                 draft.sendCommand['when']    = actions.payload2
                 draft.sendCommand['say']     = actions.payload3
-
             })
         }
         case commandAction.RUN_COMMAND: {
             return produce(state, draft => {
-
                 draft.runCommandData['commandType'] = actions.payload1
                 draft.runCommandData['parameter']   = actions.payload2
                 draft.runCommandData['say']         = actions.payload3
-
             })
         }
         case commandAction.COUNT_COMMAND: {

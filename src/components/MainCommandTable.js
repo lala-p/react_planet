@@ -42,14 +42,12 @@ const MainCommandTable = () => {
                         dispatch(messageAction.addMsgHistory('me:' + userInput))
                         
                         if (userInput.replace(/\s/g, "")) {
-                            console.log(userInput)
                             dispatch(commandAction.sendCommand(userInput, true))
                         }
 
                     }
 
                     if (userInput.replace(/\s/g, "") && userInput != inputHistory[inputHistory.length - 1]) {
-                        console.log("2", userInput)
                         setInputHistory(inputHistory.concat(userInput))
                         setInputHistoryCurrentAddress(inputHistory.length + 1)
 
