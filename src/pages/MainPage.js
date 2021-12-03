@@ -10,6 +10,7 @@ import MemoTable2 from '../components/MemoTable2';
 import MainCommandTable from '../components/MainCommandTable';
 import MainGuide from '../components/MainGuide';
 import Help from '../components/Help';
+import CommandEvent from '../components/CommandEvent';
 
 
 const MainPage = () => {
@@ -43,10 +44,10 @@ const MainPage = () => {
             <div style={{display: "flex", paddingTop: "20px", paddingLeft:"20px"}}>
                 <div style={{width: "320px"}}>
                     <div>
-                        
                         <MainGuide></MainGuide>
                     </div>
                     <div>
+                        <CommandEvent />
                         <MainCommandTable></MainCommandTable>
                     </div>
 

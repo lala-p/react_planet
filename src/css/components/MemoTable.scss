@@ -1,18 +1,5 @@
 @import '../base.scss';
 
-.plan-box {
-    .plan-state-box {
-        background-color: red;
-    }
-
-    .plan-info-box {
-        background-color: orange;
-    }
-
-    .plan-conclusion-box {
-        background-color: yellow;
-    }
-}
 
 .MemoTable {
 
@@ -53,18 +40,6 @@
 
     }
 
-    // .day-data-modal{
-    //     content: {
-    //         top: 10rem;
-    //         left: 1rem;
-    //         right: auto;
-    //         bottom: auto;
-    //         margin-right: 1rem;
-    //         transform: translate(1rem, 1rem);            
-    //         backgroundColor: 'blue';
-    //     }
-    // }
-
     .desc {
         display: flex;
         flex-direction: column-reverse;
@@ -75,4 +50,19 @@
         flex-direction: column;
     }
 
+}
+
+
+.plan-box {
+    .plan-state-box {
+        background-color: red;
+    }
+
+    .plan-info-box {
+        background-color: orange;
+    }
+
+    .plan-conclusion-box {
+        background-color: yellow;
+    }
 }

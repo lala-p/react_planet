@@ -1,433 +1,82 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useCookies } from 'react-cookie';
 
-import axios from 'axios';
-import random from 'random';
-
-import * as mainTextAction from '../actions/mainText';
-import * as astronautAction from '../actions/astronaut';
 import * as messageAction from '../actions/message';
-import * as modeAction from '../actions/mode';
+import * as commandAction from '../actions/command';
+
 import { useHotkeys } from 'react-hotkeys-hook';
+
 
 const MainCommandTable = () => {
 
     const dispatch = useDispatch();
-    const mainText = useSelector((state) => state.mainText.mainText)
-    const saveTime = useSelector((state) => state.mainText.saveTime)
-
-    const astronautId       = useSelector((state) => state.astronaut.astronautId)
-    const astronautNickname = useSelector((state) => state.astronaut.astronautNickname)
-    const astronautPassword = useSelector((state) => state.astronaut.astronautPassword)
-    const mealMenu          = useSelector((state) => state.astronaut.mealMenu)
-    const week              = useSelector((state) => state.astronaut.week)
 
     const msgHistory  = useSelector((state) => state.message.msgHistory)
     const guideScript = useSelector((state) => state.message.guideScript)
     const guideTempo  = useSelector((state) => state.message.guideTempo)
     const readOnly    = useSelector((state) => state.message.readOnly)    
 
-    const mode = useSelector((state) => state.mode.mode)
-
     const [cookie, setCookie, removeCookie] = useCookies()    
 
     const tableRef = useRef(null)    
     const inputRef = useRef(null)
     const [userInput, setUserInput] = useState("")
-    const [loading, setLoading] = useState(true)
 
-    const [cmdHistory, setCmdHistory] = useState([])
-    const [cmdAddr, setCmdAddr] = useState(-100)
-    
-    const [cmdScript, setCmdScript] = useState({})
+    const [inputHistory, setInputHistory] = useState([])
+    const [inputHistoryCurrentAddress, setInputHistoryCurrentAddress] = useState(-100)
 
-    // ===================================================
-    // 문자열 길이만큼 특정문자로 채우기
-    const wordFill = (str, len, word) => {
-
-        let returnWord = str;
-
-        for (let index = str.length; index < len; index++) {
-            returnWord = word + returnWord;
-        }
-
-        return returnWord;
-    }
-    // ===================================================
-    // 서버 연결 확인하기
-    const ping = useCallback(
-        () => {
-
-            dispatch(messageAction.setReadOnly(true))
-            
-            let url = "http://localhost:3001/";
-    
-            axios
-                .get(url)
-                .then((response) => {
-                    console.log(response.data)
-                    dispatch(messageAction.addMsgHistory('gu:connect'))
-                })
-                .catch((error) => {
-                    console.log(error)
-                    dispatch(messageAction.addMsgHistory('gu:connect failed'))
-                })
-                .finally(() => {
-                    setLoading(false)
-                    dispatch(messageAction.setReadOnly(false))
-                })
-
-            return undefined;
-        }, [msgHistory]
-    )
-
-    const update = useCallback(
-        () => {
-            dispatch(mainTextAction.setUpdateTime(new Date()))
-        }, [msgHistory]
-    )
-
-    // ===================================================
-    // axios post => server cosmic_dust/planet 덮어씌우기
-    const save = useCallback(
-        () => {
-            dispatch(mainTextAction.setSaveTime(new Date()))
-
-            return undefined;
-        }, [msgHistory]
-    )
-
-    // ===================================================
-    // axios get => return server cosmic_dust/planet
-    const getMainText = useCallback(
-        () => {
-
-            dispatch(messageAction.setReadOnly(true))
-            dispatch(messageAction.addMsgHistory('gu:loading...'))
-
-            let url = "http://localhost:3001/main/getText";
-
-            axios
-                .get(url)
-                .then((response) => {
-
-                    console.log(response.data)
-                    dispatch(mainTextAction.setMainText(response.data))
-                    dispatch(messageAction.addMsgHistory('gu:!@!@!@!@!@!'))
-                })
-                .catch((error) => {
-                    console.log(error)
-                    dispatch(messageAction.addMsgHistory('gu:failed'))
-                    const sec = new Date().getSeconds().toString()
-                    dispatch(mainTextAction.setMainText(sec))
-                
-                })
-                .finally(() => {
-                    dispatch(messageAction.setReadOnly(false))
-                })
-
-            return undefined;
-        }, [msgHistory]
-    )
-
-    // ===================================================
-    // mainContent에 있는 component 바꾸기/ mode 바꾸기
-    const setMode = useCallback(
-        (changeMode) => {
-
-            let notExist = true;
-
-            for (let index = 0; index < mode.length; index++) {
-                if (changeMode[0] == mode[index]) {
-                    dispatch(modeAction.setMode(index))
-                    notExist = false
-                    return undefined;
-                }
-            }
-
-            if (notExist) {
-                const script = [changeMode[0] + ' mode does not exist.']
-                return script;
-            }
-        }, [msgHistory]
-    )
-    // ===================================================
-    // return 현재 시간 
-    // ex) PM 02:08:33
-    const getNow = useCallback(
-        () => {
-
-            let getToday = new Date();
-
-            let hours = getToday.getHours();
-            let ampm = hours < 12 ? '  AM' : '  PM';
-
-            hours = hours <= 12 ? hours : hours - 12;
-            hours = wordFill(hours.toString(), 2, '0')
-
-            let minutes = wordFill(getToday.getMinutes().toString(), 2, '0');
-            let seconds = wordFill(getToday.getSeconds().toString(), 2, '0');
-
-            let now = ampm + "  " + hours + ":" + minutes + ":" + seconds;
-            now = [now]
-
-            return now;
-
-        }, [msgHistory]
-    )
-    // ===================================================
-    // return 현재 날짜
-    // ex) 2021-08-30 THU
-    const getToday = useCallback(
-        () => {
-
-            let today = new Date();
-            let year = today.getFullYear();
-            let month = wordFill((today.getMonth() + 1).toString(), 2, '0');
-            let date = wordFill(today.getDate().toString(), 2, '0');
-            let day = week[today.getDay()];
-
-            today = year + "-" + month + "-" + date + " " + day;
-            today = [today]
-
-            return today;
-        }, [msgHistory]
-    )
-    
-    // ===================================================
-    // input : get week (year, month, date)
-    // return 특적 날짜의 요일 
-    // ex) 2021-08-30 was... / THU
-    const getWeek = useCallback(
-        (that_date) => {
-
-            let year  = that_date[0];
-            let month = that_date[1];
-            let date  = that_date[2];
-                
-            const that_day = new Date();
-            that_day.setFullYear(year)
-            that_day.setMonth(month-1)
-            that_day.setDate(date)
-            
-            year = wordFill(that_day.getFullYear().toString(), 4, '0')
-            month = wordFill((that_day.getMonth() + 1).toString(), 2, '0')
-            date = wordFill(that_day.getDate().toString(), 2, '0')
-
-            let script = [];
-
-            script[0] = ''
-            script[1] = week[that_day.getDay()]
-
-            const now = new Date();
-
-
-            if (now.getFullYear() <= that_day.getFullYear() && now.getMonth() <= that_day.getMonth() && now.getDate() < that_day.getDate()) {
-                script[0] = `${year}-${month}-${date} is...`;
-
-            } else if (now.getFullYear() === that_day.getFullYear() && now.getMonth() === that_day.getMonth() && now.getDate() === that_day.getDate()) {
-                script[0] = `${year}-${month}-${date} today is...`;
-
-            } else if (that_day.getFullYear() < 0) {
-                script[0] = `B.C. &nbsp;${wordFill(Math.abs(that_day.getFullYear()).toString(), 4, '0')}-${month}-${date} was...`;
-
-            } else {
-                script[0] = `${year}-${month}-${date} was...`;
-            }
-
-            return script;
-
-        }, [msgHistory]
-    ) 
-    // ===================================================
-    // return mealMenu
-    const getMealMenu = useCallback(
-        () => {
-
-            let script = [];
-
-            for (let index = 0; index < mealMenu.length; index++) {
-                script = script.concat('[' + (index + 1) + '] ' + mealMenu[index])
-            }
-
-            return script;
-
-        }, [msgHistory]
-    )
-
-    // ===================================================
-    // return random으로 mealMenu 중 하나를 뽑음
-    const randomMeal = useCallback(
-        () => {
-
-            const ranInt = random.int(0, mealMenu.length - 1)
-            let meal = mealMenu[ranInt]
-            meal = [meal]
-
-            return meal;
-
-        }, [msgHistory]
-    )
-
-    // ===================================================
-    // return meal로 array를 받은 후, mealMenu 요소를 추가함.
-    const addMealMenu = useCallback(
-        (meal) => {
-
-            dispatch(astronautAction.addMealMenu(meal))
-            const script = ['Completed.']
-
-            return script;
-
-        }, [msgHistory]
-    )
-    // ===================================================
-    // return meal로 array를 받은 후, mealMenu 요소를 삭제함.
-    const deleteMealMenu = useCallback(
-        (meal) => {
-
-            dispatch(astronautAction.deleteMealMenu(meal))
-            const script = ['Completed.']
-
-            return script;
-
-        }, [msgHistory]
-    )
-    // ===================================================
-    const commandInit = useCallback(
-        () => {
-
-            const script = {}
-
-            script['haha'] = () => ["haha!@!", "hoho", "asdfasdf"]
-            script['hi'] = () => [`hi, ${week[2]}`, "nice meet you"]
-            script['hello'] = () => ["it's me..."]
-
-            script['now'] = () => getNow()
-            script['today'] = () => getToday()
-
-            script['ping'] = () => ping()
-            script['update'] = () => update()
-
-            script['get'] = {}
-            script['get']['week'] = (that_date) => getWeek(that_date)
-            script['get']['text'] = () => getMainText()
-
-            script['set'] = {}
-            script['set']['mode'] = (mode) => setMode(mode)
-
-            script['save'] = {}
-            script['save']['text'] = () => save()
-
-            script['random'] = {}
-            script['random']['meal'] = () => randomMeal()
-
-            script['show'] = {}
-            script['show']['meal_menu'] = () => getMealMenu()
-            script['show']['test'] = (haha) => haha;
-
-            script['add'] = {}
-            script['add']['meal_menu'] = (meal) => addMealMenu(meal)
-
-            script['delete'] = {}
-            script['delete']['meal_menu'] = (meal) => deleteMealMenu(meal)
-
-
-            setCmdScript(script)
-
-        }, [msgHistory])
-
-    // ===================================================
-    const command = useCallback(
-        (cmd) => {
-
-            let returnData = null;
-            let cmdArr = cmd;
-
-            try {
-                if (cmdArr.length == 1) {
-                    returnData = cmdScript[cmd[0]]();
-                } else {
-                    returnData = cmdScript[cmd[0]];
-                    // console.log("cmd : " + cmd)
-                    const pr = /^\(.*\)$/g;
-
-                    for (let index = 1; index < cmdArr.length; index++) {
-                        if (pr.test(cmdArr[index])) {
-                            let prameterArr = cmdArr[index];
-                            prameterArr = prameterArr.replace(/\(|\)/g, "")
-                            prameterArr = prameterArr.split(/,/g)
-
-                            for (let index = 0; index < prameterArr.length; index++) {
-                                prameterArr[index] = prameterArr[index].replace(/^\s+|\s+$/gm, '')
-                            }
-                            returnData = returnData(prameterArr)
-                            return returnData;
-
-                        } else {
-                            returnData = returnData[cmdArr[index]]
-                        }
-                    }
-
-                    returnData = returnData()
-                }
-
-            } catch (error) {
-                return undefined;
-            }
-
-            return returnData;
-        }, [msgHistory]
-    )
     // ===================================================
     const keyDownHandler = (e) => {
-        switch (e.keyCode) {
-            case 9: // tab
-                e.preventDefault();
-                setUserInput(userInput + '\t')
-                break;
-            case 13: // enter
-                if (userInput == "clear") {
-                    dispatch(messageAction.clearMsgHistory())
-                } else {
-                    console.log(userInput)
-                    dispatch(messageAction.addMsgHistory('me:' + userInput))
+        if (!readOnly) {
+            switch (e.keyCode) {
+                case 9: // tab
+                    e.preventDefault();
+                    setUserInput(userInput + '\t')
+                    break;
+                case 13: // enter
+                    if (userInput == "clear") {
+                        dispatch(messageAction.clearMsgHistory())
+                    } else {
+                
+                        dispatch(messageAction.addMsgHistory('me:' + userInput))
+                        
+                        if (userInput.replace(/\s/g, "")) {
+                            console.log(userInput)
+                            dispatch(commandAction.sendCommand(userInput, true))
+                        }
 
-                    const sendCmd = userInput.match(/[a-zA-z\.+\?+]+|\(.+\)/g);
-                    const cmd = command(sendCmd)
-
-                    if (cmd !== undefined) {
-                        dispatch(messageAction.setGuideScript(cmd))
                     }
-                }
 
-                if (userInput.length != 0 && userInput != cmdHistory[cmdHistory.length - 1]) {
-                    setCmdHistory(cmdHistory.concat(userInput))
-                    setCmdAddr(cmdHistory.length + 1)
+                    if (userInput.replace(/\s/g, "") && userInput != inputHistory[inputHistory.length - 1]) {
+                        console.log("2", userInput)
+                        setInputHistory(inputHistory.concat(userInput))
+                        setInputHistoryCurrentAddress(inputHistory.length + 1)
 
-                } else {
-                    setCmdAddr(cmdHistory.length)
-                }
+                    } else {
+                        setInputHistoryCurrentAddress(inputHistory.length)
+                    }
 
-                break;
-            case 27: // esc
-                inputRef.current.blur()
-                break;
-            case 38: // arrow up
-                if (cmdAddr > 0) {
-                    setCmdAddr(cmdAddr - 1)
-                }
-                break;
-            case 40: // arrow down
-                if (cmdAddr < cmdHistory.length) {
-                    setCmdAddr(cmdAddr + 1)
-                }
-                break;
+                    break;
+                case 27: // esc
+                    inputRef.current.blur()
+                    break;
+                case 38: // arrow up
+                    if (inputHistoryCurrentAddress > 0) {
+                        setInputHistoryCurrentAddress(inputHistoryCurrentAddress - 1)
+                    }
+                    break;
+                case 40: // arrow down
+                    if (inputHistoryCurrentAddress < inputHistory.length) {
+                        setInputHistoryCurrentAddress(inputHistoryCurrentAddress + 1)
+                    }
+                    break;
 
-            default:
+                default:
 
-                break;
+                    break;
+            }
+
         }
     }
     // ===================================================
@@ -435,7 +84,7 @@ const MainCommandTable = () => {
         setTimeout(() => {
             dispatch(messageAction.addMsgHistory('gu:' + say))
             dispatch(messageAction.shiftGuideScript())
-            dispatch(messageAction.setReadOnly(false))
+
         }, guideTempo)
     }
 
@@ -448,31 +97,31 @@ const MainCommandTable = () => {
     // ===================================================
     // useEffect -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     useEffect(() => {
-        ping()
+        dispatch(commandAction.sendCommand('ping', true))
     }, [])
 
     useEffect(() => {
 
-        if (cmdAddr == cmdHistory.length) {
+        if (inputHistoryCurrentAddress == inputHistory.length) {
             setUserInput("")
         } else {
-            setUserInput(cmdHistory[cmdAddr])
+            setUserInput(inputHistory[inputHistoryCurrentAddress])
         }
 
-    }, [cmdAddr])
+    }, [inputHistoryCurrentAddress])
 
     useEffect(() => {
 
         if (guideScript && guideScript.length != 0) {
             guideSay(guideScript[0])
             dispatch(messageAction.setReadOnly(true))
+        } else {
+            dispatch(messageAction.setReadOnly(false))
         }
 
     }, [guideScript])
 
     useEffect(() => {
-
-        commandInit()
 
         const scroll = tableRef.current.scrollHeight - tableRef.current.clientHeight;
         tableRef.current.scrollTo(0, scroll)
@@ -492,30 +141,14 @@ const MainCommandTable = () => {
         <div className="MainCommandTable">
             <div>
                 <div ref={tableRef} style={{display: "flex", width: "320px", height: "550px", backgroundColor: "coral", overflow: "auto", flexDirection: "column-reverse"}}>
-                {loading ? 
-                    <div>
-                        Loading....
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />
-                        <br />            
-                    </div>                    
-                    :
                     <div>
                         {msgList}
-                    </div>
-                    
-                }
-        
+                    </div>        
                 </div>
 
-                <input ref={inputRef} type="text" style={{width: "310px", height: "25px"}} onKeyDown={keyDownHandler} value={userInput} onChange={(e)=> setUserInput(e.target.value)} readOnly={readOnly ? readOnly : null} />
+                <input ref={inputRef} type="text" style={{width: "310px", height: "25px"}} onKeyDown={keyDownHandler} value={userInput} onChange={(e)=> setUserInput(e.target.value)} readOnly={readOnly} />
 
-                {readOnly ? 
+                { readOnly ? 
                     <div>readOnly true</div>    
                 :
                     <div>readOnly false</div>

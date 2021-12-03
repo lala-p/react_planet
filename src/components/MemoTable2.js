@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
 
-import ReactModal from 'react-modal';
+import ReactModal from 'react-modal'; 
 
 
 import '../css/components/MemoTable.scss';
@@ -133,17 +133,6 @@ const MemoTable2 = () => {
                 <div className={"day-data-modal"}>
                 { dayDataModalData ? 
                     <ReactModal
-                        // style={{
-                        //     content: {
-                        //         top: '10rem',
-                        //         left: '1rem',
-                        //         right: 'auto',
-                        //         bottom: 'auto',
-                        //         marginRight: '1rem',
-                        //         transform: 'translate(1rem, 1rem)',
-                        //         backgroundColor: 'white'
-                        //     },
-                        // }}
                         isOpen={dayDataModalOpen}
                         onRequestClose={()=>setDayDataModalOpen(false)}
                         contentLabel="dayDataModal"

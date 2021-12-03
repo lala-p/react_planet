@@ -6,39 +6,6 @@ import ReactModal from 'react-modal';
 import * as memoAction from '../actions/memo';
 
 
-// memo 
-// memoBox 
-
-// etcListBox 
-// planListBox 
-
-// planStateBox
-// planInfoBox
-// planConclusionBox
-
-
-// oBox 
-// xBox 
-// aBox 
-// conclusionBox
-
-// const memo = (list) => {
-//     const box = dataList.map((data) => {
-
-//         return (
-//             <div></div>
-//         )
-//     })
-
-//     return box;
-// }
-
-
-
-
-
-
-
 const MemoBoard = () => {
 
     const dispatch = useDispatch();

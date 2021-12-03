@@ -2,7 +2,6 @@ import produce from 'immer';
 
 import * as astronautAction from '../actions/astronaut';
 
-
 const initialStates = {
 
     astronautId       : "",

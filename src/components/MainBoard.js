@@ -5,7 +5,8 @@ import { useHistory } from 'react-router-dom';
 
 import Editor from "@monaco-editor/react";
 import ToggleSwitch from 'react-switch';
-import axios from 'axios';
+
+import { saveMainText } from '../api/mainTextApi';
 
 import * as mainTextAction from '../actions/mainText';
 import * as messageAction from '../actions/message';
@@ -276,24 +277,21 @@ const MainBoard = () => {
                     dispatchWeekDataList(editorRef.current.getValue())
 
 
-                    let url = "http://localhost:3001/main/saveText";
-
-                    const planTextBox = {
+                    const planTextData = {
                         text: editorRef.current.getValue(),
                     }
 
-                    axios
-                        .post(url, planTextBox)
-                        .then((response) => {
+                    saveMainText(
+                        planTextData,
+                        (response) => {
                             dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
-                        })
-                        .catch((error) => {
+                        },
+                        (error) => {
                             console.log(error)
                             dispatch(messageAction.addMsgHistory('gu:Save failed.'))
-                        })
-                        .finally(() => {
-                            dispatch(messageAction.setReadOnly(false))
-                        })
+                        },
+                        () => { dispatch(messageAction.setReadOnly(false)) },
+                    )
                     
                 
                 } else {

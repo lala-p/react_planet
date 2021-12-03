@@ -7,7 +7,7 @@ const initialStates = {
 
     mode: [
         'board', 
-        'MemoTable', 
+        'memoTable', 
         'help',
     ],
     currentMode: 0,
