@@ -8,13 +8,12 @@ import * as mainTextAction from '../actions/mainText';
 const Loading = () => {
 
     const history = useHistory()
-
     const dispatch = useDispatch()
 
 
     useEffect(() => {
         setTimeout(() => {
-            dispatch(mainTextAction.setFontSize(50))
+            // dispatch(mainTextAction.setFontSize(50))
             history.push("/main")
         }, 1000)    
     }, [])

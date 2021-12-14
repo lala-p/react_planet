@@ -8,8 +8,7 @@ router.use(express.json());
 router.use(cors());
 
 
-router('/signup', (req, res) => {
-
+router.post('/user', (req, res) => {
 
 
 });

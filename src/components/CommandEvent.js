@@ -65,7 +65,7 @@ const CommandEvent = () => {
     )
 
     // ===================================================
-    // axios post => server cosmic_dust/planet 덮어씌우기
+    // axios post => 
     const saveTextCmd = useCallback(
         () => {
             dispatch(mainTextAction.setSaveTime(new Date()))

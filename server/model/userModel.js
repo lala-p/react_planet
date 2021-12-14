@@ -1,8 +1,23 @@
 const db = require('./dbConnection');
 
 
-exports.selectUser = function() {
+exports.getAllUser = function (callback) {
 
-    return "signin!@!@!"
+    var query = "select * from user";
+
+    db.query(query, [], (err, rows) => {
+        callback(err, rows)
+    })
+
 }
 
+exports.getUserById = function (user_id, user_password, callback) {
+    
+    var query = "select user_id, user_password from user where user_id = ? and user_password = ?";
+    var parmas = [user_id, user_password]
+
+    db.query(query, parmas, (err, rows) => {
+        callback(err, rows)
+    })
+
+}

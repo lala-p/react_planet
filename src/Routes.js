@@ -1,10 +1,12 @@
 import React from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
 
-import LoginPage from './pages/LoginPage';
-import TestPage from './pages/TestPage';
-import MainPage from './pages/MainPage';
+import SigninPage from './pages/SigninPage';
+import SignOutPage from './pages/SignOutPage';
 import LoadingPage from './pages/Loading';
+import MainPage from './pages/MainPage';
+
+import TestPage from './pages/TestPage';
 
 class Routes extends React.Component{
 
@@ -14,10 +16,12 @@ class Routes extends React.Component{
             <Router>
                 <Switch>
 
-                    <Route exact path="/" component={LoginPage} />
-                    <Route exact path="/main" component={MainPage} />
-                    <Route exact path="/test" component={TestPage} />
+                    <Route exact path="/" component={SigninPage} />
+                    <Route exact path="/signout" component={SignOutPage}/>
                     <Route exact path="/loading" component={LoadingPage} />
+                    <Route exact path="/main" component={MainPage} />
+
+                    <Route exact path="/test" component={TestPage} />
 
                 </Switch>
             </Router>

@@ -290,7 +290,7 @@ const MainBoard = () => {
                             console.log(error)
                             dispatch(messageAction.addMsgHistory('gu:Save failed.'))
                         },
-                        () => { dispatch(messageAction.setReadOnly(false)) },
+                        () => { dispatch(messageAction.setReadOnly(false)) }
                     )
                     
                 

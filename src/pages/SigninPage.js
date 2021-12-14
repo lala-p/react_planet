@@ -1,12 +1,15 @@
 import React, {useState, useEffect, useRef} from 'react';
 import { useHistory } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
-import axios from 'axios';
+
+import { signinUser } from '../api/signin';
 
 
-const Password = () => {
+const SigninPage = () => {
 
     const history = useHistory()
+
+    const [cookies, setCookie, removeCookie] = useCookies(['user_id'])
 
     const [userId, setUserId] = useState('')
     const [password, setPassword] = useState('')
@@ -26,45 +29,49 @@ const Password = () => {
 
         if (e.keyCode == 13) { // enter
 
-            // axios
-
-            // let url = "http://localhost:3001/login";
-            // const loginBox = {
-            //     userId: userId,
-            //     password: password,
-            // }
-            // axios.post(url, loginBox)
-            // .then((response) => {    
-            //     console.log(response.data)
-            //     setMsg(response.data)
-            //     if(response.data == "login"){
-            //         history.push("/main")
-            //     }
-            // })
-            // .catch((error) => {
-            //     console.log(error)
-            // })
-
-
-            if (userId == "lala-p" && password == "asdf!@#$") {
-                history.push("/main")
-            } else {
-                setUserId('')
-                setPassword('')
-                userIdRef.current.focus()
-                setMsg("wrong!@!")
+            const signinData = {
+                userId      : userId,
+                userPassword: password,
             }
 
-            console.log(password)
+            signinUser(
+                signinData,
+                (response) => {
+                    console.log(response.data)
             
+                    if (response.data) {
+                        setCookie('user_id', userId, {path: '/'})
+                        history.push("/loading")
+
+                    } else {
+                        setUserId('')
+                        setPassword('')
+                        userIdRef.current.focus()
+                        setMsg("wrong!@!")
+
+                    }
+
+                },
+                (error) => {
+                    setMsg("signin failed...")
+                    console.log(error)                    
+                },
+                () => {
+
+                }
+            )
+
         }
 
     }
 
-
     useEffect(() => {
         
-        userIdRef.current.focus()
+        if (cookies.user_id) {
+            history.push("/loading")
+        } else {
+            userIdRef.current.focus()
+        }
 
     }, [])
 
@@ -85,4 +92,4 @@ const Password = () => {
 
 }
 
-export default Password;
+export default SigninPage;
