@@ -1,23 +1,37 @@
-const db = require('./dbConnection');
+const knex = require('./dbConnection');
 
 
-exports.getAllUser = function (callback) {
-
-    var query = "select * from user";
-
-    db.query(query, [], (err, rows) => {
-        callback(err, rows)
-    })
-
-}
-
-exports.getUserById = function (user_id, user_password, callback) {
+exports.getAllUser = async function () {
     
-    var query = "select user_id, user_password from user where user_id = ? and user_password = ?";
-    var parmas = [user_id, user_password]
+    var data = await knex.select().table('user')
 
-    db.query(query, parmas, (err, rows) => {
-        callback(err, rows)
-    })
-
+    return data;
 }
+
+exports.getUserById = async function (user_id) {
+    
+    var data = await knex('user')
+        .where({
+            user_id: user_id,
+        })
+        .select('user_id', 'user_password')
+
+    return data;
+}
+
+exports.getUserByIdAndPassword = async function (user_id, user_password) {
+
+    var data = await knex('user')
+        .where({
+            user_id: user_id,
+            user_password: user_password,
+        })
+        .select('user_id', 'user_password')
+
+    return data;
+}
+
+
+
+
+
