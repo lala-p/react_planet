@@ -17,7 +17,7 @@ const MainCommandTable = () => {
     const guideTempo  = useSelector((state) => state.message.guideTempo)
     const readOnly    = useSelector((state) => state.message.readOnly)    
 
-    const [cookie, setCookie, removeCookie] = useCookies()    
+    const [cookies, setCookie, removeCookie] = useCookies()    
 
     const tableRef = useRef(null)    
     const inputRef = useRef(null)
@@ -126,11 +126,11 @@ const MainCommandTable = () => {
         setUserInput("")
 
     }, [msgHistory])
-
+    
 
     const msgList = msgHistory.map((msg, index) => (
-        <div> {msg.substr(0, 3) === 'me:' ? 
-            <div key={index} style={{minHeight: '25px', overflow: "hidden", wordBreak: "break-all", backgroundColor: "pink"}}>&lt;{cookie['astronaut_id']}&gt; {msg.substr(3)}</div> :
+        <div key={index}> {msg.substr(0, 3) === 'me:' ? 
+            <div style={{minHeight: '25px', overflow: "hidden", wordBreak: "break-all", backgroundColor: "pink"}}>&lt;{cookies['user_id']}&gt; {msg.substr(3)}</div> :
             <div dangerouslySetInnerHTML={{__html: msg.substr(3)}} key={index} style={{minHeight: '25px',overflow: "hidden", wordBreak: "break-all", backgroundColor: "pink"}}></div> } 
         </div>
     ))
@@ -152,7 +152,7 @@ const MainCommandTable = () => {
                     <div>readOnly false</div>
                 }       
             </div>
-
+                
         </div>
     )
 

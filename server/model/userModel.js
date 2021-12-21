@@ -8,25 +8,25 @@ exports.getAllUser = async function () {
     return data;
 }
 
-exports.getUserById = async function (user_id) {
+exports.getUserById = async function (userId) {
     
     var data = await knex('user')
         .where({
-            user_id: user_id,
+            user_id: userId,
         })
-        .select('user_id', 'user_password')
+        .select('user_no', 'user_id', 'user_password')
 
     return data;
 }
 
-exports.getUserByIdAndPassword = async function (user_id, user_password) {
+exports.getUserByIdAndPassword = async function (userId, userPassword) {
 
     var data = await knex('user')
         .where({
-            user_id: user_id,
-            user_password: user_password,
+            user_id: userId,
+            user_password: userPassword,
         })
-        .select('user_id', 'user_password')
+        .select('user_no', 'user_id', 'user_password')
 
     return data;
 }

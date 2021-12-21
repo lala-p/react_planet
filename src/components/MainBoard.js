@@ -2,11 +2,12 @@ import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHotkeys } from 'react-hotkeys-hook';
 import { useHistory } from 'react-router-dom';
+import { useCookies } from 'react-cookie';
 
 import Editor from "@monaco-editor/react";
 import ToggleSwitch from 'react-switch';
 
-import { saveMainText } from '../api/mainTextApi';
+import { saveCurrentText } from '../api/textApi';
 
 import * as mainTextAction from '../actions/mainText';
 import * as messageAction from '../actions/message';
@@ -25,6 +26,8 @@ const MainBoard = () => {
     const fontSize              = useSelector((state) => state.mainText.fontSize)
 
     const readOnly = useSelector((state) => state.message.readOnly)
+
+    const [cookies, setCookie, removeCookie] = useCookies()    
 
     const editorRef = useRef(null)
     const btnRef = useRef(null)
@@ -277,12 +280,14 @@ const MainBoard = () => {
                     dispatchWeekDataList(editorRef.current.getValue())
 
 
-                    const planTextData = {
+                    const dataContainer = {
+                        userId: cookies['user_id'],
                         text: editorRef.current.getValue(),
                     }
 
-                    saveMainText(
-                        planTextData,
+
+                    saveCurrentText(
+                        dataContainer,
                         (response) => {
                             dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
                         },
@@ -290,9 +295,10 @@ const MainBoard = () => {
                             console.log(error)
                             dispatch(messageAction.addMsgHistory('gu:Save failed.'))
                         },
-                        () => { dispatch(messageAction.setReadOnly(false)) }
+                        () => {
+                            dispatch(messageAction.setReadOnly(false))
+                        }
                     )
-                    
                 
                 } else {
                     console.log("same!@!")
@@ -325,7 +331,7 @@ const MainBoard = () => {
                         onMount={eMount}
                         options={options}
                     />
-                    <button onClick={()=>{console.log(mainText)}}>zxc</button>
+                    <button onClick={()=>{dispatch(mainTextAction.setMainText("asdadasdsdas"))}}>zxc</button>
                     <button onClick={()=>{history.push('/loading')}}>asdf</button>
                     <button ref={btnRef} onFocus={()=> {btnRef.current.blur()}}></button>
 

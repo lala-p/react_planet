@@ -8,11 +8,9 @@ router.use(express.json());
 router.use(cors());
 
 
-router.post('/user', (req, res) => {
+router.post('/user', async (req, res) => {
 
 
 });
-
-
 
 module.exports = router;

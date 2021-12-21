@@ -1,19 +1,22 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSelector, useDispatch } from 'react-redux';
+import { useCookies } from 'react-cookie';
 
 import * as mainTextAction from '../actions/mainText';
 import * as messageAction from '../actions/message';
 import * as commandAction from '../actions/command';
 import * as modeAction from '../actions/mode';
-import * as astronautAction from '../actions/astronaut';
+// import * as astronautAction from '../actions/astronaut';
 
 
-import axios from "axios";
-import random from "random";
+// import random from "random";
 
 import { serverConnect } from '../api/etcApi';
+import * as textApi from '../api/textApi';
 
 import { wordFill } from "./etc";
+
+
 
 const CommandEvent = () => {
 
@@ -22,13 +25,16 @@ const CommandEvent = () => {
     const runCommandData = useSelector((state) => state.command.runCommandData)
     const commandCounter = useSelector((state) => state.command.commandCounter)
 
-    const astronautId       = useSelector((state) => state.astronaut.astronautId)
-    const astronautNickname = useSelector((state) => state.astronaut.astronautNickname)
-    const astronautPassword = useSelector((state) => state.astronaut.astronautPassword)
-    const mealMenu          = useSelector((state) => state.astronaut.mealMenu)
+    // const astronautId       = useSelector((state) => state.astronaut.astronautId)
+    // const astronautNickname = useSelector((state) => state.astronaut.astronautNickname)
+    // const astronautPassword = useSelector((state) => state.astronaut.astronautPassword)
+    // const mealMenu          = useSelector((state) => state.astronaut.mealMenu)
     const week              = useSelector((state) => state.astronaut.week)
 
     const mode = useSelector((state) => state.mode.mode)
+
+
+    const [cookies, setCookie, removeCookie] = useCookies()    
 
     const [commandList, setCommandList] = useState({})
     
@@ -76,31 +82,37 @@ const CommandEvent = () => {
     // ===================================================
     // axios get => return server cosmic_dust/planet
     const getTextCmd = useCallback(
-        () => {
+        async () => {
 
             dispatch(messageAction.setReadOnly(true))
             dispatch(messageAction.addMsgHistory('gu:loading...'))
+            dispatch(mainTextAction.setMainText('loading...'))
 
-            let url = "http://localhost:3001/main/getText";
+            const dataContainer = {
+                userId: cookies['user_id']
+            }
 
-            axios
-                .get(url)
-                .then((response) => {
-
+            textApi.getCurrentText(
+                dataContainer,
+                (response) => {
                     console.log(response.data)
-                    dispatch(mainTextAction.setMainText(response.data))
+                    const text = response.data[0]['text_content']
+    
+                    dispatch(mainTextAction.setMainText(text))
                     dispatch(messageAction.addMsgHistory('gu:!@!@!@!@!@!'))
-                })
-                .catch((error) => {
+
+                },
+                (error) => {
                     console.log(error)
                     dispatch(messageAction.addMsgHistory('gu:failed'))
                     const sec = new Date().getSeconds().toString()
                     dispatch(mainTextAction.setMainText(sec))
-                
-                })
-                .finally(() => {
+
+                },
+                () => {
                     dispatch(messageAction.setReadOnly(false))
-                })
+                }
+            )
 
         }, [commandCounter['get+text']]
     )
@@ -231,70 +243,70 @@ const CommandEvent = () => {
     ) 
     // ===================================================
     // return mealMenu
-    const showMealMenuCmd = useCallback(
-        () => {
+    // const showMealMenuCmd = useCallback(
+    //     () => {
 
-            let script = [];
+    //         let script = [];
 
-            for (let index = 0; index < mealMenu.length; index++) {
-                script = script.concat('[' + (index + 1) + '] ' + mealMenu[index])
-            }
+    //         for (let index = 0; index < mealMenu.length; index++) {
+    //             script = script.concat('[' + (index + 1) + '] ' + mealMenu[index])
+    //         }
 
-            if (runCommandData['say']) {
-                dispatch(messageAction.setGuideScript(script))
-            }
+    //         if (runCommandData['say']) {
+    //             dispatch(messageAction.setGuideScript(script))
+    //         }
 
 
-        }, [commandCounter['show+meal_menu']]
-    )
+    //     }, [commandCounter['show+meal_menu']]
+    // )
 
     // ===================================================
     // return random으로 mealMenu 중 하나를 뽑음
-    const randomMealCmd = useCallback(
-        () => {
+    // const randomMealCmd = useCallback(
+    //     () => {
 
-            const ranInt = random.int(0, mealMenu.length - 1)
-            let meal = mealMenu[ranInt]
-            meal = [meal]
+    //         const ranInt = random.int(0, mealMenu.length - 1)
+    //         let meal = mealMenu[ranInt]
+    //         meal = [meal]
 
-            if (runCommandData['say']) {
-                dispatch(messageAction.setGuideScript(meal))
-            }
+    //         if (runCommandData['say']) {
+    //             dispatch(messageAction.setGuideScript(meal))
+    //         }
 
 
-        }, [commandCounter['random+meal']]
-    )
+    //     }, [commandCounter['random+meal']]
+    // )
 
     // ===================================================
     // return meal로 array를 받은 후, mealMenu 요소를 추가함.
-    const addMealMenuCmd = useCallback(
-        () => {
+    // const addMealMenuCmd = useCallback(
+    //     () => {
 
-            let meal = runCommandData['parameter']
+    //         let meal = runCommandData['parameter']
 
-            dispatch(astronautAction.addMealMenu(meal))
-            const script = ['Completed.']
+    //         dispatch(astronautAction.addMealMenu(meal))
+    //         const script = ['Completed.']
 
-            if (runCommandData['say']) {
-                dispatch(messageAction.setGuideScript(script))
-            }
+    //         if (runCommandData['say']) {
+    //             dispatch(messageAction.setGuideScript(script))
+    //         }
 
-        }, [commandCounter['add+meal_menu']]
-    )
+    //     }, [commandCounter['add+meal_menu']]
+    // )
     // ===================================================
     // return meal로 array를 받은 후, mealMenu 요소를 삭제함.
-    const deleteMealMenuCmd = useCallback(
-        () => {
-            let meal = runCommandData['parameter']
-            dispatch(astronautAction.deleteMealMenu(meal))
-            const script = ['Completed.']
+    // const deleteMealMenuCmd = useCallback(
+    //     () => {
+    //         let meal = runCommandData['parameter']
+    //         dispatch(astronautAction.deleteMealMenu(meal))
+    //         const script = ['Completed.']
 
-            if (runCommandData['say']) {
-                dispatch(messageAction.setGuideScript(script))
-            }
+    //         if (runCommandData['say']) {
+    //             dispatch(messageAction.setGuideScript(script))
+    //         }
 
-        }, [commandCounter['delete+meal_menu']]
-    )
+    //     }, [commandCounter['delete+meal_menu']]
+    // )
 
     const commandInit = useCallback(
         () => {
@@ -321,17 +333,17 @@ const CommandEvent = () => {
             cmdList['save+text'] = saveTextCmd
 
             // random
-            cmdList['random+meal'] = randomMealCmd
+            // cmdList['random+meal'] = randomMealCmd
 
             // show
-            cmdList['show+meal_menu'] = showMealMenuCmd
-            cmdList['show+test']      = () => { dispatch(messageAction.setGuideScript(["test!@!@!@!@"])) }
+            // cmdList['show+meal_menu'] = showMealMenuCmd
+            // cmdList['show+test']      = () => { dispatch(messageAction.setGuideScript(["test!@!@!@!@"])) }
 
             //add 
-            cmdList['add+meal_menu']  = addMealMenuCmd
+            // cmdList['add+meal_menu']  = addMealMenuCmd
 
             // delete
-            cmdList['delete+meal_menu'] = deleteMealMenuCmd
+            // cmdList['delete+meal_menu'] = deleteMealMenuCmd
 
 
             setCommandList(cmdList)

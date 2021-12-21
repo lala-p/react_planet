@@ -11,11 +11,11 @@ router.use(cors());
 
 router.post('/user', async (req, res) => {
 
-    let user_id = req.body.userId;
-    let user_password = req.body.userPassword;
+    let userId = req.body.userId
+    let userPassword = req.body.userPassword
 
 
-    var signinUser = await userModel.getUserByIdAndPassword(user_id, user_password)
+    var signinUser = await userModel.getUserByIdAndPassword(userId, userPassword)
 
     if (signinUser.length == 0) {
         console.log("signin failed.")

@@ -5,6 +5,7 @@ export const SET_TEXT_LENGTH              = 'SET_TEXT_LENGTH';
 export const SET_REMOVE_SPACE_TEXT_LENGTH = 'SET_REMOVE_SPACE_TEXT_LENGTH'; 
 export const SET_FONT_SIZE                = 'SET_FONT_SIZE';
 export const SET_WEEK_DATA_LIST           = 'SET_WEEK_DATA_LIST'; 
+export const SET_TEXT_LIST                = 'SET_TEXT_LIST'; 
 
 
 export const setMainText = (text) => {
@@ -53,5 +54,13 @@ export const setWeekDataList = (dataList) => {
     return {
         type: SET_WEEK_DATA_LIST,
         payload: dataList,
+    }
+}
+
+
+export const setTextList = (textList) => {
+    return {
+        type: SET_TEXT_LIST,
+        payload: textList,
     }
 }

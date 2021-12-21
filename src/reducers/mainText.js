@@ -12,6 +12,7 @@ const initialStates = {
     removeSpaceTextLength: 0,
     fontSize: 14,
     weekDataList: [],
+    textList: [],
 }
 
 const reducers = (state = initialStates, actions) => {
@@ -51,6 +52,11 @@ const reducers = (state = initialStates, actions) => {
             return produce(state, draft => {
                 draft.weekDataList = actions.payload
             })            
+        }
+        case mainTextAction.SET_TEXT_LIST: {
+            return produce(state, draft => {
+                draft.textList = actions.payload
+            })
         }
 
 

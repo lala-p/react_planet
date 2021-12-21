@@ -9,6 +9,7 @@ import MainBoard from '../components/MainBoard';
 import MemoTable2 from '../components/MemoTable2';
 import MainCommandTable from '../components/MainCommandTable';
 import MainGuide from '../components/MainGuide';
+import TextTable from '../components/TextTable';
 import Help from '../components/Help';
 import CommandEvent from '../components/CommandEvent';
 
@@ -25,6 +26,8 @@ const MainPage = () => {
                 return null
             case 1: 
                 return <MemoTable2></MemoTable2>
+            case 2:
+                return <TextTable></TextTable>
             default:
                 return <Help></Help>
 
