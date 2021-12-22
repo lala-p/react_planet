@@ -17,6 +17,8 @@ import CommandEvent from '../components/CommandEvent';
 const MainPage = () => {
 
     const dispatch = useDispatch();
+
+    const textTitle = useSelector((state) => state.mainText.textTitle)
     const currentMode = useSelector((state) => state.mode.currentMode);
 
     const modeHandler = () => {
@@ -38,7 +40,9 @@ const MainPage = () => {
     useHotkeys('shift+down', ()=> dispatch(modeAction.rangeControl(1)))
 
     useEffect(() => {
-
+        if (!textTitle) {
+            history.push("/loading")
+        }
     }, [])
 
 

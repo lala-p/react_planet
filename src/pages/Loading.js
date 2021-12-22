@@ -30,6 +30,7 @@ const Loading = () => {
                     console.log(response.data['textListOrderByUpdatedAt'])
                     
                     dispatch(mainTextAction.setTextList(response.data['textListOrderByCreatedAt']))
+                    dispatch(mainTextAction.setTextTitle('current'))
                 },
                 (error) => {
                     console.log(error)

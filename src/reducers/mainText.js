@@ -6,6 +6,7 @@ import * as mainTextAction from '../actions/mainText';
 const initialStates = {
 
     mainText: false,
+    textTitle: false,
     saveTime: false,
     updateTime: false,
     textLength: 0,
@@ -21,6 +22,11 @@ const reducers = (state = initialStates, actions) => {
         case mainTextAction.SET_MAIN_TEXT: {
             return produce(state, draft => {
                 draft.mainText = actions.payload
+            })
+        }
+        case mainTextAction.SET_TEXT_TITLE: {
+            return produce(state, draft => {
+                draft.textTitle = actions.payload
             })
         }
         case mainTextAction.SET_SAVE_TIME: {

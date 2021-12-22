@@ -20,6 +20,7 @@ const MainBoard = () => {
 
     const dispatch = useDispatch()
     const mainText              = useSelector((state) => state.mainText.mainText)
+    const textTitle             = useSelector((state) => state.mainText.textTitle)
     const saveTime              = useSelector((state) => state.mainText.saveTime)
     const textLength            = useSelector((state) => state.mainText.textLength)
     const removeSpaceTextLength = useSelector((state) => state.mainText.removeSpaceTextLength)
@@ -283,6 +284,7 @@ const MainBoard = () => {
                     const dataContainer = {
                         userId: cookies['user_id'],
                         text: editorRef.current.getValue(),
+                        textTitle: textTitle,
                     }
 
 

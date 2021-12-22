@@ -1,4 +1,5 @@
 export const SET_MAIN_TEXT                = 'SET_MAIN_TEXT';
+export const SET_TEXT_TITLE               = 'SET_TEXT_TITLE';
 export const SET_SAVE_TIME                = 'SET_SAVE_TIME';
 export const SET_UPDATE_TIME              = 'SET_UPDATE_TIME';
 export const SET_TEXT_LENGTH              = 'SET_TEXT_LENGTH';
@@ -12,6 +13,13 @@ export const setMainText = (text) => {
     return {
         type: SET_MAIN_TEXT,
         payload: text,
+    }
+};
+
+export const setTextTitle = (title) => {
+    return {
+        type: SET_TEXT_TITLE,
+        payload: title,
     }
 };
 

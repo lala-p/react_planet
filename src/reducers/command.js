@@ -21,6 +21,7 @@ const initialStates = {
         'hi': 0,
         'hello': 0,
 
+        'say': 0,
         'now': 0,
         'today': 0,
         
@@ -30,6 +31,9 @@ const initialStates = {
         // get
         'get+week' : 0,
         'get+text' : 0,
+
+        // load
+        'load+text' : 0,
 
         // set
         'set+mode' : 0,

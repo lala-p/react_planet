@@ -10,13 +10,14 @@ router.use(cors());
 
 
 
-router.post('/get/current', async (req, res) => {
+router.post('/get/byTextTitle', async (req, res) => {
 
-    let userId = req.body.userId
+    let userId    = req.body.userId
+    let textTitle = req.body.textTitle
+    
+    var text = await textModel.getTextByTextTitle(userId, textTitle)
 
-    var currentText = await textModel.getCurrentTextByUserId(userId)
-
-    res.send(currentText);
+    res.send(text);
 });
 
 router.post('/get/byTitle', async (req, res) => {
@@ -24,12 +25,13 @@ router.post('/get/byTitle', async (req, res) => {
 
 });
 
-router.post('/save/current', async (req, res) => {
+router.post('/save', async (req, res) => {
 
-    let userId = req.body.userId
-    let text = req.body.text
+    let userId    = req.body.userId
+    let text      = req.body.text
+    let textTitle = req.body.textTitle
 
-    var save = await textModel.saveCurrentText(userId, text)
+    var save = await textModel.saveCurrentText(userId, text, textTitle)
 
     console.log(save)
     

@@ -21,6 +21,9 @@ import { wordFill } from "./etc";
 const CommandEvent = () => {
 
     const dispatch = useDispatch()
+
+    const textTitle = useSelector((state) => state.mainText.textTitle)
+
     const sendCommand    = useSelector((state) => state.command.sendCommand)
     const runCommandData = useSelector((state) => state.command.runCommandData)
     const commandCounter = useSelector((state) => state.command.commandCounter)
@@ -61,46 +64,29 @@ const CommandEvent = () => {
 
         }, [commandCounter['ping']]
     )
-
     // ===================================================
-    // ?????????
-    const updateCmd = useCallback(
-        () => {
-            dispatch(mainTextAction.setUpdateTime(new Date()))
-        }, [commandCounter['update']]
-    )
-
-    // ===================================================
-    // axios post => 
-    const saveTextCmd = useCallback(
-        () => {
-            dispatch(mainTextAction.setSaveTime(new Date()))
-
-        }, [commandCounter['saveText']]
-    )
-
-    // ===================================================
-    // axios get => return server cosmic_dust/planet
+    // axios post
     const getTextCmd = useCallback(
-        async () => {
+        () => {
 
             dispatch(messageAction.setReadOnly(true))
             dispatch(messageAction.addMsgHistory('gu:loading...'))
             dispatch(mainTextAction.setMainText('loading...'))
 
             const dataContainer = {
-                userId: cookies['user_id']
+                userId: cookies['user_id'],
+                textTitle: 'current',
             }
 
-            textApi.getCurrentText(
+            textApi.getTextByTextTitle(
                 dataContainer,
                 (response) => {
                     console.log(response.data)
                     const text = response.data[0]['text_content']
     
                     dispatch(mainTextAction.setMainText(text))
+                    dispatch(mainTextAction.setTextTitle('current'))
                     dispatch(messageAction.addMsgHistory('gu:!@!@!@!@!@!'))
-
                 },
                 (error) => {
                     console.log(error)
@@ -116,7 +102,56 @@ const CommandEvent = () => {
 
         }, [commandCounter['get+text']]
     )
+    // ===================================================
+    // axios post 
+    const loadTextCmd = useCallback(
+        () => {
+            
+            dispatch(messageAction.setReadOnly(true))
+            dispatch(mainTextAction.setMainText('loading...'))
 
+            let loadTextTitle = runCommandData['parameter'][0]   
+            
+            
+            const dataContainer = {
+                userId: cookies['user_id'],
+                textTitle: loadTextTitle,
+            }
+
+            textApi.getTextByTextTitle(
+                dataContainer,
+                (response) => {
+                    console.log(response.data)
+                    const text = response.data[0]['text_content']
+                    
+                    dispatch(mainTextAction.setMainText(text))
+                    dispatch(mainTextAction.setTextTitle(loadTextTitle))
+                    dispatch(messageAction.addMsgHistory('gu:!@!@!@!@!@!@!@!@!@!'))
+                },
+                (error) => {
+                    console.log(error)
+                    dispatch(messageAction.addMsgHistory('gu:failed'))
+                },
+                () => {
+                    dispatch(messageAction.setReadOnly(false))
+                }
+            )
+        }, [commandCounter['load+text']]
+    )
+    // ===================================================
+    // ?????????
+    const updateCmd = useCallback(
+        () => {
+            dispatch(mainTextAction.setUpdateTime(new Date()))
+        }, [commandCounter['update']]
+    )
+    // ===================================================
+    // axios post
+    const saveTextCmd = useCallback(
+        () => {
+            dispatch(mainTextAction.setSaveTime(new Date()))
+        }, [commandCounter['saveText']]
+    )
     // ===================================================
     // mainContent에 있는 component 바꾸기/ mode 바꾸기
     const setModeCmd = useCallback(
@@ -144,6 +179,14 @@ const CommandEvent = () => {
         }, [commandCounter['set+mode']]
     )
     // ===================================================
+    // say 
+    const sayCmd = useCallback(
+        () => {
+            let userSay = runCommandData['parameter'][0]
+            dispatch(messageAction.addMsgHistory('me:' + userSay))
+        }, [commandCounter['say']]
+    )
+    // ===================================================
     // return 현재 시간 
     // ex) PM 02:08:33
     const nowCmd = useCallback(
@@ -157,8 +200,8 @@ const CommandEvent = () => {
             hours = hours <= 12 ? hours : hours - 12;
             hours = wordFill(hours.toString(), 2, '0')
 
-            let minutes = wordFill(getToday.getMinutes().toString(), 2, '0');
-            let seconds = wordFill(getToday.getSeconds().toString(), 2, '0');
+            let minutes = wordFill(getToday.getMinutes().toString(), 2, '0')
+            let seconds = wordFill(getToday.getSeconds().toString(), 2, '0')
 
             let now = ampm + "  " + hours + ":" + minutes + ":" + seconds;
             now = [now]
@@ -316,6 +359,7 @@ const CommandEvent = () => {
             cmdList['hi'] = () => { dispatch(messageAction.setGuideScript([`hi, ????`, "nice meet you"])) }
             cmdList['hello'] = () => { dispatch(messageAction.setGuideScript(["it's me..."])) }
 
+            cmdList['say'] = sayCmd
             cmdList['now']   = nowCmd
             cmdList['today'] = todayCmd
 
@@ -325,6 +369,9 @@ const CommandEvent = () => {
             // get 
             cmdList['get+week'] = getWeekCmd
             cmdList['get+text'] = getTextCmd
+
+            // load
+            cmdList['load+text'] = loadTextCmd
 
             // set
             cmdList['set+mode'] = setModeCmd

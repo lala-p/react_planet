@@ -1,6 +1,19 @@
 const knex = require('./dbConnection');
 
 
+
+exports.getTextByTextTitle = async function (userId, textTitle) {
+    
+    var data = await knex('text')
+        .where({
+            user_id: userId,
+            text_title: textTitle
+        })
+        .select('text_content', 'created_at', 'updated_at')
+
+        return data;
+}
+
 exports.getCurrentTextByUserId = async function (userId) {
     
     var data = await knex('text')
@@ -50,21 +63,16 @@ exports.getTextListByUserId = async function (userId) {
 // }
 
 
-exports.saveCurrentText = async function (userId, text) {
+exports.saveText = async function (userId, text, textTitle) {
     
     var saveText = await knex('text')
         .where('user_id', userId)
-        .andWhere('text_title', 'current')
+        .andWhere('text_title', textTitle)
         .update({
             text_content: text,
         })
 
-    return saveText
-}
-
-exports.saveTheText = async function (userId, text, textTitle) {
-
-    
+    return saveText;
 }
 
 exports.getTextListOrderByCreatedAt = async function (userId) {
@@ -94,3 +102,4 @@ exports.getTextListOrderByUpdatedAt = async function (userId) {
 
     return data;
 }
+
