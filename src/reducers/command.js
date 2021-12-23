@@ -26,7 +26,7 @@ const initialStates = {
         'today': 0,
         
         'ping': 0,
-        'update': 0,
+        // 'update': 0,
 
         // get
         'get+week' : 0,

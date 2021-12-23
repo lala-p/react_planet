@@ -18,6 +18,7 @@ const Loading = () => {
     useEffect(() => {
         setTimeout(() => {
             // dispatch(mainTextAction.setFontSize(50)) 
+            dispatch(mainTextAction.setTextTitle('current'))
         
             const dataContainer = {
                 userId: cookies['user_id']
@@ -26,10 +27,9 @@ const Loading = () => {
             textApi.getTextList(
                 dataContainer,
                 (response) => {
-                    console.log(response.data['textListOrderByCreatedAt'])
-                    console.log(response.data['textListOrderByUpdatedAt'])
+                    console.log(response.data)
                     
-                    dispatch(mainTextAction.setTextList(response.data['textListOrderByCreatedAt']))
+                    dispatch(mainTextAction.setTextList(response.data))
                     dispatch(mainTextAction.setTextTitle('current'))
                 },
                 (error) => {
@@ -39,7 +39,6 @@ const Loading = () => {
 
                 }
             )
-
 
             history.push("/main")
         }, 1000)    

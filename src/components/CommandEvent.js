@@ -32,7 +32,7 @@ const CommandEvent = () => {
     // const astronautNickname = useSelector((state) => state.astronaut.astronautNickname)
     // const astronautPassword = useSelector((state) => state.astronaut.astronautPassword)
     // const mealMenu          = useSelector((state) => state.astronaut.mealMenu)
-    const week              = useSelector((state) => state.astronaut.week)
+    const week = useSelector((state) => state.astronaut.week)
 
     const mode = useSelector((state) => state.mode.mode)
 
@@ -140,11 +140,11 @@ const CommandEvent = () => {
     )
     // ===================================================
     // ?????????
-    const updateCmd = useCallback(
-        () => {
-            dispatch(mainTextAction.setUpdateTime(new Date()))
-        }, [commandCounter['update']]
-    )
+    // const updateCmd = useCallback(
+    //     () => {
+    //         dispatch(mainTextAction.setUpdateTime(new Date()))
+    //     }, [commandCounter['update']]
+    // )
     // ===================================================
     // axios post
     const saveTextCmd = useCallback(
@@ -166,7 +166,7 @@ const CommandEvent = () => {
                     notExist = false
                 }
             }
-
+            
             if (notExist) {
                 const script = [changeMode[0] + ' mode does not exist.']
 
@@ -233,7 +233,6 @@ const CommandEvent = () => {
         
         }, [commandCounter['today']]
     )
-    
     // ===================================================
     // input : get week (year, month, date)
     // return 특적 날짜의 요일 
@@ -364,7 +363,7 @@ const CommandEvent = () => {
             cmdList['today'] = todayCmd
 
             cmdList['ping']   = pingCmd
-            cmdList['update'] = updateCmd
+            // cmdList['update'] = updateCmd
             
             // get 
             cmdList['get+week'] = getWeekCmd

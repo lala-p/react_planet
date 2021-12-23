@@ -1,4 +1,5 @@
 import React, { useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { useHotkeys } from 'react-hotkeys-hook';
 
@@ -16,10 +17,11 @@ import CommandEvent from '../components/CommandEvent';
 
 const MainPage = () => {
 
-    const dispatch = useDispatch();
+    const history = useHistory()
+    const dispatch = useDispatch()
 
     const textTitle = useSelector((state) => state.mainText.textTitle)
-    const currentMode = useSelector((state) => state.mode.currentMode);
+    const currentMode = useSelector((state) => state.mode.currentMode)
 
     const modeHandler = () => {
 

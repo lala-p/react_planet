@@ -7,10 +7,10 @@ import { useCookies } from 'react-cookie';
 import Editor from "@monaco-editor/react";
 import ToggleSwitch from 'react-switch';
 
-import { saveCurrentText } from '../api/textApi';
-
 import * as mainTextAction from '../actions/mainText';
 import * as messageAction from '../actions/message';
+
+import * as textApi from '../api/textApi';
 
 import { findVer01 } from '../find/ver_01';
 
@@ -281,17 +281,33 @@ const MainBoard = () => {
                     dispatchWeekDataList(editorRef.current.getValue())
 
 
-                    const dataContainer = {
+                    const dataContainer1 = {
                         userId: cookies['user_id'],
                         text: editorRef.current.getValue(),
                         textTitle: textTitle,
                     }
 
 
-                    saveCurrentText(
-                        dataContainer,
+                    textApi.saveText(
+                        dataContainer1,
                         (response) => {
-                            dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
+                            const dataContainer2 = {
+                                userId: cookies['user_id']
+                            }
+
+                            textApi.getTextList(
+                                dataContainer2,
+                                (response) => {
+                                    dispatch(mainTextAction.setTextList(response.data))        
+                                },
+                                (error) => {
+                                    console.log(error)
+                                    dispatch(messageAction.addMsgHistory('gu:Save failed.'))
+                                },
+                                () => {
+                                    dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
+                                }
+                            )
                         },
                         (error) => {
                             console.log(error)
@@ -347,7 +363,7 @@ const MainBoard = () => {
                     {/* <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.length}자</h1> */}
                     {/* <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.replace(/\r?\n|\r/g, "").length}자</h1> 
                     줄바꿈 포함 */}
-                    </div>
+                </div>
 
             </div>
         </div>
