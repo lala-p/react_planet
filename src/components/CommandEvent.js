@@ -40,7 +40,8 @@ const CommandEvent = () => {
     const [cookies, setCookie, removeCookie] = useCookies()    
 
     const [commandList, setCommandList] = useState({})
-    
+
+
     // ===================================================
     // 서버 연결 확인하기
     const pingCmd = useCallback(
@@ -72,6 +73,13 @@ const CommandEvent = () => {
             dispatch(messageAction.setReadOnly(true))
             dispatch(messageAction.addMsgHistory('gu:loading...'))
             dispatch(mainTextAction.setMainText('loading...'))
+
+            if (window.confirm("hello...??")) {
+                alert("yes")
+            } else {
+                alert("no")
+            }
+
 
             const dataContainer = {
                 userId: cookies['user_id'],
@@ -108,6 +116,7 @@ const CommandEvent = () => {
         () => {
             
             dispatch(messageAction.setReadOnly(true))
+            dispatch(messageAction.addMsgHistory('gu:loading...'))
             dispatch(mainTextAction.setMainText('loading...'))
 
             let loadTextTitle = runCommandData['parameter'][0]   
@@ -115,7 +124,7 @@ const CommandEvent = () => {
             
             const dataContainer = {
                 userId: cookies['user_id'],
-                textTitle: loadTextTitle,
+                textTitle: runCommandData['parameter'].length != 0 ? loadTextTitle : 'current',
             }
 
             textApi.getTextByTextTitle(
@@ -136,6 +145,9 @@ const CommandEvent = () => {
                     dispatch(messageAction.setReadOnly(false))
                 }
             )
+
+
+            console.log(runCommandData)
         }, [commandCounter['load+text']]
     )
     // ===================================================
@@ -145,12 +157,32 @@ const CommandEvent = () => {
     //         dispatch(mainTextAction.setUpdateTime(new Date()))
     //     }, [commandCounter['update']]
     // )
+
     // ===================================================
     // axios post
     const saveTextCmd = useCallback(
         () => {
             dispatch(mainTextAction.setSaveTime(new Date()))
-        }, [commandCounter['saveText']]
+        }, [commandCounter['save+text']]
+    )
+    // ===================================================
+    // axios post
+    const saveAsCmd = useCallback(
+        () => {
+            if (textTitle == 'current') {
+                dispatch(mainTextAction.setSaveTime(new Date()))
+            } else {
+                dispatch(messageAction.addMsgHistory('gu:lt\'s not current.'))
+            }
+
+        }, [commandCounter['save+as']]
+    )
+    // ===================================================
+    // axios post
+    const renameTextTitleCmd = useCallback(
+        () => {
+
+        }, [commandCounter['rename+text+title']]
     )
     // ===================================================
     // mainContent에 있는 component 바꾸기/ mode 바꾸기
@@ -170,10 +202,7 @@ const CommandEvent = () => {
             if (notExist) {
                 const script = [changeMode[0] + ' mode does not exist.']
 
-                if (runCommandData['say']) {
-                    dispatch(messageAction.setGuideScript(script))
-                }
-
+                dispatch(messageAction.setGuideScript(script))
             }
         
         }, [commandCounter['set+mode']]
@@ -206,9 +235,9 @@ const CommandEvent = () => {
             let now = ampm + "  " + hours + ":" + minutes + ":" + seconds;
             now = [now]
 
-            if (runCommandData['say']) {
-                dispatch(messageAction.setGuideScript(now))
-            }
+            
+            dispatch(messageAction.setGuideScript(now))
+            
 
         }, [commandCounter['now']]
     )
@@ -227,9 +256,8 @@ const CommandEvent = () => {
             today = year + "-" + month + "-" + date + " " + day;
             today = [today]
 
-            if (runCommandData['say']) {
-                dispatch(messageAction.setGuideScript(today))
-            }
+            
+            dispatch(messageAction.setGuideScript(today))
         
         }, [commandCounter['today']]
     )
@@ -276,10 +304,7 @@ const CommandEvent = () => {
                 script[0] = `${year}-${month}-${date} was...`;
             }
 
-
-            if (runCommandData['say']) {
-                dispatch(messageAction.setGuideScript(script))
-            }
+            dispatch(messageAction.setGuideScript(script))
 
         }, [commandCounter['get+week']]
     ) 
@@ -350,6 +375,7 @@ const CommandEvent = () => {
     //     }, [commandCounter['delete+meal_menu']]
     // )
 
+
     const commandInit = useCallback(
         () => {
             let cmdList = {}
@@ -377,6 +403,7 @@ const CommandEvent = () => {
 
             // save
             cmdList['save+text'] = saveTextCmd
+            cmdList['save+as'] = saveAsCmd
 
             // random
             // cmdList['random+meal'] = randomMealCmd

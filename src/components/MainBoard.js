@@ -9,6 +9,7 @@ import ToggleSwitch from 'react-switch';
 
 import * as mainTextAction from '../actions/mainText';
 import * as messageAction from '../actions/message';
+import * as commandAction from '../actions/command';
 
 import * as textApi from '../api/textApi';
 
@@ -27,6 +28,8 @@ const MainBoard = () => {
     const fontSize              = useSelector((state) => state.mainText.fontSize)
 
     const readOnly = useSelector((state) => state.message.readOnly)
+    
+    const runCommandData = useSelector((state) => state.command.runCommandData)
 
     const [cookies, setCookie, removeCookie] = useCookies()    
 
@@ -123,7 +126,8 @@ const MainBoard = () => {
             console.log("Escape!@!")
         })
         editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S , () => {
-            dispatch(mainTextAction.setSaveTime(new Date()))
+            dispatch(commandAction.sendCommand('save text', true))
+            console.log("asdfasdfadf")
         })
 
 
@@ -287,37 +291,79 @@ const MainBoard = () => {
                         textTitle: textTitle,
                     }
 
+                    const dataContainer2 = {
+                        userId: cookies['user_id'],
+                        text: editorRef.current.getValue(),
+                        textTitle: runCommandData['parameter'][0],
+                    }
 
-                    textApi.saveText(
-                        dataContainer1,
-                        (response) => {
-                            const dataContainer2 = {
-                                userId: cookies['user_id']
+                    const dataContainer3 = {
+                        userId: cookies['user_id']
+                    }
+
+                    if (runCommandData['commandType'] == 'save+text') {
+                        
+                        textApi.saveText(
+                            dataContainer1,
+                            (response) => {
+
+                                textApi.getTextList(
+                                    dataContainer3,
+                                    (response) => {
+                                        dispatch(mainTextAction.setTextList(response.data))
+                                    },
+                                    (error) => {
+                                        console.log(error)
+                                        dispatch(messageAction.addMsgHistory('gu:Save failed.'))
+                                    },
+                                    () => {
+                                        dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
+                                    }
+                                )
+                            },
+                            (error) => {
+                                console.log(error)
+                                dispatch(messageAction.addMsgHistory('gu:Save failed.'))
+                            },
+                            () => {
+                                dispatch(messageAction.setReadOnly(false))
                             }
+                        )
 
-                            textApi.getTextList(
-                                dataContainer2,
-                                (response) => {
-                                    dispatch(mainTextAction.setTextList(response.data))        
-                                },
-                                (error) => {
-                                    console.log(error)
-                                    dispatch(messageAction.addMsgHistory('gu:Save failed.'))
-                                },
-                                () => {
-                                    dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
-                                }
-                            )
-                        },
-                        (error) => {
-                            console.log(error)
-                            dispatch(messageAction.addMsgHistory('gu:Save failed.'))
-                        },
-                        () => {
-                            dispatch(messageAction.setReadOnly(false))
-                        }
-                    )
-                
+                    } else if (runCommandData['commandType'] == 'save+as') {
+
+                        textApi.saveAsText(
+                            dataContainer2,
+                            (response) => {
+
+                                textApi.getTextList(
+                                    dataContainer3,
+                                    (response) => {
+                                        dispatch(mainTextAction.setTextList(response.data))
+                                        dispatch(commandAction.sendCommand('load text', true))
+                                    },
+                                    (error) => {
+                                        console.log(error)
+                                        dispatch(messageAction.addMsgHistory('gu:Save failed.'))
+                                    },
+                                    () => {
+                                        dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
+                                    }
+                                )
+                            },
+                            (error) => {
+                                console.log(error)
+                                dispatch(messageAction.addMsgHistory('gu:Save failed.'))
+                            },
+                            () => {
+                                dispatch(messageAction.setReadOnly(false))
+                            }
+                        )
+                    } else {
+                        console.log('?????')
+                    }
+
+
                 } else {
                     console.log("same!@!")
                 }

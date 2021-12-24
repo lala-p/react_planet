@@ -40,6 +40,7 @@ const initialStates = {
         
         // save
         'save+text' : 0,
+        'save+as'   : 0,
         
         // random
         'random+meal' : 0,

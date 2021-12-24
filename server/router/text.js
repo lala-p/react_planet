@@ -32,6 +32,22 @@ router.post('/save', async (req, res) => {
     res.send('Save Completed.')
 });
 
+router.post('/save/as', async (req, res) => {
+
+    let userId    = req.body.userId
+    let text      = req.body.text
+    let textTitle = req.body.textTitle
+
+    var saveAs = await textModel.saveAsText(userId, text, textTitle)
+    console.log(saveAs)
+
+    var createCurrent = await textModel.createCurrentText(userId)
+    console.log(createCurrent)
+
+    res.send('save as text')
+});
+
+
 router.post('/get/textList', async (req, res) => {
 
     let userId = req.body.userId
@@ -41,5 +57,6 @@ router.post('/get/textList', async (req, res) => {
     console.log(textList)
     res.send(textList)
 });
+
 
 module.exports = router;

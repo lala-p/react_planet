@@ -44,7 +44,7 @@ const Loading = () => {
         }, 1000)    
     }, [])
 
-    
+
     return (
         <div>
             <br />

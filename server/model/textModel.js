@@ -1,7 +1,6 @@
 const knex = require('./dbConnection');
 
 
-
 exports.getTextByTextTitle = async function (userId, textTitle) {
     
     var data = await knex('text')
@@ -25,6 +24,35 @@ exports.saveText = async function (userId, text, textTitle) {
         })
 
     return saveText;
+}
+
+exports.saveAsText = async function (userId, text, textTitle) {
+
+    var saveAsText = await knex('text')
+        .where('user_id', userId)
+        .andWhere('text_title', 'current')
+        .update({
+            text_content: text,
+            text_title  : textTitle,
+            updated_at  : knex.raw('now()')
+        })
+    
+    return saveAsText;
+}
+
+exports.createCurrentText = async function (userId) {
+    
+    var createCurrent = await knex('text')
+        .insert({
+            user_id     : userId,
+            text_title  : 'current',
+            text_content: 'hello...?',
+            created_at  : knex.raw('now()'),
+            updated_at  : knex.raw('now()')
+        })
+
+
+    return createCurrent;
 }
 
 exports.getTextList = async function (userId) {

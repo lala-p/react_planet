@@ -12,6 +12,8 @@ const MainCommandTable = () => {
 
     const dispatch = useDispatch();
 
+    const runCommandData = useSelector((state) => state.command.runCommandData)
+
     const msgHistory  = useSelector((state) => state.message.msgHistory)
     const guideScript = useSelector((state) => state.message.guideScript)
     const guideTempo  = useSelector((state) => state.message.guideTempo)
@@ -96,6 +98,7 @@ const MainCommandTable = () => {
     // useEffect -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     useEffect(() => {
         dispatch(commandAction.sendCommand('ping', true))
+    
     }, [])
 
     useEffect(() => {
@@ -110,7 +113,7 @@ const MainCommandTable = () => {
 
     useEffect(() => {
 
-        if (guideScript && guideScript.length != 0) {
+        if (guideScript && guideScript.length != 0 && runCommandData['say']) {
             guideSay(guideScript[0])
             dispatch(messageAction.setReadOnly(true))
         } else {
@@ -150,7 +153,8 @@ const MainCommandTable = () => {
                     <div>readOnly true</div>    
                 :
                     <div>readOnly false</div>
-                }       
+                } 
+
             </div>
                 
         </div>
