@@ -30,7 +30,6 @@ const initialStates = {
 
         // get
         'get+week' : 0,
-        'get+text' : 0,
 
         // load
         'load+text' : 0,

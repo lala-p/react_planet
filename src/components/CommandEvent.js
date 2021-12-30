@@ -66,51 +66,6 @@ const CommandEvent = () => {
         }, [commandCounter['ping']]
     )
     // ===================================================
-    // axios post
-    const getTextCmd = useCallback(
-        () => {
-
-            dispatch(messageAction.setReadOnly(true))
-            dispatch(messageAction.addMsgHistory('gu:loading...'))
-            dispatch(mainTextAction.setMainText('loading...'))
-
-            if (window.confirm("hello...??")) {
-                alert("yes")
-            } else {
-                alert("no")
-            }
-
-
-            const dataContainer = {
-                userId: cookies['user_id'],
-                textTitle: 'current',
-            }
-
-            textApi.getTextByTextTitle(
-                dataContainer,
-                (response) => {
-                    console.log(response.data)
-                    const text = response.data[0]['text_content']
-    
-                    dispatch(mainTextAction.setMainText(text))
-                    dispatch(mainTextAction.setTextTitle('current'))
-                    dispatch(messageAction.addMsgHistory('gu:!@!@!@!@!@!'))
-                },
-                (error) => {
-                    console.log(error)
-                    dispatch(messageAction.addMsgHistory('gu:failed'))
-                    const sec = new Date().getSeconds().toString()
-                    dispatch(mainTextAction.setMainText(sec))
-
-                },
-                () => {
-                    dispatch(messageAction.setReadOnly(false))
-                }
-            )
-
-        }, [commandCounter['get+text']]
-    )
-    // ===================================================
     // axios post 
     const loadTextCmd = useCallback(
         () => {
@@ -221,18 +176,18 @@ const CommandEvent = () => {
     const nowCmd = useCallback(
         () => {
 
-            let getToday = new Date();
+            let getToday = new Date()
 
-            let hours = getToday.getHours();
-            let ampm = hours < 12 ? '  AM' : '  PM';
+            let hours = getToday.getHours()
+            let ampm = hours < 12 ? '  AM' : '  PM'
 
-            hours = hours <= 12 ? hours : hours - 12;
+            hours = hours <= 12 ? hours : hours - 12
             hours = wordFill(hours.toString(), 2, '0')
 
             let minutes = wordFill(getToday.getMinutes().toString(), 2, '0')
             let seconds = wordFill(getToday.getSeconds().toString(), 2, '0')
 
-            let now = ampm + "  " + hours + ":" + minutes + ":" + seconds;
+            let now = ampm + "  " + hours + ":" + minutes + ":" + seconds
             now = [now]
 
             
@@ -247,11 +202,11 @@ const CommandEvent = () => {
     const todayCmd = useCallback(
         () => {
 
-            let today = new Date();
-            let year = today.getFullYear();
-            let month = wordFill((today.getMonth() + 1).toString(), 2, '0');
-            let date = wordFill(today.getDate().toString(), 2, '0');
-            let day = week[today.getDay()];
+            let today = new Date()
+            let year = today.getFullYear()
+            let month = wordFill((today.getMonth() + 1).toString(), 2, '0')
+            let date = wordFill(today.getDate().toString(), 2, '0')
+            let day = week[today.getDay()]
 
             today = year + "-" + month + "-" + date + " " + day;
             today = [today]
@@ -269,12 +224,11 @@ const CommandEvent = () => {
         () => {
 
             let that_date = runCommandData['parameter']
-
-            let year  = that_date[0];
-            let month = that_date[1];
-            let date  = that_date[2];
-                
-            const that_day = new Date();
+            let year  = that_date[0]
+            let month = that_date[1]
+            let date  = that_date[2]
+            
+            const that_day = new Date()
             that_day.setFullYear(year)
             that_day.setMonth(month-1)
             that_day.setDate(date)
@@ -283,25 +237,25 @@ const CommandEvent = () => {
             month = wordFill((that_day.getMonth() + 1).toString(), 2, '0')
             date = wordFill(that_day.getDate().toString(), 2, '0')
 
-            let script = [];
+            let script = []
 
             script[0] = ''
             script[1] = week[that_day.getDay()]
 
-            const now = new Date();
+            const now = new Date()
 
 
             if (now.getFullYear() <= that_day.getFullYear() && now.getMonth() <= that_day.getMonth() && now.getDate() < that_day.getDate()) {
-                script[0] = `${year}-${month}-${date} is...`;
+                script[0] = `${year}-${month}-${date} is...`
 
             } else if (now.getFullYear() === that_day.getFullYear() && now.getMonth() === that_day.getMonth() && now.getDate() === that_day.getDate()) {
-                script[0] = `${year}-${month}-${date} today is...`;
+                script[0] = `${year}-${month}-${date} today is...`
 
             } else if (that_day.getFullYear() < 0) {
-                script[0] = `B.C. &nbsp;${wordFill(Math.abs(that_day.getFullYear()).toString(), 4, '0')}-${month}-${date} was...`;
+                script[0] = `B.C. &nbsp;${wordFill(Math.abs(that_day.getFullYear()).toString(), 4, '0')}-${month}-${date} was...`
 
             } else {
-                script[0] = `${year}-${month}-${date} was...`;
+                script[0] = `${year}-${month}-${date} was...`
             }
 
             dispatch(messageAction.setGuideScript(script))
@@ -393,7 +347,6 @@ const CommandEvent = () => {
             
             // get 
             cmdList['get+week'] = getWeekCmd
-            cmdList['get+text'] = getTextCmd
 
             // load
             cmdList['load+text'] = loadTextCmd
@@ -432,7 +385,7 @@ const CommandEvent = () => {
         let parameter = []
 
         const pr = /^\(.*\)$/g;
-        if ( pr.test(commandType[commandType.length -1])) {
+        if (pr.test(commandType[commandType.length -1])) {
             parameter = commandType.pop()
             parameter = parameter.replace(/\(|\)/g, "")
             parameter = parameter.split(/,/g)

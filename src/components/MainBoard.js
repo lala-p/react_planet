@@ -244,8 +244,7 @@ const MainBoard = () => {
                         } else if (findVer01['global']['find']['planFailed'].test(planText)) {
                             state = 2
                             planText = planText.replace(findVer01['global']['find']['planFailed'], "")
-                        } 
-                        else if (findVer01['global']['find']['planDelay'].test(planText)) {
+                        } else if (findVer01['global']['find']['planDelay'].test(planText)) {
                             state = 3
                             planText = planText.replace(findVer01['global']['find']['planDelay'], "")
                         } else if (findVer01['global']['find']['planSomeday'].test(planText)) {
@@ -274,7 +273,7 @@ const MainBoard = () => {
     useEffect(() => {
         if (mountComplete) {
             if (saveTime && !readOnly) {
-                if (mainText != editorRef.current.getValue()) { 
+                if (mainText != editorRef.current.getValue() || runCommandData['commandType'] == 'save+as') { 
                     
                     dispatch(messageAction.setReadOnly(true))
                     dispatch(messageAction.addMsgHistory('gu:Saving...'))
@@ -359,6 +358,7 @@ const MainBoard = () => {
                                 dispatch(messageAction.setReadOnly(false))
                             }
                         )
+                        
                     } else {
                         console.log('?????')
                     }

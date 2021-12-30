@@ -56,14 +56,14 @@ export const setFontSize = (size) => {
         type: SET_FONT_SIZE,
         payload: size,
     }    
-}
+};
 
 export const setWeekDataList = (dataList) => {
     return {
         type: SET_WEEK_DATA_LIST,
         payload: dataList,
     }
-}
+};
 
 
 export const setTextList = (textList) => {
@@ -71,4 +71,4 @@ export const setTextList = (textList) => {
         type: SET_TEXT_LIST,
         payload: textList,
     }
-}
+};
