@@ -26,7 +26,6 @@ router.post('/save', async (req, res) => {
     let textTitle = req.body.textTitle
 
     var save = await textModel.saveText(userId, text, textTitle)
-
     console.log(save)
     
     res.send('Save Completed.')

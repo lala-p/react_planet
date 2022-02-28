@@ -20,7 +20,7 @@ exports.saveText = async function (userId, text, textTitle) {
         .andWhere('text_title', textTitle)
         .update({
             text_content: text,
-            updated_at: knex.raw('now()') 
+            updated_at: knex.raw('NOW()') 
         })
 
     return saveText;

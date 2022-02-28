@@ -74,12 +74,12 @@ const CommandEvent = () => {
             dispatch(messageAction.addMsgHistory('gu:loading...'))
             dispatch(mainTextAction.setMainText('loading...'))
 
-            let loadTextTitle = runCommandData['parameter'][0]   
-            
-            
+            let loadTextTitle = runCommandData['parameter'] ? runCommandData['parameter'][0] : 'current'   
+        
+
             const dataContainer = {
                 userId: cookies['user_id'],
-                textTitle: runCommandData['parameter'].length != 0 ? loadTextTitle : 'current',
+                textTitle: loadTextTitle,
             }
 
             textApi.getTextByTextTitle(

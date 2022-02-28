@@ -284,6 +284,7 @@ const MainBoard = () => {
                     dispatchWeekDataList(editorRef.current.getValue())
 
 
+
                     const dataContainer1 = {
                         userId: cookies['user_id'],
                         text: editorRef.current.getValue(),
@@ -301,7 +302,9 @@ const MainBoard = () => {
                     }
 
                     if (runCommandData['commandType'] == 'save+text') {
-                        
+
+                        console.log(dataContainer1)
+
                         textApi.saveText(
                             dataContainer1,
                             (response) => {
