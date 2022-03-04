@@ -10,9 +10,6 @@ import * as modeAction from '../actions/mode';
 import { serverConnect } from '../api/etcApi';
 import * as textApi from '../api/textApi';
 
-import { wordFill } from "./etc";
-
-
 
 const CommandEvent = () => {
 
@@ -20,9 +17,10 @@ const CommandEvent = () => {
 
     const textTitle = useSelector((state) => state.mainText.textTitle)
 
-    const sendCommand    = useSelector((state) => state.command.sendCommand)
-    const runCommandData = useSelector((state) => state.command.runCommandData)
-    const commandCounter = useSelector((state) => state.command.commandCounter)
+    const sendCommand     = useSelector((state) => state.command.sendCommand)
+    const sendCommandList = useSelector((state) => state.command.sendCommandList)
+    const runCommandData  = useSelector((state) => state.command.runCommandData)
+    const commandCounter  = useSelector((state) => state.command.commandCounter)
 
     const week = useSelector((state) => state.astronaut.week)
 
@@ -33,30 +31,37 @@ const CommandEvent = () => {
 
     const [commandList, setCommandList] = useState({})
 
+    // ===================================================
+    const wordFill = (str, len, word) => {
+
+        let returnWord = str;
+        for (let index = str.length; index < len; index++) {
+            returnWord = word + returnWord;
+        }
+    
+        return returnWord;
+    }
+    // ===================================================
+    const guideSayNotDelay = (script) => {
+        dispatch(messageAction.addMsgHistory('gu:loading...'))
+    }
 
     // ===================================================
     // 서버 연결 확인하기
     const pingCmd = useCallback(
-        () => {
-
-            dispatch(messageAction.setReadOnly(true))
-            
+        () => {            
             serverConnect(
                 (response) => {
+                    let script = ['connect']
+                    dispatch(messageAction.setGuideScript(script))
                     console.log(response.data)
-                    if (runCommandData['say']) {
-                        dispatch(messageAction.addMsgHistory('gu:connect'))
-                    }
                 },
                 (error) => {
+                    let script = ['connect failed']
+                    dispatch(messageAction.setGuideScript(script))
                     console.log(error)
-                    if (runCommandData['say']) {
-                        dispatch(messageAction.addMsgHistory('gu:connect failed'))   
-                    }
                 },
-                () => {
-                    dispatch(messageAction.setReadOnly(false))
-                },
+                false
             )
 
         }, [commandCounter['ping']]
@@ -66,7 +71,8 @@ const CommandEvent = () => {
     const loadTextCmd = useCallback(
         () => {
             
-            dispatch(messageAction.setReadOnly(true))
+            let script = ['connect']
+                    dispatch(messageAction.setGuideScript(script))
             if (runCommandData['say']) {
                 dispatch(messageAction.addMsgHistory('gu:loading...'))
             }
@@ -99,14 +105,36 @@ const CommandEvent = () => {
                         dispatch(messageAction.addMsgHistory('gu:failed'))
                     }
                 },
-                () => {
-                    dispatch(messageAction.setReadOnly(false))
-                }
+                false
             )
 
             console.log(dataContainer)
             console.log(runCommandData)
         }, [commandCounter['load+text']]
+    )
+    // ===================================================
+    // 
+    const getTextListCmd = useCallback(
+        () => {
+
+            const dataContainer = {
+                userId: cookies['user_id'],
+            }
+    
+            textApi.getTextList(
+                dataContainer,
+                (response) => {
+                    dispatch(mainTextAction.setTextList(response.data))
+                    dispatch(messageAction.setGuideScript(['Completed','!@!!@!@!@21']))
+                },
+                (error) => {
+                    console.log(error)
+                    // dispatch(messageAction.addMsgHistory('gu:fffffailed.'))
+                },
+                false
+            )
+
+        }, [commandCounter['get+textlist']]
     )
     // ===================================================
     // 
@@ -165,9 +193,7 @@ const CommandEvent = () => {
                             dispatch(messageAction.addMsgHistory('gu:failed'))
                         }
                     },
-                    () => {
-                        dispatch(messageAction.setReadOnly(false))
-                    }
+                    false
                 )
 
 
@@ -317,6 +343,7 @@ const CommandEvent = () => {
             
             // get 
             cmdList['get+week'] = getWeekCmd
+            cmdList['get+textlist'] = getTextListCmd
 
             // load
             cmdList['load+text'] = loadTextCmd
@@ -336,8 +363,6 @@ const CommandEvent = () => {
 
         }, [runCommandData]
     )
-
-    
 
     const IsCommand = (command) => {
 
@@ -361,6 +386,11 @@ const CommandEvent = () => {
         }
     }
 
+    useEffect(() => {
+        if (sendCommandList.length != 0) {
+            dispatch(commandAction.sendCommand(sendCommandList[0]['command'], sendCommandList[0]['say']))
+        }
+    }, [sendCommandList])
 
     useEffect(() => {
         if (sendCommand['command'] != undefined) {
@@ -386,6 +416,10 @@ const CommandEvent = () => {
     useEffect(() => {
         if (runCommandData['commandType'] != undefined) {
             commandList[runCommandData['commandType']]()
+            
+            if (sendCommandList.length != 0) {
+                dispatch(commandAction.shiftSendCommandList())
+            }
         }
     }, [commandList])
 

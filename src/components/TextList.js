@@ -17,28 +17,6 @@ const TextTable = () => {
     
     const [cookies, setCookie, removeCookie] = useCookies()    
 
-    useEffect(() => {
-
-        const dataContainer = {
-            userId: cookies['user_id'],
-        }
-
-        textApi.getTextList(
-            dataContainer,
-            (response) => {
-                dispatch(mainTextAction.setTextList(response.data))
-            },
-            (error) => {
-                console.log(error)
-                // dispatch(messageAction.addMsgHistory('gu:fffffailed.'))
-            },
-            () => {
-                // dispatch(messageAction.setReadOnly(false))
-            }
-        )
-
-    }, [saveAt])
-    
 
     const textList = textListData.map((textData, index) => (
         <tr>

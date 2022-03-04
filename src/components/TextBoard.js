@@ -274,8 +274,7 @@ const MainBoard = () => {
         if (mountComplete) {
             if (saveAt && !readOnly) {
                 if (mainText != editorRef.current.getValue() || runCommandData['commandType'] == 'save+as') { 
-                    
-                    dispatch(messageAction.setReadOnly(true))
+                
                     dispatch(messageAction.addMsgHistory('gu:Saving...'))
 
                     dispatch(mainTextAction.setMainText(editorRef.current.getValue()))
@@ -295,20 +294,18 @@ const MainBoard = () => {
                         textApi.saveText(
                             dataContainer,
                             (response) => {
-                                if (runCommandData['say']) {
-                                    dispatch(messageAction.addMsgHistory('gu:Save Completed.'))
-                                }  
+                                let script = ['Save Completed']
+                                dispatch(messageAction.setGuideScript(script))
+                                
+                                dispatch(commandAction.sendCommand('get textlist', false))  
                             },
                             (error) => {
-                                console.log(error)
-                                if (runCommandData['say']) {
-                                    dispatch(messageAction.addMsgHistory('gu:Save failed.'))
-                                }
+                                let script = ['Save failed.']
+                                dispatch(messageAction.setGuideScript(script))
                                 
+                                console.log(error)
                             },
-                            () => {
-                                dispatch(messageAction.setReadOnly(false))
-                            }
+                            false
                         )
 
                     } else if (runCommandData['commandType'] == 'save+as') {
@@ -322,20 +319,16 @@ const MainBoard = () => {
                         textApi.saveAsText(
                             dataContainer,
                             (response) => {
-                                if (runCommandData['say']) {
-                                    dispatch(messageAction.addMsgHistory('gu:Save as Completed.'))
-                                }
-                                dispatch(commandAction.sendCommand('save text', false))
+                                let script = ['Save as Completed.']
+                                dispatch(messageAction.setGuideScript(script))
+                                dispatch(commandAction.sendCommand('get textlist', false))
                             },
                             (error) => {
+                                let script = ['Save as failed.']
+                                dispatch(messageAction.setGuideScript(script))
                                 console.log(error)
-                                if (runCommandData['say']) {
-                                    dispatch(messageAction.addMsgHistory('gu:Save as failed.'))
-                                }
                             },
-                            () => {
-                                dispatch(messageAction.setReadOnly(false))
-                            }
+                            false
                         )
                         
                     } else {

@@ -31,7 +31,7 @@ const MainPage = () => {
             case 1: 
                 return <MemoTable2></MemoTable2>
             case 2:
-                return null // TextList
+                return <TextList></TextList> // TextList
             default:
                 return <Help></Help>
 
@@ -71,9 +71,9 @@ const MainPage = () => {
                     <div style={currentMode != 0 ? {display: "none"} : null}>
                         <TextBoard></TextBoard>
                     </div>
-                    <div style={currentMode != 2 ? {display: "none"} : null}>
+                    {/* <div style={currentMode != 2 ? {display: "none"} : null}>
                         <TextList></TextList>
-                    </div>
+                    </div> */}
                 
                     {modeHandler()}
                 </div>

@@ -7,9 +7,10 @@ const initialStates = {
 
     sendCommand: {
         command: undefined,
-        when   : "",
+        at     : "",
         say    : false,
     },
+    sendCommandList: [],
     runCommandData: {
         commandType: undefined,
         parameter  : undefined,
@@ -28,24 +29,25 @@ const initialStates = {
         // 'update': 0,
 
         // get
-        'get+week' : 0,
+        'get+week'    : 0,
+        'get+textlist': 0,
 
         // load
-        'load+text' : 0,
+        'load+text': 0,
 
         // set
-        'set+mode' : 0,
+        'set+mode': 0,
         
         // save
-        'save+text' : 0,
-        'save+as'   : 0,
+        'save+text': 0,
+        'save+as'  : 0,
         
         // show
-        'show+text+title' : 0,
+        'show+text+title': 0,
         'show+meal_menu' : 0,
-        'show+test' : 0,
+        'show+test'      : 0,
 
-        'rename+text+title' : 0,
+        'rename+text+title': 0,
         
         
     }, 
@@ -57,8 +59,18 @@ const reducers = (state = initialStates, actions) => {
         case commandAction.SEND_COMMAND: {
             return produce(state, draft => {
                 draft.sendCommand['command'] = actions.payload1
-                draft.sendCommand['when']    = actions.payload2
+                draft.sendCommand['at']    = actions.payload2
                 draft.sendCommand['say']     = actions.payload3
+            })
+        }
+        case commandAction.SEND_COMMAND_LIST: {
+            return produce(state, draft => {
+                draft.sendCommandList = actions.payload
+            })
+        }
+        case commandAction.SHIFT_SEND_COMMAND_LIST: {
+            return produce(state, draft => {
+                draft.sendCommandList.shift()
             })
         }
         case commandAction.RUN_COMMAND: {
