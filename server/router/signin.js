@@ -9,7 +9,7 @@ router.use(express.json());
 router.use(cors());
 
 
-router.post('/user', async (req, res) => {
+router.post('/signinUser', async (req, res) => {
 
     let userId = req.body.userId
     let userPassword = req.body.userPassword

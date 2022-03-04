@@ -2,7 +2,7 @@ import React, {useState, useEffect, useRef} from 'react';
 import { useHistory } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
-import { signinUser } from '../api/signin';
+import { signInUser } from '../api/sign';
 
 
 const SigninPage = () => {
@@ -34,14 +34,14 @@ const SigninPage = () => {
                 userPassword: password,
             }
 
-            signinUser(
+            signInUser(
                 signinData,
                 (response) => {
                     console.log(response.data)
             
                     if (response.data) {
                         setCookie('user_id', userId, {path: '/'})
-                        history.push("/loading")
+                        history.push("/main")
 
                     } else {
                         setUserId('')
@@ -68,7 +68,7 @@ const SigninPage = () => {
     useEffect(() => {
         
         if (cookies.user_id) {
-            history.push("/loading")
+            history.push("/main")
         } else {
             userIdRef.current.focus()
         }

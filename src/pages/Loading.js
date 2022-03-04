@@ -18,28 +18,8 @@ const Loading = () => {
     useEffect(() => {
         setTimeout(() => {
             // dispatch(mainTextAction.setFontSize(50)) 
-            dispatch(mainTextAction.setTextTitle('current'))
+            // dispatch(mainTextAction.setTextTitle('current'))
         
-            const dataContainer = {
-                userId: cookies['user_id']
-            }
-
-            textApi.getTextList(
-                dataContainer,
-                (response) => {
-                    console.log(response.data)
-                    
-                    dispatch(mainTextAction.setTextList(response.data))
-                    dispatch(mainTextAction.setTextTitle('current'))
-                },
-                (error) => {
-                    console.log(error)
-                },
-                () => {
-
-                }
-            )
-
             history.push("/main")
         }, 1000)    
     }, [])

@@ -7,8 +7,8 @@ const initialStates = {
 
     mainText: false,
     textTitle: false,
-    saveTime: false,
-    updateTime: false,
+    saveAt: false,
+    updateAt: false,
     textLength: 0,
     removeSpaceTextLength: 0,
     fontSize: 14,
@@ -29,14 +29,14 @@ const reducers = (state = initialStates, actions) => {
                 draft.textTitle = actions.payload
             })
         }
-        case mainTextAction.SET_SAVE_TIME: {
+        case mainTextAction.SET_SAVE_AT: {
             return produce(state, draft => {
-                draft.saveTime = actions.payload
+                draft.saveAt = actions.payload
             })
         }
-        case mainTextAction.SET_UPDATE_TIME: {
+        case mainTextAction.SET_UPDATE_AT: {
             return produce(state, draft => {
-                draft.updateTime = actions.payload
+                draft.updateAt = actions.payload
             })
         }
         case mainTextAction.SET_TEXT_LENGTH: {

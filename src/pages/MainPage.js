@@ -5,12 +5,12 @@ import { useHotkeys } from 'react-hotkeys-hook';
 
 import * as modeAction from '../actions/mode';
 
-import MainBoard from '../components/MainBoard';
+import TextBoard from '../components/TextBoard';
 // import MemoTable from '../components/MemoTable';
 import MemoTable2 from '../components/MemoTable2';
-import MainCommandTable from '../components/MainCommandTable';
-import MainGuide from '../components/MainGuide';
-import TextTable from '../components/TextTable';
+import CommandTable from '../components/CommandTable';
+import Gudie from '../components/Guide';
+import TextList from '../components/TextList';
 import Help from '../components/Help';
 import CommandEvent from '../components/CommandEvent';
 
@@ -20,18 +20,18 @@ const MainPage = () => {
     const history = useHistory()
     const dispatch = useDispatch()
 
-    const textTitle = useSelector((state) => state.mainText.textTitle)
+    // const textTitle = useSelector((state) => state.mainText.textTitle)
     const currentMode = useSelector((state) => state.mode.currentMode)
 
     const modeHandler = () => {
 
         switch (currentMode) {
             case 0:
-                return null
+                return null // TextBoard
             case 1: 
                 return <MemoTable2></MemoTable2>
             case 2:
-                return <TextTable></TextTable>
+                return null // TextList
             default:
                 return <Help></Help>
 
@@ -42,9 +42,7 @@ const MainPage = () => {
     useHotkeys('shift+down', ()=> dispatch(modeAction.rangeControl(1)))
 
     useEffect(() => {
-        if (!textTitle) {
-            history.push("/loading")
-        }
+       
     }, [])
 
 
@@ -53,11 +51,11 @@ const MainPage = () => {
             <div style={{display: "flex", paddingTop: "20px", paddingLeft:"20px"}}>
                 <div style={{width: "320px"}}>
                     <div>
-                        <MainGuide></MainGuide>
+                        <Gudie></Gudie>
                     </div>
                     <div>
                         <CommandEvent />
-                        <MainCommandTable></MainCommandTable>
+                        <CommandTable></CommandTable>
                     </div>
 
                     현재 currentMode = {currentMode}
@@ -71,8 +69,12 @@ const MainPage = () => {
                 &nbsp;&nbsp;&nbsp;
                 <div style={{display: "flex", width: "1400px"}}>   
                     <div style={currentMode != 0 ? {display: "none"} : null}>
-                        <MainBoard></MainBoard>
+                        <TextBoard></TextBoard>
                     </div>
+                    <div style={currentMode != 2 ? {display: "none"} : null}>
+                        <TextList></TextList>
+                    </div>
+                
                     {modeHandler()}
                 </div>
                 &nbsp;&nbsp;&nbsp;

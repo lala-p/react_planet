@@ -6,10 +6,6 @@ import * as mainTextAction from '../actions/mainText';
 import * as messageAction from '../actions/message';
 import * as commandAction from '../actions/command';
 import * as modeAction from '../actions/mode';
-// import * as astronautAction from '../actions/astronaut';
-
-
-// import random from "random";
 
 import { serverConnect } from '../api/etcApi';
 import * as textApi from '../api/textApi';
@@ -28,10 +24,6 @@ const CommandEvent = () => {
     const runCommandData = useSelector((state) => state.command.runCommandData)
     const commandCounter = useSelector((state) => state.command.commandCounter)
 
-    // const astronautId       = useSelector((state) => state.astronaut.astronautId)
-    // const astronautNickname = useSelector((state) => state.astronaut.astronautNickname)
-    // const astronautPassword = useSelector((state) => state.astronaut.astronautPassword)
-    // const mealMenu          = useSelector((state) => state.astronaut.mealMenu)
     const week = useSelector((state) => state.astronaut.week)
 
     const mode = useSelector((state) => state.mode.mode)
@@ -52,11 +44,15 @@ const CommandEvent = () => {
             serverConnect(
                 (response) => {
                     console.log(response.data)
-                    dispatch(messageAction.addMsgHistory('gu:connect'))
+                    if (runCommandData['say']) {
+                        dispatch(messageAction.addMsgHistory('gu:connect'))
+                    }
                 },
                 (error) => {
                     console.log(error)
-                    dispatch(messageAction.addMsgHistory('gu:connect failed'))
+                    if (runCommandData['say']) {
+                        dispatch(messageAction.addMsgHistory('gu:connect failed'))   
+                    }
                 },
                 () => {
                     dispatch(messageAction.setReadOnly(false))
@@ -71,14 +67,17 @@ const CommandEvent = () => {
         () => {
             
             dispatch(messageAction.setReadOnly(true))
-            dispatch(messageAction.addMsgHistory('gu:loading...'))
+            if (runCommandData['say']) {
+                dispatch(messageAction.addMsgHistory('gu:loading...'))
+            }
+            
             dispatch(mainTextAction.setMainText('loading...'))
 
-            let loadTextTitle = runCommandData['parameter'] ? runCommandData['parameter'][0] : 'current'   
+            const loadTextTitle = runCommandData['parameter'].length != 0 ? runCommandData['parameter'][0] : 'current'   
         
 
             const dataContainer = {
-                userId: cookies['user_id'],
+                userId   : cookies['user_id'],
                 textTitle: loadTextTitle,
             }
 
@@ -90,54 +89,101 @@ const CommandEvent = () => {
                     
                     dispatch(mainTextAction.setMainText(text))
                     dispatch(mainTextAction.setTextTitle(loadTextTitle))
-                    dispatch(messageAction.addMsgHistory('gu:!@!@!@!@!@!@!@!@!@!'))
+                    if (runCommandData['say']) {
+                        dispatch(messageAction.addMsgHistory('gu:!@!@!@!@!@!@!@!@!@!'))
+                    }  
                 },
                 (error) => {
                     console.log(error)
-                    dispatch(messageAction.addMsgHistory('gu:failed'))
+                    if (runCommandData['say']) {
+                        dispatch(messageAction.addMsgHistory('gu:failed'))
+                    }
                 },
                 () => {
                     dispatch(messageAction.setReadOnly(false))
                 }
             )
 
-
+            console.log(dataContainer)
             console.log(runCommandData)
         }, [commandCounter['load+text']]
     )
     // ===================================================
-    // ?????????
-    // const updateCmd = useCallback(
-    //     () => {
-    //         dispatch(mainTextAction.setUpdateTime(new Date()))
-    //     }, [commandCounter['update']]
-    // )
-
-    // ===================================================
-    // axios post
+    // 
     const saveTextCmd = useCallback(
         () => {
-            dispatch(mainTextAction.setSaveTime(new Date()))
+            dispatch(mainTextAction.setSaveAt(new Date()))
         }, [commandCounter['save+text']]
     )
     // ===================================================
-    // axios post
+    // 
     const saveAsCmd = useCallback(
         () => {
-            if (textTitle == 'current') {
-                dispatch(mainTextAction.setSaveTime(new Date()))
+            if (runCommandData['parameter'][0] == 'current') {
+                if (runCommandData['say']) {
+                    dispatch(messageAction.addMsgHistory('gu:\'current\' not allowed'))
+                }
+                
+            } else if (textTitle != 'current') {
+                if (runCommandData['say']) {
+                    dispatch(messageAction.addMsgHistory('gu:lt\'s not current.'))
+                }
             } else {
-                dispatch(messageAction.addMsgHistory('gu:lt\'s not current.'))
+                dispatch(mainTextAction.setSaveAt(new Date()))
             }
 
         }, [commandCounter['save+as']]
     )
     // ===================================================
-    // axios post
+    // 
     const renameTextTitleCmd = useCallback(
         () => {
+            let textTitle    = runCommandData['parameter'][0]
+            let newTextTitle = runCommandData['parameter'][1]
+
+            if (textTitle == 'current' || newTextTitle == 'current') {
+                const script = ['current', 'not', 'allowed.']
+                dispatch(messageAction.setGuideScript(script))
+            } else {
+
+                const dataContainer = {
+                    userId       : cookies['user_id'],
+                    textTitle    : textTitle,
+                    newTextTitle : newTextTitle,
+                }
+
+                textApi.renameTextTitle(
+                    dataContainer,
+                    (response) => {
+                        if (runCommandData['say']) {
+                            dispatch(messageAction.addMsgHistory('Completed'))
+                        }
+                    },
+                    (error) => {
+                        console.log(error)
+                        if (runCommandData['say']) {
+                            dispatch(messageAction.addMsgHistory('gu:failed'))
+                        }
+                    },
+                    () => {
+                        dispatch(messageAction.setReadOnly(false))
+                    }
+                )
+
+
+
+
+            }
 
         }, [commandCounter['rename+text+title']]
+    )
+    // ===================================================
+    // 
+    const showTitleCmd = useCallback(
+        () => {
+            const script = [textTitle]
+            dispatch(messageAction.setGuideScript(script))
+        }, [commandCounter['show+text+title']]
     )
     // ===================================================
     // mainContent에 있는 component 바꾸기/ mode 바꾸기
@@ -145,30 +191,22 @@ const CommandEvent = () => {
         () => {
 
             let notExist = true;
-            let changeMode = runCommandData['parameter']
+            let changeMode = runCommandData['parameter'][0]
 
             for (let index = 0; index < mode.length; index++) {
-                if (changeMode[0] == mode[index]) {
+                if (changeMode == mode[index]) {
                     dispatch(modeAction.setMode(index))
                     notExist = false
                 }
             }
             
             if (notExist) {
-                const script = [changeMode[0] + ' mode does not exist.']
+                const script = [changeMode + ' mode does not exist.']
 
                 dispatch(messageAction.setGuideScript(script))
             }
         
         }, [commandCounter['set+mode']]
-    )
-    // ===================================================
-    // say 
-    const sayCmd = useCallback(
-        () => {
-            let userSay = runCommandData['parameter'][0]
-            dispatch(messageAction.addMsgHistory('me:' + userSay))
-        }, [commandCounter['say']]
     )
     // ===================================================
     // return 현재 시간 
@@ -218,7 +256,7 @@ const CommandEvent = () => {
     )
     // ===================================================
     // input : get week (year, month, date)
-    // return 특적 날짜의 요일 
+    // return 특정 날짜의 요일 
     // ex) 2021-08-30 was... / THU
     const getWeekCmd = useCallback(
         () => {
@@ -262,72 +300,6 @@ const CommandEvent = () => {
 
         }, [commandCounter['get+week']]
     ) 
-    // ===================================================
-    // return mealMenu
-    // const showMealMenuCmd = useCallback(
-    //     () => {
-
-    //         let script = [];
-
-    //         for (let index = 0; index < mealMenu.length; index++) {
-    //             script = script.concat('[' + (index + 1) + '] ' + mealMenu[index])
-    //         }
-
-    //         if (runCommandData['say']) {
-    //             dispatch(messageAction.setGuideScript(script))
-    //         }
-
-
-    //     }, [commandCounter['show+meal_menu']]
-    // )
-
-    // ===================================================
-    // return random으로 mealMenu 중 하나를 뽑음
-    // const randomMealCmd = useCallback(
-    //     () => {
-
-    //         const ranInt = random.int(0, mealMenu.length - 1)
-    //         let meal = mealMenu[ranInt]
-    //         meal = [meal]
-
-    //         if (runCommandData['say']) {
-    //             dispatch(messageAction.setGuideScript(meal))
-    //         }
-
-
-    //     }, [commandCounter['random+meal']]
-    // )
-
-    // ===================================================
-    // return meal로 array를 받은 후, mealMenu 요소를 추가함.
-    // const addMealMenuCmd = useCallback(
-    //     () => {
-
-    //         let meal = runCommandData['parameter']
-
-    //         dispatch(astronautAction.addMealMenu(meal))
-    //         const script = ['Completed.']
-
-    //         if (runCommandData['say']) {
-    //             dispatch(messageAction.setGuideScript(script))
-    //         }
-
-    //     }, [commandCounter['add+meal_menu']]
-    // )
-    // ===================================================
-    // return meal로 array를 받은 후, mealMenu 요소를 삭제함.
-    // const deleteMealMenuCmd = useCallback(
-    //     () => {
-    //         let meal = runCommandData['parameter']
-    //         dispatch(astronautAction.deleteMealMenu(meal))
-    //         const script = ['Completed.']
-
-    //         if (runCommandData['say']) {
-    //             dispatch(messageAction.setGuideScript(script))
-    //         }
-
-    //     }, [commandCounter['delete+meal_menu']]
-    // )
 
 
     const commandInit = useCallback(
@@ -338,12 +310,10 @@ const CommandEvent = () => {
             cmdList['hi'] = () => { dispatch(messageAction.setGuideScript([`hi, ????`, "nice meet you"])) }
             cmdList['hello'] = () => { dispatch(messageAction.setGuideScript(["it's me..."])) }
 
-            cmdList['say'] = sayCmd
             cmdList['now']   = nowCmd
             cmdList['today'] = todayCmd
 
             cmdList['ping']   = pingCmd
-            // cmdList['update'] = updateCmd
             
             // get 
             cmdList['get+week'] = getWeekCmd
@@ -358,20 +328,10 @@ const CommandEvent = () => {
             cmdList['save+text'] = saveTextCmd
             cmdList['save+as'] = saveAsCmd
 
-            // random
-            // cmdList['random+meal'] = randomMealCmd
-
             // show
-            // cmdList['show+meal_menu'] = showMealMenuCmd
-            // cmdList['show+test']      = () => { dispatch(messageAction.setGuideScript(["test!@!@!@!@"])) }
+            cmdList['show+text+title'] = showTitleCmd
 
-            //add 
-            // cmdList['add+meal_menu']  = addMealMenuCmd
-
-            // delete
-            // cmdList['delete+meal_menu'] = deleteMealMenuCmd
-
-
+            cmdList['rename+text+title'] = renameTextTitleCmd
             setCommandList(cmdList)
 
         }, [runCommandData]

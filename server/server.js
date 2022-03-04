@@ -8,7 +8,6 @@ const cors = require("cors");
 const app = express();
 const port = 3001
 
-
 const astronaut = require('./router/astronaut');
 const command = require('./router/command');
 const signin = require('./router/signin');
@@ -26,11 +25,11 @@ app.get('/', (req, res) => {
 
 });
 
-app.use('/astronaut', astronaut);
-app.use('/command', command);
-app.use('/signin', signin);
-app.use('/signup', signup);
-app.use('/text', text);
+app.use('/astronautApi', astronaut);
+app.use('/commandApi', command);
+app.use('/signinApi', signin);
+app.use('/signupApi', signup);
+app.use('/textApi', text);
 
 
 app.listen(port, () => {

@@ -8,7 +8,7 @@ router.use(express.json());
 router.use(cors());
 
 
-router.post('/user', async (req, res) => {
+router.post('/signUpuser', async (req, res) => {
 
 
 });

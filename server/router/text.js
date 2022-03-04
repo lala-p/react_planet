@@ -9,12 +9,12 @@ router.use(express.json());
 router.use(cors());
 
 
-router.post('/get/byTextTitle', async (req, res) => {
+router.post('/getTextByTitle', async (req, res) => {
 
     let userId    = req.body.userId
     let textTitle = req.body.textTitle
-    
-    var text = await textModel.getTextByTextTitle(userId, textTitle)
+
+    var text = await textModel.getTextByTitle(userId, textTitle)
 
     res.send(text);
 });
@@ -31,7 +31,7 @@ router.post('/save', async (req, res) => {
     res.send('Save Completed.')
 });
 
-router.post('/save/as', async (req, res) => {
+router.post('/saveAs', async (req, res) => {
 
     let userId    = req.body.userId
     let text      = req.body.text
@@ -47,7 +47,7 @@ router.post('/save/as', async (req, res) => {
 });
 
 
-router.post('/get/textList', async (req, res) => {
+router.post('/getTextList', async (req, res) => {
 
     let userId = req.body.userId
         
@@ -57,5 +57,13 @@ router.post('/get/textList', async (req, res) => {
     res.send(textList)
 });
 
+router.post('/renameTextTitle', async (req, res) => {
+
+    let userId       = req.body.userId
+    let textTitle    = req.body.textTitle
+    let newTextTitle = req.body.newTextTitle
+
+    res.send(false)
+});
 
 module.exports = router;

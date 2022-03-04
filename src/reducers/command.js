@@ -21,7 +21,6 @@ const initialStates = {
         'hi': 0,
         'hello': 0,
 
-        'say': 0,
         'now': 0,
         'today': 0,
         
@@ -41,18 +40,13 @@ const initialStates = {
         'save+text' : 0,
         'save+as'   : 0,
         
-        // random
-        'random+meal' : 0,
-        
         // show
+        'show+text+title' : 0,
         'show+meal_menu' : 0,
         'show+test' : 0,
+
+        'rename+text+title' : 0,
         
-        // add
-        'add+meal_menu' : 0,
-        
-        // delete
-        'delete+meal_menu' : 0,
         
     }, 
 
