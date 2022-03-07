@@ -381,6 +381,7 @@ const CommandEvent = () => {
             cmdList['show+text+title'] = showTitleCmd
 
             cmdList['rename+text+title'] = renameTextTitleCmd
+            
             setCommandList(cmdList)
 
         }, [runCommandData]
@@ -411,6 +412,7 @@ const CommandEvent = () => {
     useEffect(() => {
         if (sendCommandList.length != 0) {
             dispatch(commandAction.sendCommand(sendCommandList[0]['command'], sendCommandList[0]['say']))
+            console.log(sendCommandList[0])
         }
     }, [sendCommandList])
 
@@ -438,10 +440,6 @@ const CommandEvent = () => {
     useEffect(() => {
         if (runCommandData['commandType'] != undefined) {
             commandList[runCommandData['commandType']]()
-            
-            if (sendCommandList.length != 0) {
-                dispatch(commandAction.shiftSendCommandList())
-            }
         }
     }, [commandList])
 

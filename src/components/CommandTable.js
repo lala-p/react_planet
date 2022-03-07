@@ -12,10 +12,12 @@ const MainCommandTable = () => {
 
     const dispatch = useDispatch();
 
+    const sendCommandList = useSelector((state) => state.command.sendCommandList)
     const runCommandData = useSelector((state) => state.command.runCommandData)
 
     const msgHistory  = useSelector((state) => state.message.msgHistory)
     const guideScript = useSelector((state) => state.message.guideScript)
+    const guideTempo  = useSelector((state) => state.message.guideTempo)
     const readOnly    = useSelector((state) => state.message.readOnly)    
 
     const [cookies, setCookie, removeCookie] = useCookies()    
@@ -39,6 +41,7 @@ const MainCommandTable = () => {
                     if (userInput == "clear") {
                         dispatch(messageAction.clearMsgHistory())
                     } else {
+                
                         dispatch(messageAction.addMsgHistory('me:' + userInput))
                         
                         if (userInput.replace(/\s/g, "")) {
@@ -78,27 +81,11 @@ const MainCommandTable = () => {
         }
     }
     // ===================================================
-    const guideSay = () => {
-
-        let time = []
-        let total = 0
-
-        for (let index = 0; index < guideScript.length; index++) { 
-            time.push(total + guideScript[index]['tempo'])
-            total = total + guideScript[index]['tempo']
-        }
-
-        for (let index = 0; index < guideScript.length; index++) {
-            ((x) => {
-				setTimeout(() => {
-					dispatch(messageAction.addMsgHistory('gu:' + guideScript[x]['say']))
-                    if (x == guideScript.length - 1) {
-                        dispatch(messageAction.setReadOnly(false))
-                    }
-                }, time[x])
-			})(index)
-		}
-
+    const guideSay = (script) => {
+        setTimeout(() => {
+            dispatch(messageAction.addMsgHistory('gu:' + script['say']))
+            dispatch(messageAction.shiftGuideScript())
+        }, script['tempo'] + 25)
     }
 
     // ===================================================
@@ -116,8 +103,8 @@ const MainCommandTable = () => {
         commandList.push({command: 'ping', say: true})
         commandList.push({command: 'load text', say: true})
         commandList.push({command: 'get textlist', say: true})
-
-        dispatch(commandAction.sendCommandList(commandList))        
+        
+        dispatch(commandAction.sendCommandList(commandList))
     }, [])
 
     useEffect(() => {
@@ -132,9 +119,17 @@ const MainCommandTable = () => {
 
     useEffect(() => {
         if (runCommandData['say'] && guideScript && guideScript.length != 0) {
-            dispatch(messageAction.setReadOnly(true))
-            guideSay()
+            guideSay(guideScript[0])
+            // dispatch(messageAction.setReadOnly(true))
+            
+        } else {
+            if (sendCommandList.length != 0) {
+                dispatch(commandAction.shiftSendCommandList())
+                // dispatch(messageAction.setReadOnly(false))
+            }
         }
+        dispatch(messageAction.setReadOnly(runCommandData['say'] && guideScript && guideScript.length != 0  || sendCommandList.length != 1))
+
     }, [guideScript])
 
     useEffect(() => {

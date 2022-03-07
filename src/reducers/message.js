@@ -30,6 +30,11 @@ const reducers = (state = initialStates, actions) => {
                 draft.guideScript = actions.payload
             })
         }
+        case messageAction.SHIFT_GUIDE_SCRIPT: {
+            return produce(state, draft => {
+                draft.guideScript.shift()
+            })
+        }
         case messageAction.SET_NORMAL_TEMPO: {
             return produce(state, draft => {
                 draft.normalTempo = actions.payload
