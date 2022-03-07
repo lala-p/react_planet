@@ -18,9 +18,9 @@ const initialStates = {
     },
     commandCounter: {
 
-        'haha': 0,
-        'hi': 0,
-        'hello': 0,
+        // 'haha': 0,
+        // 'hi': 0,
+        // 'hello': 0,
 
         'now': 0,
         'today': 0,

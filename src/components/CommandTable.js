@@ -16,7 +16,6 @@ const MainCommandTable = () => {
 
     const msgHistory  = useSelector((state) => state.message.msgHistory)
     const guideScript = useSelector((state) => state.message.guideScript)
-    const guideTempo  = useSelector((state) => state.message.guideTempo)
     const readOnly    = useSelector((state) => state.message.readOnly)    
 
     const [cookies, setCookie, removeCookie] = useCookies()    
@@ -40,7 +39,6 @@ const MainCommandTable = () => {
                     if (userInput == "clear") {
                         dispatch(messageAction.clearMsgHistory())
                     } else {
-                
                         dispatch(messageAction.addMsgHistory('me:' + userInput))
                         
                         if (userInput.replace(/\s/g, "")) {
@@ -81,16 +79,26 @@ const MainCommandTable = () => {
     }
     // ===================================================
     const guideSay = () => {
+
+        let time = []
+        let total = 0
+
+        for (let index = 0; index < guideScript.length; index++) { 
+            time.push(total + guideScript[index]['tempo'])
+            total = total + guideScript[index]['tempo']
+        }
+
         for (let index = 0; index < guideScript.length; index++) {
-			((x) => {
+            ((x) => {
 				setTimeout(() => {
-					dispatch(messageAction.addMsgHistory('gu:' + guideScript[x]))
+					dispatch(messageAction.addMsgHistory('gu:' + guideScript[x]['say']))
                     if (x == guideScript.length - 1) {
                         dispatch(messageAction.setReadOnly(false))
                     }
-                }, guideTempo * (x + 1))
+                }, time[x])
 			})(index)
 		}
+
     }
 
     // ===================================================
@@ -105,9 +113,9 @@ const MainCommandTable = () => {
 
         let commandList = []
 
-        commandList.push({command: 'ping', say: false})
-        commandList.push({command: 'load text', say: false})
-        commandList.push({command: 'get textlist', say: false})
+        commandList.push({command: 'ping', say: true})
+        commandList.push({command: 'load text', say: true})
+        commandList.push({command: 'get textlist', say: true})
 
         dispatch(commandAction.sendCommandList(commandList))        
     }, [])

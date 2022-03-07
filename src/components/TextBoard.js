@@ -27,7 +27,8 @@ const MainBoard = () => {
     const removeSpaceTextLength = useSelector((state) => state.mainText.removeSpaceTextLength)
     const fontSize              = useSelector((state) => state.mainText.fontSize)
 
-    const readOnly = useSelector((state) => state.message.readOnly)
+    const normalTempo = useSelector((state) => state.message.normalTempo) 
+    const readOnly    = useSelector((state) => state.message.readOnly)
     
     const runCommandData = useSelector((state) => state.command.runCommandData)
 
@@ -275,7 +276,10 @@ const MainBoard = () => {
             if (saveAt && !readOnly) {
                 if (mainText != editorRef.current.getValue() || runCommandData['commandType'] == 'save+as') { 
                 
-                    dispatch(messageAction.addMsgHistory('gu:Saving...'))
+                    let script = [
+                        { say: 'Saving...', tempo: 0}
+                    ]
+                    dispatch(messageAction.setGuideScript(script))
 
                     dispatch(mainTextAction.setMainText(editorRef.current.getValue()))
                     dispatch(mainTextAction.setTextLength(editorRef.current.getValue().length))
@@ -294,13 +298,17 @@ const MainBoard = () => {
                         textApi.saveText(
                             dataContainer,
                             (response) => {
-                                let script = ['Save Completed']
+                                let script = [
+                                    { say: 'Save Completed', tempo: 0 },
+                                ]
                                 dispatch(messageAction.setGuideScript(script))
                                 
                                 dispatch(commandAction.sendCommand('get textlist', false))  
                             },
                             (error) => {
-                                let script = ['Save failed.']
+                                let script = [
+                                    { say: 'Save failed.', tempo: 0 },
+                                ]
                                 dispatch(messageAction.setGuideScript(script))
                                 
                                 console.log(error)
@@ -319,12 +327,22 @@ const MainBoard = () => {
                         textApi.saveAsText(
                             dataContainer,
                             (response) => {
-                                let script = ['Save as Completed.']
+                                let script = [
+                                    {
+                                        say: 'Save as Completed.',
+                                        tempo: 0,
+                                    },
+                                ]
                                 dispatch(messageAction.setGuideScript(script))
                                 dispatch(commandAction.sendCommand('get textlist', false))
                             },
                             (error) => {
-                                let script = ['Save as failed.']
+                                let script = [
+                                    {
+                                        say: 'Save as failed.',
+                                        tempo: 0,
+                                    },
+                                ]
                                 dispatch(messageAction.setGuideScript(script))
                                 console.log(error)
                             },

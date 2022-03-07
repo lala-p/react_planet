@@ -1,8 +1,7 @@
 export const ADD_MSG_HISTORY    = 'ADD_MSG_HISTORY';
 export const CLEAR_MSG_HISTORY  = 'CLEAR_MSG_HISTORY';
 export const SET_GUIDE_SCRIPT   = 'SET_GUIDE_SCRIPT';
-// export const SHIFT_GUIDE_SCRIPT = 'SHIFT_GUIDE_SCRIPT';  
-export const SET_GUIDE_TEMPO    = 'SET_GUIDE_TEMPO';
+export const SET_NORMAL_TEMPO   = 'SET_NORMAL_TEMPO';
 export const SET_READ_ONLY      = 'SET_READ_ONLY';
 
 
@@ -26,16 +25,10 @@ export const setGuideScript = (script) => {
     }
 };
 
-// export const shiftGuideScript = () => {
-//     return {
-//         type: SHIFT_GUIDE_SCRIPT,
-//     }
-// }
-
-export const setGuideTempo = (speed) => {
+export const setNormalTempo = (tempo) => {
     return {
-        type: SET_GUIDE_TEMPO,
-        payload: speed,
+        type: SET_NORMAL_TEMPO,
+        payload: tempo,
     }
 };
 
@@ -45,4 +38,3 @@ export const setReadOnly = (readOnly) => {
         payload: readOnly,
     }
 };
-

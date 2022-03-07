@@ -7,7 +7,7 @@ const initialStates = {
 
     msgHistory: [],
     guideScript: [],
-    guideTempo: 300,
+    normalTempo: 300,
     readOnly: false,
 
 }
@@ -17,7 +17,7 @@ const reducers = (state = initialStates, actions) => {
     switch (actions.type) {
         case messageAction.ADD_MSG_HISTORY: {
             return produce(state, draft => {
-                draft.msgHistory.concat(actions.payload)
+                draft.msgHistory.push(actions.payload)
             })
         }
         case messageAction.CLEAR_MSG_HISTORY: {
@@ -30,14 +30,9 @@ const reducers = (state = initialStates, actions) => {
                 draft.guideScript = actions.payload
             })
         }
-        // case messageAction.SHIFT_GUIDE_SCRIPT: {
-        //     return produce(state, draft => {                
-        //         draft.guideScript.shift()
-        //     })
-        // }
-        case messageAction.SET_GUIDE_TEMPO: {
+        case messageAction.SET_NORMAL_TEMPO: {
             return produce(state, draft => {
-                draft.guideTempo = actions.payload
+                draft.normalTempo = actions.payload
             })
         }
         case messageAction.SET_READ_ONLY: {
