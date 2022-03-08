@@ -18,10 +18,6 @@ const initialStates = {
     },
     commandCounter: {
 
-        // 'haha': 0,
-        // 'hi': 0,
-        // 'hello': 0,
-
         'now': 0,
         'today': 0,
         
@@ -47,6 +43,8 @@ const initialStates = {
         
         // rename
         'rename+text+title': 0,
+
+        'test': 0,
         
         
     }, 

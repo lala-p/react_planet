@@ -88,7 +88,8 @@ const MainCommandTable = () => {
         setTimeout(() => {
             dispatch(messageAction.addMsgHistory('gu:' + script['say']))
             dispatch(messageAction.shiftGuideScript())
-        }, script['tempo'] + 25)
+
+        }, script['tempo'] + 20)
     }
 
     // ===================================================
@@ -100,7 +101,6 @@ const MainCommandTable = () => {
     // ===================================================
     // useEffect -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     useEffect(() => {
-        
         if (cookies['user_id']) {
             let commandList = []
 
@@ -113,18 +113,16 @@ const MainCommandTable = () => {
         } else {
             history.push("/")
         }
-
     }, [])
 
     useEffect(() => {
-
         if (inputHistoryCurrentAddress == inputHistory.length) {
             setUserInput("")
         } else {
             setUserInput(inputHistory[inputHistoryCurrentAddress])
         }
-
     }, [inputHistoryCurrentAddress])
+
 
     useEffect(() => {
         if (runCommandData['say'] && guideScript && guideScript.length != 0) {
@@ -134,16 +132,10 @@ const MainCommandTable = () => {
                 dispatch(commandAction.shiftSendCommandList())
             }
         }
-        
-        // if (sendCommandList.length > 1 || (runCommandData['say'] && guideScript && guideScript.length != 0)) {
-        //     dispatch(messageAction.setReadOnly(true))
-        // } else {
-        //     dispatch(messageAction.setReadOnly(false))
-        // }
-
         dispatch(messageAction.setReadOnly(sendCommandList.length > 1 || (runCommandData['say'] && guideScript && guideScript.length != 0)))
-
+            
     }, [guideScript])
+
 
     useEffect(() => {
 

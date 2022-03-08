@@ -63,7 +63,10 @@ router.post('/renameTextTitle', async (req, res) => {
     let textTitle    = req.body.textTitle
     let newTextTitle = req.body.newTextTitle
 
-    res.send(false)
+    var renameTextTitle = await textModel.updateTextTitle(userId, textTitle, newTextTitle)
+
+    console.log(renameTextTitle)
+    res.send('rename')
 });
 
 module.exports = router;

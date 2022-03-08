@@ -137,7 +137,11 @@ const CommandEvent = () => {
                 },
                 (error) => {
                     console.log(error)
-                    // dispatch(messageAction.addMsgHistory('gu:fffffailed.'))
+                    let script = [
+                        { say: 'failed', tempo: 0 },
+                        { say: '!@!!@!@!@21', tempo: normalTempo },
+                    ]
+                    dispatch(messageAction.setGuideScript(script))
                 },
                 false
             )
@@ -204,7 +208,7 @@ const CommandEvent = () => {
                             { say: 'Completed', tempo: 0 },
                         ]
                         dispatch(messageAction.setGuideScript(script))
-
+                        dispatch(commandAction.sendCommand('get textlist', false))
                     },
                     (error) => {
                         console.log(error)
@@ -215,10 +219,6 @@ const CommandEvent = () => {
                     },
                     false
                 )
-
-
-
-
             }
 
         }, [commandCounter['rename+text+title']]
@@ -349,45 +349,6 @@ const CommandEvent = () => {
         }, [commandCounter['get+week']]
     ) 
 
-
-    const commandInit = useCallback(
-        () => {
-            let cmdList = {}
-
-            // cmdList['haha'] = () => { dispatch(messageAction.setGuideScript(["haha!@!", "hoho", "asdfasdf"])) }
-            // cmdList['hi'] = () => { dispatch(messageAction.setGuideScript([`hi, ????`, "nice meet you"])) }
-            // cmdList['hello'] = () => { dispatch(messageAction.setGuideScript(["it's me..."])) }
-
-            cmdList['now']   = nowCmd
-            cmdList['today'] = todayCmd
-
-            cmdList['ping']   = pingCmd
-            
-            // get 
-            cmdList['get+week'] = getWeekCmd
-            cmdList['get+textlist'] = getTextListCmd
-
-            // load
-            cmdList['load+text'] = loadTextCmd
-
-            // set
-            cmdList['set+mode'] = setModeCmd
-
-            // save
-            cmdList['save+text'] = saveTextCmd
-            cmdList['save+as'] = saveAsCmd
-
-            // show
-            cmdList['show+title'] = showTitleCmd
-
-            // rename
-            cmdList['rename+text+title'] = renameTextTitleCmd
-            
-            setCommandList(cmdList)
-
-        }, [runCommandData]
-    )
-
     const IsCommand = (command) => {
 
         let commandType = command.match(/[a-zA-z\.+\?+]+|\(.+\)/g)
@@ -431,8 +392,7 @@ const CommandEvent = () => {
 
     useEffect(() => {
         if (runCommandData['commandType'] != undefined) {
-            
-            
+        
             switch (runCommandData['commandType']) {
                 case 'now': nowCmd()
                     break;
@@ -470,23 +430,21 @@ const CommandEvent = () => {
                 case 'rename+text+title': renameTextTitleCmd()
                     break;
 
+                case 'test': 
+                    let commandList = []
 
+                    commandList.push({command: 'ping', say: true})
+                    commandList.push({command: 'load text', say: true})
+                    commandList.push({command: 'get textlist', say: true})
+
+                    dispatch(commandAction.sendCommandList(commandList))
+                break;
 
             }
-    
-            // commandInit()
-            // console.log("commandInit")
+
         }
 
     }, [commandCounter])
-
-
-    // useEffect(() => {
-    //     if (runCommandData['commandType'] != undefined) {
-    //         commandList[runCommandData['commandType']]()
-    //     }
-    // }, [commandList])
-
 
     return <></>
 }
