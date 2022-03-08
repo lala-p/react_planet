@@ -378,8 +378,9 @@ const CommandEvent = () => {
             cmdList['save+as'] = saveAsCmd
 
             // show
-            cmdList['show+text+title'] = showTitleCmd
+            cmdList['show+title'] = showTitleCmd
 
+            // rename
             cmdList['rename+text+title'] = renameTextTitleCmd
             
             setCommandList(cmdList)
@@ -430,18 +431,61 @@ const CommandEvent = () => {
 
     useEffect(() => {
         if (runCommandData['commandType'] != undefined) {
-            commandInit()
-            console.log("commandInit")
+            
+            
+            switch (runCommandData['commandType']) {
+                case 'now': nowCmd()
+                    break;
+                case 'today': todayCmd()
+                    break;
+
+                case 'ping': pingCmd()
+                    break;
+
+                // get
+                case 'get+week': getWeekCmd()
+                    break;
+                case 'get+textlist': getTextListCmd()
+                    break;
+
+                // load 
+                case 'load+text': loadTextCmd()
+                    break;
+
+                // set
+                case 'set+mode': setModeCmd()
+                    break;
+
+                // save
+                case 'save+text': saveTextCmd()
+                    break;
+                case 'save+as': saveAsCmd()
+                    break;
+
+                // show
+                case 'show+title': showTitleCmd()
+                    break;
+
+                // rename
+                case 'rename+text+title': renameTextTitleCmd()
+                    break;
+
+
+
+            }
+    
+            // commandInit()
+            // console.log("commandInit")
         }
 
     }, [commandCounter])
 
 
-    useEffect(() => {
-        if (runCommandData['commandType'] != undefined) {
-            commandList[runCommandData['commandType']]()
-        }
-    }, [commandList])
+    // useEffect(() => {
+    //     if (runCommandData['commandType'] != undefined) {
+    //         commandList[runCommandData['commandType']]()
+    //     }
+    // }, [commandList])
 
 
     return <></>

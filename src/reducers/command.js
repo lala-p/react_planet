@@ -43,10 +43,9 @@ const initialStates = {
         'save+as'  : 0,
         
         // show
-        'show+text+title': 0,
-        'show+meal_menu' : 0,
-        'show+test'      : 0,
-
+        'show+title': 0,
+        
+        // rename
         'rename+text+title': 0,
         
         

@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+
+import { useHistory } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
 import * as messageAction from '../actions/message';
@@ -17,9 +19,10 @@ const MainCommandTable = () => {
 
     const msgHistory  = useSelector((state) => state.message.msgHistory)
     const guideScript = useSelector((state) => state.message.guideScript)
-    const guideTempo  = useSelector((state) => state.message.guideTempo)
     const readOnly    = useSelector((state) => state.message.readOnly)    
 
+    const history = useHistory()
+    
     const [cookies, setCookie, removeCookie] = useCookies()    
 
     const tableRef = useRef(null)    
@@ -97,14 +100,20 @@ const MainCommandTable = () => {
     // ===================================================
     // useEffect -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     useEffect(() => {
-
-        let commandList = []
-
-        commandList.push({command: 'ping', say: true})
-        commandList.push({command: 'load text', say: true})
-        commandList.push({command: 'get textlist', say: true})
         
-        dispatch(commandAction.sendCommandList(commandList))
+        if (cookies['user_id']) {
+            let commandList = []
+
+            commandList.push({command: 'ping', say: true})
+            commandList.push({command: 'load text', say: true})
+            commandList.push({command: 'get textlist', say: true})
+
+            dispatch(commandAction.sendCommandList(commandList))
+        
+        } else {
+            history.push("/")
+        }
+
     }, [])
 
     useEffect(() => {
@@ -120,15 +129,19 @@ const MainCommandTable = () => {
     useEffect(() => {
         if (runCommandData['say'] && guideScript && guideScript.length != 0) {
             guideSay(guideScript[0])
-            // dispatch(messageAction.setReadOnly(true))
-            
         } else {
             if (sendCommandList.length != 0) {
                 dispatch(commandAction.shiftSendCommandList())
-                // dispatch(messageAction.setReadOnly(false))
             }
         }
-        dispatch(messageAction.setReadOnly(runCommandData['say'] && guideScript && guideScript.length != 0  || sendCommandList.length != 1))
+        
+        // if (sendCommandList.length > 1 || (runCommandData['say'] && guideScript && guideScript.length != 0)) {
+        //     dispatch(messageAction.setReadOnly(true))
+        // } else {
+        //     dispatch(messageAction.setReadOnly(false))
+        // }
+
+        dispatch(messageAction.setReadOnly(sendCommandList.length > 1 || (runCommandData['say'] && guideScript && guideScript.length != 0)))
 
     }, [guideScript])
 
