@@ -10,7 +10,7 @@ import MemoTable from '../components/MemoTable';
 import MemoTable2 from '../components/MemoTable2';
 import CommandTable from '../components/CommandTable';
 import Gudie from '../components/Guide';
-import TextList from '../components/TextList';
+import TextTable from '../components/TextTable';
 import Help from '../components/Help';
 import CommandEvent from '../components/CommandEvent';
 
@@ -30,7 +30,7 @@ const MainPage = () => {
             case 1: 
                 return <MemoTable2></MemoTable2> 
             case 2:
-                return <TextList></TextList>
+                return <TextTable></TextTable>
             default:
                 return <Help></Help>
 

@@ -10,7 +10,7 @@ const MemoTable2 = () => {
 
     const dispatch = useDispatch();
     
-    const weekDataList = useSelector((state) => state.mainText.weekDataList)
+    const weekDataList = useSelector((state) => state.boardText.weekDataList)
 
     // const weekDataBoxLineUp  = useSelector((state) => state.memo.weekBoxLineUp)
     const [weekDataBoxLineUp, setWeekDataBoxLineUp] = useState(0)

@@ -1,6 +1,21 @@
 const knex = require('./dbConnection');
 
 
+exports.createCurrentText = async function (userId) {
+    
+    var createCurrent = await knex('text')
+        .insert({
+            user_id     : userId,
+            text_title  : 'current',
+            text_content: 'hello...?',
+            created_at  : knex.raw('now()'),
+            updated_at  : knex.raw('now()')
+        })
+
+
+    return createCurrent;
+}
+
 exports.getTextByTitle = async function (userId, textTitle) {
     
     var data = await knex('text')
@@ -9,6 +24,33 @@ exports.getTextByTitle = async function (userId, textTitle) {
             text_title: textTitle
         })
         .select('text_content', 'created_at', 'updated_at')
+
+    return data;
+}
+
+exports.getTextList = async function (userId) {
+
+    var data = await knex('text')
+        .where({
+            user_id: userId,
+        })
+        .select('text_title',
+            knex.raw('date_format(created_at, \'%Y.%m.%d %T\') as created_at'),
+            knex.raw('date_format(updated_at, \'%Y.%m.%d %T\') as updated_at')
+        )
+        .orderBy('created_at', 'desc')
+
+    return data;
+}
+
+exports.getTextTitleList = async function (userId) {
+
+    var data = await knex('text')
+        .where({
+            user_id: userId,
+        })
+        .select('text_title', 'text_content')
+        .orderBy('created_at', 'desc')
 
     return data;
 }
@@ -38,36 +80,6 @@ exports.saveAsText = async function (userId, text, textTitle) {
         })
     
     return saveAsText;
-}
-
-exports.createCurrentText = async function (userId) {
-    
-    var createCurrent = await knex('text')
-        .insert({
-            user_id     : userId,
-            text_title  : 'current',
-            text_content: 'hello...?',
-            created_at  : knex.raw('now()'),
-            updated_at  : knex.raw('now()')
-        })
-
-
-    return createCurrent;
-}
-
-exports.getTextList = async function (userId) {
-
-    var data = await knex('text')
-        .where({
-            user_id: userId,
-        })
-        .select('text_title',
-            knex.raw('date_format(created_at, \'%Y.%m.%d %T\') as created_at'),
-            knex.raw('date_format(updated_at, \'%Y.%m.%d %T\') as updated_at')
-        )
-        .orderBy('created_at', 'desc')
-
-    return data;
 }
 
 exports.updateTextTitle = async function (userId, textTitle, newTextTitle) {

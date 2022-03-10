@@ -22,7 +22,6 @@ const initialStates = {
         'today': 0,
         
         'ping': 0,
-        // 'update': 0,
 
         // get
         'get+week'    : 0,
@@ -35,9 +34,9 @@ const initialStates = {
         'set+mode': 0,
         
         // save
-        'save+text': 0,
+        'save': 0,
         'save+as'  : 0,
-        
+    
         // show
         'show+title': 0,
         

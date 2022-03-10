@@ -15,8 +15,29 @@ router.post('/getTextByTitle', async (req, res) => {
     let textTitle = req.body.textTitle
 
     var text = await textModel.getTextByTitle(userId, textTitle)
-
+    console.log(textTitle)
     res.send(text);
+});
+
+router.post('/getTextTitleList', async (req, res) => {
+
+    let userId = req.body.userId
+        
+    var textTitleList = await textModel.getTextTitleList(userId)
+    
+    console.log(textTitleList)
+    res.send(textTitleList)
+});
+
+router.post('/getTextList', async (req, res) => {
+
+    let userId = req.body.userId
+        
+    var textList = await textModel.getTextList(userId)
+    
+    console.log(textList)
+    res.send(textList)
+    
 });
 
 router.post('/save', async (req, res) => {
@@ -44,17 +65,6 @@ router.post('/saveAs', async (req, res) => {
     console.log(createCurrent)
 
     res.send('save as text')
-});
-
-
-router.post('/getTextList', async (req, res) => {
-
-    let userId = req.body.userId
-        
-    var textList = await textModel.getTextList(userId)
-    
-    console.log(textList)
-    res.send(textList)
 });
 
 router.post('/renameTextTitle', async (req, res) => {

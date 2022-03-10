@@ -8,8 +8,8 @@ import * as memoAction from '../actions/memo';
 const MemoBoard = () => {
 
     const dispatch = useDispatch();
-    const mainText = useSelector((state) => state.mainText.mainText);
-    const memoData = useSelector((state) => state.mainText.memoData)
+    const boardText = useSelector((state) => state.boardText.boardText);
+    const memoData = useSelector((state) => state.boardText.memoData)
 
     const weekBoxLineUp = useSelector((state) => state.memo.weekBoxLineUp);
     const memoBoxLineUp = useSelector((state) => state.memo.memoBoxLineUp);
@@ -319,11 +319,11 @@ const MemoBoard = () => {
 
     useEffect(() => {
         
-        let text = mainText
+        let text = boardText
         text = text.replace(/\n/g, "")
         setNoneLineBreakText(text)
     
-    }, [mainText])
+    }, [boardText])
 
 
     useEffect(() => {

@@ -2,7 +2,9 @@ import React, {useState, useEffect, useRef} from 'react';
 import { useHistory } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 
-import { signInUser } from '../api/sign';
+import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios';
+
+import { SIGNIN_USER } from '../api/signApiUrl';
 
 
 const SigninPage = () => {
@@ -29,13 +31,14 @@ const SigninPage = () => {
 
         if (e.keyCode == 13) { // enter
 
-            const signinData = {
+            const dataContainer = {
                 userId      : userId,
                 userPassword: password,
             }
 
-            signInUser(
-                signinData,
+            sendAxiosPost(
+                SIGNIN_USER,
+                dataContainer,
                 (response) => {
                     console.log(response.data)
             
@@ -56,10 +59,36 @@ const SigninPage = () => {
                     setMsg("signin failed...")
                     console.log(error)                    
                 },
-                () => {
-
-                }
+                false
             )
+            
+
+            // signInUser(
+            //     signinData,
+            //     (response) => {
+            //         console.log(response.data)
+            
+            //         if (response.data) {
+            //             setCookie('user_id', userId, {path: '/'})
+            //             history.push("/main")
+
+            //         } else {
+            //             setUserId('')
+            //             setPassword('')
+            //             userIdRef.current.focus()
+            //             setMsg("wrong!@!")
+
+            //         }
+
+            //     },
+            //     (error) => {
+            //         setMsg("signin failed...")
+            //         console.log(error)                    
+            //     },
+            //     () => {
+
+            //     }
+            // )
 
         }
 

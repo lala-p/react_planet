@@ -5,32 +5,40 @@ import * as memoAction from '../actions/memo';
 
 const initialStates = {
 
-    weekBoxLineUp: 0,
-    memoBoxLineUp: 0,
-    memoBoxReverse: false,
+    memoText: '',
+    memoDataList: [],
+    sortedMemoDataList: [],
+    sortMode: {
+        week: {sort: 0, reverse: false},
+        day: {sort: 0, reverse: false},
+    },
 
 }
-
 
 const reducers = (state = initialStates, actions) => {
 
     switch (actions.type) {
-        case memoAction.SET_WEEK_BOX_LINE_UP: {
-            return produce(state, draft => {
-                draft.weekBoxLineUp = actions.payload;
+        case memoAction.SET_MEMO_TEXT: {
+            return produce(state, draft =>{
+                draft.memoText = actions.payload
             })
         }
-        case memoAction.SET_MEMO_BOX_LINE_UP: {
+        case memoAction.SET_MEMO_DATA_LIST: {
             return produce(state, draft => {
-                draft.memoBoxLineUp = actions.payload;
+                draft.memoDataList = actions.payload
             })
         }
-        case memoAction.SET_MEMO_BOX_REVERSE: {
+        case memoAction.SET_SORTED_MEMO_DATA_LIST: {
             return produce(state, draft => {
-                draft.memoBoxReverse = actions.payload;
+                draft.sortedMemoDataList = actions.payload
             })
         }
-        
+        case memoAction.SET_SORT_MODE: {
+            return produce(state, draft => {
+                draft.sortMode = actions.payload
+            })
+        }
+  
         default: {
             return {
                 ...state
