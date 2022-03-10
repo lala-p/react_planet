@@ -7,7 +7,7 @@ const initialStates = {
 
     msgHistory: [],
     guideScript: [],
-    normalTempo: 600,
+    normalTempo: 400,
     readOnly: false,
 
 }

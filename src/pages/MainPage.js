@@ -6,7 +6,7 @@ import { useHotkeys } from 'react-hotkeys-hook';
 import * as modeAction from '../actions/mode';
 
 import TextBoard from '../components/TextBoard';
-// import MemoTable from '../components/MemoTable';
+import MemoTable from '../components/MemoTable';
 import MemoTable2 from '../components/MemoTable2';
 import CommandTable from '../components/CommandTable';
 import Gudie from '../components/Guide';
@@ -20,7 +20,6 @@ const MainPage = () => {
     const history = useHistory()
     const dispatch = useDispatch()
 
-    // const textTitle = useSelector((state) => state.mainText.textTitle)
     const currentMode = useSelector((state) => state.mode.currentMode)
 
     const modeHandler = () => {
@@ -29,9 +28,9 @@ const MainPage = () => {
             case 0:
                 return null // TextBoard
             case 1: 
-                return <MemoTable2></MemoTable2>
+                return <MemoTable2></MemoTable2> 
             case 2:
-                return <TextList></TextList> // TextList
+                return <TextList></TextList>
             default:
                 return <Help></Help>
 
@@ -71,9 +70,6 @@ const MainPage = () => {
                     <div style={currentMode != 0 ? {display: "none"} : null}>
                         <TextBoard></TextBoard>
                     </div>
-                    {/* <div style={currentMode != 2 ? {display: "none"} : null}>
-                        <TextList></TextList>
-                    </div> */}
                 
                     {modeHandler()}
                 </div>

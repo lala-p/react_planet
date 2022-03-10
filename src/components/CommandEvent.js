@@ -31,8 +31,6 @@ const CommandEvent = () => {
 
     const [cookies, setCookie, removeCookie] = useCookies()    
 
-    const [commandList, setCommandList] = useState({})
-
     // ===================================================
     const wordFill = (str, len, word) => {
 
@@ -50,14 +48,13 @@ const CommandEvent = () => {
             serverConnect(
                 (response) => {
                     let script = [
-                        { say: 'connect', tempo: 0 },
+                        { say: 'connect', tempo: 0, last: true },
                     ]
                     dispatch(messageAction.setGuideScript(script))
-                    console.log(response.data)
                 },
                 (error) => {
                     let script = [
-                        { say: 'connect failed', tempo: 0 },
+                        { say: 'connect failed', tempo: 0, last: true },
                     ]
                     dispatch(messageAction.setGuideScript(script))
                     console.log(error)
@@ -73,7 +70,7 @@ const CommandEvent = () => {
         () => {
             
             let script = [
-                { say: 'loading...', tempo: 0 },
+                { say: 'loading...', tempo: 600, last: false },
             ]
             dispatch(messageAction.setGuideScript(script))
             dispatch(mainTextAction.setMainText('loading...'))
@@ -89,13 +86,12 @@ const CommandEvent = () => {
             textApi.getTextByTextTitle(
                 dataContainer,
                 (response) => {
-                    console.log(response.data)
                     const text = response.data[0]['text_content']
                     
                     dispatch(mainTextAction.setMainText(text))
                     dispatch(mainTextAction.setTextTitle(loadTextTitle))
                     let script = [
-                        { say: '!@!@!@!@!@!@!@!@!@!', tempo: 0 },
+                        { say: '!@!@!@!@!@!@!@!@!@!', tempo: 1000, last: true },
                     ]
                     if (runCommandData['say']) {
                         dispatch(messageAction.setGuideScript(script))
@@ -104,7 +100,7 @@ const CommandEvent = () => {
                 (error) => {
                     console.log(error)
                     let script = [
-                        { say: 'failed', tempo: 0 },
+                        { say: 'failed', tempo: 0, last: true },
                     ]
                     dispatch(messageAction.setGuideScript(script))
                     
@@ -112,8 +108,6 @@ const CommandEvent = () => {
                 false
             )
 
-            console.log(dataContainer)
-            console.log(runCommandData)
         }, [commandCounter['load+text']]
     )
     // ===================================================
@@ -130,16 +124,16 @@ const CommandEvent = () => {
                 (response) => {
                     dispatch(mainTextAction.setTextList(response.data))
                     let script = [
-                        { say: 'Completed', tempo: 0 },
-                        { say: '!@!!@!@!@21', tempo: normalTempo },
+                        { say: 'Completed', tempo: 0 + 600, last: false },
+                        { say: '!@!!@!@!@21', tempo: normalTempo + 600, last: true },
                     ]
                     dispatch(messageAction.setGuideScript(script))
                 },
                 (error) => {
                     console.log(error)
                     let script = [
-                        { say: 'failed', tempo: 0 },
-                        { say: '!@!!@!@!@21', tempo: normalTempo },
+                        { say: 'failed', tempo: 0, last: false },
+                        { say: '!@!!@!@!@21', tempo: normalTempo, last: true },
                     ]
                     dispatch(messageAction.setGuideScript(script))
                 },
@@ -161,14 +155,14 @@ const CommandEvent = () => {
         () => {
             if (runCommandData['parameter'][0] == 'current') {
                 let script = [
-                    { say: '\'current\' not allowed', tempo: normalTempo },
+                    { say: '\'current\' not allowed', tempo: normalTempo, last: true },
                 ]
                 dispatch(messageAction.setGuideScript(script))
     
                 
             } else if (textTitle != 'current') {
                 let script = [
-                    { say: 'lt\'s not current.', tempo: normalTempo },
+                    { say: 'lt\'s not current.', tempo: normalTempo, last: true },
                 ]
                 dispatch(messageAction.setGuideScript(script))
                 
@@ -187,9 +181,9 @@ const CommandEvent = () => {
 
             if (textTitle == 'current' || newTextTitle == 'current') {
                 let script = [
-                    { say: 'current', tempo: normalTempo },
-                    { say: 'not', tempo: normalTempo },
-                    { say: 'allowed.', tempo: normalTempo }, 
+                    { say: 'current', tempo: normalTempo, last: false },
+                    { say: 'not', tempo: normalTempo, last: false },
+                    { say: 'allowed.', tempo: normalTempo, last: true }, 
                 ]
 
                 dispatch(messageAction.setGuideScript(script))
@@ -205,7 +199,7 @@ const CommandEvent = () => {
                     dataContainer,
                     (response) => {
                         let script = [
-                            { say: 'Completed', tempo: 0 },
+                            { say: 'Completed', tempo: 0, last: true },
                         ]
                         dispatch(messageAction.setGuideScript(script))
                         dispatch(commandAction.sendCommand('get textlist', false))
@@ -213,7 +207,7 @@ const CommandEvent = () => {
                     (error) => {
                         console.log(error)
                         let script = [
-                            { say: 'failed', tempo: 0 },
+                            { say: 'failed', tempo: 0, last: true },
                         ]
                         dispatch(messageAction.setGuideScript(script))
                     },
@@ -228,7 +222,7 @@ const CommandEvent = () => {
     const showTitleCmd = useCallback(
         () => {
             const script = [
-                { say: textTitle, tempo: normalTempo },
+                { say: textTitle, tempo: normalTempo, last: true },
             ]
             dispatch(messageAction.setGuideScript(script))
         }, [commandCounter['show+text+title']]
@@ -250,7 +244,7 @@ const CommandEvent = () => {
             
             if (notExist) {
                 let script = [
-                    { say: changeMode + ' mode does not exist.', tempo: normalTempo }, 
+                    { say: changeMode + ' mode does not exist.', tempo: normalTempo, last: true }, 
                 ]
                 dispatch(messageAction.setGuideScript(script))
             }
@@ -277,7 +271,7 @@ const CommandEvent = () => {
             let now = ampm + "  " + hours + ":" + minutes + ":" + seconds
             
             let script = [
-                { say: now, tempo: normalTempo }, 
+                { say: now, tempo: normalTempo, last: true }, 
             ]
             dispatch(messageAction.setGuideScript(script))
         }, [commandCounter['now']]
@@ -297,7 +291,7 @@ const CommandEvent = () => {
             today = year + "-" + month + "-" + date + " " + day;
             
             let script = [
-                { say: today, tempo: normalTempo }, 
+                { say: today, tempo: normalTempo, last: true }, 
             ]
             dispatch(messageAction.setGuideScript(script))
         }, [commandCounter['today']]
@@ -326,22 +320,22 @@ const CommandEvent = () => {
             let script = []
 
             script[0] = {}
-            script[1] = { say: week[that_day.getDay()], tempo: normalTempo }
+            script[1] = { say: week[that_day.getDay()], tempo: normalTempo, last: true }
 
             const now = new Date()
 
 
             if (now.getFullYear() <= that_day.getFullYear() && now.getMonth() <= that_day.getMonth() && now.getDate() < that_day.getDate()) {
-                script[0] = { say: `${year}-${month}-${date} is...`, tempo: normalTempo } 
+                script[0] = { say: `${year}-${month}-${date} is...`, tempo: normalTempo, last: false } 
 
             } else if (now.getFullYear() === that_day.getFullYear() && now.getMonth() === that_day.getMonth() && now.getDate() === that_day.getDate()) {
-                script[0] = { say: `${year}-${month}-${date} today is...`, tempo: normalTempo }
+                script[0] = { say: `${year}-${month}-${date} today is...`, tempo: normalTempo, last: false }
 
             } else if (that_day.getFullYear() < 0) {
-                script[0] =  { say: `B.C. &nbsp;${wordFill(Math.abs(that_day.getFullYear()).toString(), 4, '0')}-${month}-${date} was...`, tempo: normalTempo }
+                script[0] =  { say: `B.C. &nbsp;${wordFill(Math.abs(that_day.getFullYear()).toString(), 4, '0')}-${month}-${date} was...`, tempo: normalTempo, last: false }
 
             } else {
-                script[0] = { say: `${year}-${month}-${date} was...`, tempo: normalTempo }
+                script[0] = { say: `${year}-${month}-${date} was...`, tempo: normalTempo, last: false }
             }
 
             dispatch(messageAction.setGuideScript(script))
@@ -364,7 +358,7 @@ const CommandEvent = () => {
         commandType = commandType.join('+')
 
         if (commandType in commandCounter) {
-            return { 'commandType': commandType, 'parameter': parameter}        
+            return {'commandType': commandType, 'parameter': parameter}        
         } else {
             return false;
         
@@ -374,7 +368,6 @@ const CommandEvent = () => {
     useEffect(() => {
         if (sendCommandList.length != 0) {
             dispatch(commandAction.sendCommand(sendCommandList[0]['command'], sendCommandList[0]['say']))
-            console.log(sendCommandList[0])
         }
     }, [sendCommandList])
 

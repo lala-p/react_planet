@@ -84,12 +84,29 @@ const MainCommandTable = () => {
         }
     }
     // ===================================================
-    const guideSay = (script) => {
-        setTimeout(() => {
-            dispatch(messageAction.addMsgHistory('gu:' + script['say']))
-            dispatch(messageAction.shiftGuideScript())
 
-        }, script['tempo'] + 20)
+    function sleep(ms) {
+        return new Promise((resolve, reject) => {
+            setTimeout(resolve, ms)
+        });
+    }
+
+    const guideSay = async (script) => {
+        for (let index = 0; index < script.length; index++) {        
+            await sleep(script[index]['tempo'])
+            dispatch(messageAction.addMsgHistory('gu:' + script[index]['say']))
+
+            if (script[index]['last']) {
+                if (sendCommandList.length >= 1) {
+                    dispatch(commandAction.shiftSendCommandList())
+                }
+
+                if (sendCommandList.length <= 1) {
+                    dispatch(messageAction.setReadOnly(false))
+                } 
+            }
+        }
+
     }
 
     // ===================================================
@@ -101,7 +118,9 @@ const MainCommandTable = () => {
     // ===================================================
     // useEffect -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
     useEffect(() => {
+
         if (cookies['user_id']) {
+
             let commandList = []
 
             commandList.push({command: 'ping', say: true})
@@ -113,6 +132,7 @@ const MainCommandTable = () => {
         } else {
             history.push("/")
         }
+
     }, [])
 
     useEffect(() => {
@@ -126,13 +146,13 @@ const MainCommandTable = () => {
 
     useEffect(() => {
         if (runCommandData['say'] && guideScript && guideScript.length != 0) {
-            guideSay(guideScript[0])
+            dispatch(messageAction.setReadOnly(true))
+            guideSay(guideScript)
         } else {
             if (sendCommandList.length != 0) {
                 dispatch(commandAction.shiftSendCommandList())
             }
         }
-        dispatch(messageAction.setReadOnly(sendCommandList.length > 1 || (runCommandData['say'] && guideScript && guideScript.length != 0)))
             
     }, [guideScript])
 

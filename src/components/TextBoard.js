@@ -27,7 +27,6 @@ const MainBoard = () => {
     const removeSpaceTextLength = useSelector((state) => state.mainText.removeSpaceTextLength)
     const fontSize              = useSelector((state) => state.mainText.fontSize)
 
-    const normalTempo = useSelector((state) => state.message.normalTempo) 
     const readOnly    = useSelector((state) => state.message.readOnly)
     
     const runCommandData = useSelector((state) => state.command.runCommandData)
@@ -277,7 +276,7 @@ const MainBoard = () => {
                 if (mainText != editorRef.current.getValue() || runCommandData['commandType'] == 'save+as') { 
                 
                     let script = [
-                        { say: 'Saving...', tempo: 0}
+                        {say: 'Saving...', tempo: 0, last: false}
                     ]
                     dispatch(messageAction.setGuideScript(script))
 
@@ -299,7 +298,7 @@ const MainBoard = () => {
                             dataContainer,
                             (response) => {
                                 let script = [
-                                    { say: 'Save Completed', tempo: 0 },
+                                    { say: 'Save Completed', tempo: 0, last: true },
                                 ]
                                 dispatch(messageAction.setGuideScript(script))
                                 
@@ -307,7 +306,7 @@ const MainBoard = () => {
                             },
                             (error) => {
                                 let script = [
-                                    { say: 'Save failed.', tempo: 0 },
+                                    { say: 'Save failed.', tempo: 0, last: true },
                                 ]
                                 dispatch(messageAction.setGuideScript(script))
                                 
@@ -328,20 +327,14 @@ const MainBoard = () => {
                             dataContainer,
                             (response) => {
                                 let script = [
-                                    {
-                                        say: 'Save as Completed.',
-                                        tempo: 0,
-                                    },
+                                    { say: 'Save as Completed.', tempo: 0, last: true},
                                 ]
                                 dispatch(messageAction.setGuideScript(script))
                                 dispatch(commandAction.sendCommand('get textlist', false))
                             },
                             (error) => {
                                 let script = [
-                                    {
-                                        say: 'Save as failed.',
-                                        tempo: 0,
-                                    },
+                                    { say: 'Save as failed.', tempo: 0, last: true},
                                 ]
                                 dispatch(messageAction.setGuideScript(script))
                                 console.log(error)
