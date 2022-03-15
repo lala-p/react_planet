@@ -28,13 +28,14 @@ const initialStates = {
         'load+text': 0,
 
         // set
-        'set+memo+text': 0,
         'set+mode': 0,
         
         // save
         'save': 0,
         'save+as'  : 0,
         
+        'use+text': 0,
+
         // sort
         'sort+memo': 0,
 
@@ -43,9 +44,6 @@ const initialStates = {
         
         // rename
         'rename+text+title': 0,
-
-        'test': 0,
-        
         
     }, 
 

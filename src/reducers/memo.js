@@ -5,7 +5,6 @@ import * as memoAction from '../actions/memo';
 
 const initialStates = {
 
-
     memoUseTextList   : [],
     memoDataList      : [],
     sortedMemoDataList: [],
@@ -14,7 +13,7 @@ const initialStates = {
         day : {sort: 'normal', reverse: false},
     },
     useDays           : { 0: false, 1: true, 2: true, 3: true, 4: true, 5: true, 6: false },
-    
+
 }
 
 const reducers = (state = initialStates, actions) => {

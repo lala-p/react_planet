@@ -10,7 +10,8 @@
         height: 53rem;
         overflow: scroll;
         margin: auto;
-        
+        flex-direction: column;
+
         .week-data-box {
             .box-container {
                 display: flex;
@@ -23,9 +24,12 @@
                     height: 9rem;
                     margin-left: 0.7rem;
                     background-color: skyblue;
-                
-                
-                
+                }
+
+                .day-memo-box-empty {
+                    width: 15rem;
+                    height: 9rem;
+                    margin-left: 0.7rem;
                 }
             
 
@@ -39,17 +43,6 @@
         }    
 
     }
-
-    .desc {
-        display: flex;
-        flex-direction: column-reverse;
-    }
-
-    .asc {
-        display: flex;
-        flex-direction: column;
-    }
-
 }
 
 

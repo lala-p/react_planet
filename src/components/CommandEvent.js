@@ -15,6 +15,9 @@ import * as textApi from '../api/textApiUrl';
 
 import { findVer01 } from '../find/ver_01';
 
+import _ from 'lodash';
+
+
 const CommandEvent = () => {
 
     const dispatch = useDispatch()
@@ -31,6 +34,7 @@ const CommandEvent = () => {
 
     const memoUseTextList = useSelector((state) => state.memo.memoUseTextList)
     const sortMode        = useSelector((state) => state.memo.sortMode)
+    const useDays         = useSelector((state) => state.memo.useDays)
 
     const normalTempo = useSelector((state) => state.message.normalTempo) 
 
@@ -246,7 +250,7 @@ const CommandEvent = () => {
     )
     // ===================================================
     //
-    const cmdSetMemoText = useCallback(
+    const cmdUseText = useCallback(
         () => {
 
             if (runCommandData['parameter'].length == 0) {
@@ -302,7 +306,7 @@ const CommandEvent = () => {
                             dispatch(messageAction.setGuideScript(script))
                             
                             const MemoDataList = setMemoDataList(response.data)
-
+                            console.log(MemoDataList)
                             dispatch(memoAction.setMemoUseTextList(MemoDataList))
                             // dispatch(commandAction.sendCommand('sort memo (desc, normal, false)', true))
                         },
@@ -319,7 +323,7 @@ const CommandEvent = () => {
                 }
             }
 
-        }, [commandCounter['set+memo+text']]
+        }, [commandCounter['use+text']]
     )
 
     const setMemoDataList = (data) => {
@@ -438,73 +442,95 @@ const CommandEvent = () => {
 
             let sortedMemoDataList = []
             sortedMemoDataList = memoUseTextList.slice()
-
-            // 날짜 정렬하고
             sortedMemoDataList = sortedMemoDataList.sort((a, b) => new Date(a.date) - new Date(b.date)) 
-            
-            // 일주일로 나누고
+
             let weekList = []
             let weekNum = 0
-            let oneWeek = [false, false, false, false, false, false, false]
-        
-            for (let index = 0; index < sortedMemoDataList.length; index++) {
 
-                if (index == 0) {
+            switch (daySortMode) {
+                case 'normal':
+                    weekList.push(new Array())
+                    weekList[0].push(sortedMemoDataList[0])
 
-                    switch (daySortMode) {
-                        case 'normal':
-                            weekList.push(new Array())
-                            weekList[0].push(sortedMemoDataList[0])
-                            break;
-
-                        case 'calendar':
-                            weekList.push(oneWeek.slice())
-                            weekList[0][sortedMemoDataList[0]['day']] = sortedMemoDataList[0]
-                            break;
-                    }
-
-                } else {
-                    const previousData = sortedMemoDataList[index-1]
-                    const currentData = sortedMemoDataList[index]
+                    for (let index = 1; index < sortedMemoDataList.length; index++) {
                     
-                    const min = new Date(previousData['date']) < new Date(currentData['date']) ? previousData : currentData
-                    const max = new Date(previousData['date']) < new Date(currentData['date']) ? currentData : previousData
-                
-                    if (Math.ceil(new Date(max['date']).getTime() / (1000*60*60*24)) - (Math.ceil(new Date(min['date']).getTime() / (1000*60*60*24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) > 0) {
+                        const previousData = sortedMemoDataList[index-1]
+                        const currentData = sortedMemoDataList[index]
                         
-                        switch (daySortMode) {
-                            case 'normal':
-                                weekList.push(new Array())   
-                                break;
-    
-                            case 'calendar':
-                                if (dayReverse) {
-                                    weekList[weekNum] = weekList[weekNum].reverse()
-                                }
-                                weekList.push(oneWeek.slice())
-                                break;
-                        }                   
-    
-                        weekNum += 1
-                    }
-    
-                    switch (daySortMode) {
-                        case 'normal':
+                        const min = new Date(previousData['date']) < new Date(currentData['date']) ? previousData : currentData
+                        const max = new Date(previousData['date']) < new Date(currentData['date']) ? currentData : previousData
+
+                        const isSameWeek = Math.ceil(new Date(max['date']).getTime() / (1000*60*60*24)) - (Math.ceil(new Date(min['date']).getTime() / (1000*60*60*24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <= 0
+
+                        if (!isSameWeek) {
+                            weekList.push(new Array())           
+                            weekNum += 1
+                        }
+
+
+
+                        if (useDays[currentData['day']]) {
                             if (dayReverse) {
                                 weekList[weekNum].unshift(currentData)
                             } else {
                                 weekList[weekNum].push(currentData)
                             }
-                            break;
-    
-                        case 'calendar':
-                            weekList[weekNum][currentData['day']] = currentData
-                            break;
+                
+                        }                       
+                        
                         
                     }
-    
-                }
+                    
+                    break;
 
+                case 'calendar':
+                    let oneWeek = _.cloneDeep(useDays)    
+
+                    for (let index = 0; index < 7; index++) {
+                        if (oneWeek[index]) {
+                            oneWeek[index] = false
+                        } else {
+                            delete oneWeek[index]
+                        }
+                    }
+                            
+                    weekList.push(_.cloneDeep(oneWeek))
+                    weekList[0][sortedMemoDataList[0]['day']] = sortedMemoDataList[0]
+
+                    for (let index = 1; index < sortedMemoDataList.length; index++) {
+                        const previousData = sortedMemoDataList[index-1]
+                        const currentData = sortedMemoDataList[index]
+                        
+                        const min = new Date(previousData['date']) < new Date(currentData['date']) ? previousData : currentData
+                        const max = new Date(previousData['date']) < new Date(currentData['date']) ? currentData : previousData
+                
+                        const isSameWeek = Math.ceil(new Date(max['date']).getTime() / (1000*60*60*24)) - (Math.ceil(new Date(min['date']).getTime() / (1000*60*60*24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <= 0
+
+                        if (!isSameWeek) {
+                            weekList[weekNum] =  Object.values(weekList[weekNum])    
+                            if (dayReverse) {
+                                weekList[weekNum] = weekList[weekNum].reverse()
+                            }
+
+                            weekList.push(_.cloneDeep(oneWeek))
+                            weekNum += 1
+                        }
+
+                        if (useDays[currentData['day']]) {
+                            weekList[weekNum][currentData['day']] = currentData
+                        }                       
+                        
+                    }
+
+                    if (!Array.isArray(weekList[weekList.length -1])) {
+                        weekList[weekNum] =  Object.values(weekList[weekNum])    
+                        if (dayReverse) {
+                            weekList[weekNum] = weekList[weekNum].reverse()
+                        }
+                    }
+                    
+                    break;
+            
             }
 
             sortedMemoDataList = weekList
@@ -514,7 +540,7 @@ const CommandEvent = () => {
             }      
 
             console.log(sortedMemoDataList)
-
+            dispatch(memoAction.setSortedMemoDataList(sortedMemoDataList))
             
             let script = [
                 { say: 'sorttttt', tempo: normalTempo - 200, last: true },
@@ -741,8 +767,6 @@ const CommandEvent = () => {
                     break;
 
                 // set
-                case 'set+memo+text': cmdSetMemoText()
-                    break;
                 case 'set+mode': cmdSetMode()
                     break;
 
@@ -751,6 +775,10 @@ const CommandEvent = () => {
                     break;
                 case 'save+as': cmdSaveAs()
                     break;
+
+                // use
+                case 'use+text' : cmdUseText()
+                    break; 
 
                 // sort
                 case 'sort+memo': cmdSortMemo()
@@ -763,12 +791,6 @@ const CommandEvent = () => {
                 // rename
                 case 'rename+text+title': cmdRenameTextTitle()
                     break;
-
-                case 'test': 
-                    dispatch(commandAction.sendCommand('ping', true))
-                    dispatch(commandAction.sendCommand('load text', true))
-                    dispatch(commandAction.sendCommand('get textlist', true))        
-                break;
 
             }
         }

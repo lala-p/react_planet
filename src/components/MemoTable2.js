@@ -3,15 +3,14 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import ReactModal from 'react-modal'; 
 
-
 import '../css/components/MemoTable.scss';
 
 const MemoTable2 = () => {
 
     const dispatch = useDispatch();
     
-    const memoUseTextList = useSelector((state) => state.memo.memoUseTextList)
-    const week = useSelector((state) => state.astronaut.week)
+    const sortedMemoDataList = useSelector((state) => state.memo.sortedMemoDataList)
+    const weekFormat      = useSelector((state) => state.astronaut.weekFormat)
 
     const [dayDataModalOpen, setDayDataModalOpen] = useState(false)
     const [dayDataModalData, setDayDataModalData] = useState(false)
@@ -67,7 +66,7 @@ const MemoTable2 = () => {
                 <div>
                     <h3>{ data['date'] }</h3>
                     <br />
-                    { week[data['day']] }
+                    { weekFormat[data['day']] }
                     <br /><br /><br />
                     { planBoxes(data['planList']) }
                     <br /><br />
@@ -111,23 +110,30 @@ const MemoTable2 = () => {
 
     const dayMemoBoxes = (dayDataList) => { 
         const boxes = dayDataList.map((dayData) => {
-
-            return (
-                <div 
-                    className={"day-memo-box"} 
-                    onClick={() => { 
-                        setDayDataModalData(dayData)
-                        setDayDataModalOpen(true)
-                    }}
-                >
-                    { dayData['date'] } - { week[dayData['day']] }
-                    <br />
-                    plan count: { dayData['planList'].length }
-                    <br />
-                    <br />
-                    etc count: { dayData['etc'].length }
-                </div>
-            )
+            
+            if (dayData == false) {
+                return (
+                    <div className={"day-memo-box-empty"}></div>
+                )
+            } else {
+                return (
+                    <div 
+                        className={"day-memo-box"} 
+                        onClick={() => { 
+                            setDayDataModalData(dayData)
+                            setDayDataModalOpen(true)
+                        }}
+                    >
+                        { dayData['date'] } - { weekFormat[dayData['day']] }
+                        <br />
+                        plan count: { dayData['planList'].length }
+                        <br />
+                        <br />
+                        etc count: { dayData['etc'].length }
+                    </div>
+                )
+            }
+            
         })
 
         return boxes;
@@ -232,7 +238,7 @@ const MemoTable2 = () => {
     return (
         <div className="MemoTable">      
             <br /><br />
-            { weekDataBoxContainer(memoUseTextList) }
+            { weekDataBoxContainer(sortedMemoDataList) }
 
             {dayDataModal(dayDataModalData)}
             
