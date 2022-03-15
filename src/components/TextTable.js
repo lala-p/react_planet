@@ -7,14 +7,12 @@ const TextTable = () => {
 
 
     const dispatch = useDispatch()
-    const textListData = useSelector((state) => state.boardText.textList)
-
-    const saveAt = useSelector((state) => state.boardText.saveAt)
+    const textTitleListData = useSelector((state) => state.boardText.textTitleList)
     
     const [cookies, setCookie, removeCookie] = useCookies()    
 
 
-    const textList = textListData.map((textData, index) => (
+    const textTitleList = textTitleListData.map((textData, index) => (
         <tr>
             <td>{textData['text_title']}</td> 
             <td>{textData['created_at']}</td>
@@ -30,7 +28,7 @@ const TextTable = () => {
                     <th>created_at</th>
                     <th>updated_at</th>
                 </tr>
-                {textList}
+                {textTitleList}
 
             </table>
 

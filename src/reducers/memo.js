@@ -5,22 +5,24 @@ import * as memoAction from '../actions/memo';
 
 const initialStates = {
 
-    memoText: '',
-    memoDataList: [],
-    sortedMemoDataList: [],
-    sortMode: {
-        week: {sort: 0, reverse: false},
-        day: {sort: 0, reverse: false},
-    },
 
+    memoUseTextList   : [],
+    memoDataList      : [],
+    sortedMemoDataList: [],
+    sortMode          : {
+        week: {sort: 0, orderBy: 'asc'},
+        day : {sort: 'normal', reverse: false},
+    },
+    useDays           : { 0: false, 1: true, 2: true, 3: true, 4: true, 5: true, 6: false },
+    
 }
 
 const reducers = (state = initialStates, actions) => {
 
     switch (actions.type) {
-        case memoAction.SET_MEMO_TEXT: {
+        case memoAction.SET_MEMO_USE_TEXT_LIST: {
             return produce(state, draft =>{
-                draft.memoText = actions.payload
+                draft.memoUseTextList = actions.payload
             })
         }
         case memoAction.SET_MEMO_DATA_LIST: {
@@ -38,6 +40,7 @@ const reducers = (state = initialStates, actions) => {
                 draft.sortMode = actions.payload
             })
         }
+
   
         default: {
             return {

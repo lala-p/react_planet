@@ -21,6 +21,8 @@ const MainBoard = () => {
     
     const [cookies, setCookie, removeCookie] = useCookies()    
 
+    const sendCommandList = useSelector((state) => state.command.sendCommandList)
+
     const editorRef = useRef(null)
     const btnRef = useRef(null)
     
@@ -164,6 +166,10 @@ const MainBoard = () => {
                     <ToggleSwitch onChange={(checked) => setRemoveSpace(checked)} checked={removeSpace} />
                     
                     <h1>총 {removeSpace? boardText.replace(/\s/ig, "").length : boardText.length}자</h1>
+
+                    { sendCommandList.map((command,index) => (
+                        <h5>{command['command']}</h5>
+                    )) }
                     <h2>{currentTextTitle}</h2>
                     {/* <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.length}자</h1> */}
                     {/* <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.replace(/\r?\n|\r/g, "").length}자</h1> 

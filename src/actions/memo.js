@@ -1,20 +1,13 @@
-export const SET_MEMO_TEXT             = 'SET_MEMO_TEXT';
-export const SET_USE_MEMO_TEXT_LIST    = 'SET_USE_MEMO_TEXT_LIST';
+export const SET_MEMO_USE_TEXT_LIST    = 'SET_MEMO_USE_TEXT_LIST';
 export const SET_MEMO_DATA_LIST        = 'SET_MEMO_DATA';
 export const SET_SORTED_MEMO_DATA_LIST = 'SET_SORTED_MEMO_DATA';
 export const SET_SORT_MODE             = 'SET_SORT_MODE';
+export const SET_USE_DAYS              = 'SET_USE_DAYS';
 
 
-export const setMemoText = (text) => {
+export const setMemoUseTextList = (textList) => {
     return {
-        type: SET_MEMO_TEXT,
-        payload: text,
-    }
-}
-
-export const setUseMemoTextList = (textList) => {
-    return {
-        type: SET_USE_MEMO_TEXT_LIST,
+        type: SET_MEMO_USE_TEXT_LIST,
         payload: textList,
     }
 }
@@ -38,4 +31,8 @@ export const setSortMode = (mode) => {
         type: SET_SORT_MODE,
         payload: mode,
     }
+}
+
+export const setUseDays = () => {
+    
 }

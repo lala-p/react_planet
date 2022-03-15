@@ -1,6 +1,6 @@
 export const SEND_COMMAND            = 'SEND_COMMAND';
-export const SEND_COMMAND_LIST       = 'SEND_COMMAND_LIST';
 export const SHIFT_SEND_COMMAND_LIST = 'SHIFT_SEND_COMMAND_LIST';
+export const SET_NEXT                = 'SET_NEXT';
 export const RUN_COMMAND             = 'RUN_COMMAND';
 export const COUNT_COMMAND           = 'COUNT_COMMAND';
 
@@ -8,21 +8,20 @@ export const sendCommand = (command, say) => {
     return {
         type: SEND_COMMAND,
         payload1: command,
-        payload2: new Date(),
-        payload3: say,
-    }
-}
-
-export const sendCommandList = (commandList) => {
-    return {
-        type: SEND_COMMAND_LIST,
-        payload: commandList,
+        payload2: say,
     }
 }
 
 export const shiftSendCommandList = () => {
     return {
         type: SHIFT_SEND_COMMAND_LIST,
+    }
+}
+
+export const setNext = (next) => {
+    return {
+        type: SET_NEXT,
+        payload: next
     }
 }
 

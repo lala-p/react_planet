@@ -31,9 +31,10 @@ router.post('/getTextTitleList', async (req, res) => {
 
 router.post('/getTextList', async (req, res) => {
 
-    let userId = req.body.userId
+    let userId        = req.body.userId
+    let textTitleList = req.body.textTitleList
         
-    var textList = await textModel.getTextList(userId)
+    var textList = await textModel.getTextList(userId, textTitleList)
     
     console.log(textList)
     res.send(textList)

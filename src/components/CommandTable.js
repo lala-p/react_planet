@@ -15,7 +15,7 @@ const MainCommandTable = () => {
     const dispatch = useDispatch();
 
     const sendCommandList = useSelector((state) => state.command.sendCommandList)
-    const runCommandData = useSelector((state) => state.command.runCommandData)
+    const runCommandData  = useSelector((state) => state.command.runCommandData)
 
     const msgHistory  = useSelector((state) => state.message.msgHistory)
     const guideScript = useSelector((state) => state.message.guideScript)
@@ -32,6 +32,7 @@ const MainCommandTable = () => {
     const [inputHistory, setInputHistory] = useState([])
     const [inputHistoryCurrentAddress, setInputHistoryCurrentAddress] = useState(-100)
 
+    
     // ===================================================
     const keyDownHandler = (e) => {
         if (!readOnly) {
@@ -45,12 +46,10 @@ const MainCommandTable = () => {
                         dispatch(messageAction.clearMsgHistory())
                     } else {
                 
-                        dispatch(messageAction.addMsgHistory('me:' + userInput))
-                        
-                        if (userInput.replace(/\s/g, "")) {
+                        dispatch(messageAction.addMsgHistory('me:' + userInput))   
+                        if (userInput.length != 0) {
                             dispatch(commandAction.sendCommand(userInput, true))
-                        }
-
+                        }                     
                     }
 
                     if (userInput.replace(/\s/g, "") && userInput != inputHistory[inputHistory.length - 1]) {
@@ -92,19 +91,22 @@ const MainCommandTable = () => {
     }
 
     const guideSay = async (script) => {
-        for (let index = 0; index < script.length; index++) {        
-            await sleep(script[index]['tempo'])
-            dispatch(messageAction.addMsgHistory('gu:' + script[index]['say']))
 
-            if (script[index]['last']) {
-                if (sendCommandList.length >= 1) {
-                    dispatch(commandAction.shiftSendCommandList())
+        if (runCommandData['say']) {
+            for (let index = 0; index < script.length; index++) {        
+                await sleep(script[index]['tempo'])
+                dispatch(messageAction.addMsgHistory('gu:' + script[index]['say']))
+    
+                if (script[index]['last']) {
+                    dispatch(commandAction.setNext(true))
+        
+                    if (sendCommandList.length <= 1) {
+                        dispatch(messageAction.setReadOnly(false))
+                    } 
                 }
-
-                if (sendCommandList.length <= 1) {
-                    dispatch(messageAction.setReadOnly(false))
-                } 
-            }
+            }    
+        } else {
+            dispatch(messageAction.setReadOnly(false))
         }
 
     }
@@ -120,20 +122,17 @@ const MainCommandTable = () => {
     useEffect(() => {
 
         if (cookies['user_id']) {
+            
+            dispatch(commandAction.sendCommand('ping', true))
+            dispatch(commandAction.sendCommand('load text', true))
+            dispatch(commandAction.sendCommand('get textlist', false))
 
-            let commandList = []
-
-            commandList.push({command: 'ping', say: true})
-            commandList.push({command: 'load text', say: true})
-            commandList.push({command: 'get textlist', say: true})
-
-            dispatch(commandAction.sendCommandList(commandList))
-        
         } else {
             history.push("/")
         }
 
     }, [])
+
 
     useEffect(() => {
         if (inputHistoryCurrentAddress == inputHistory.length) {
@@ -145,15 +144,10 @@ const MainCommandTable = () => {
 
 
     useEffect(() => {
-        if (runCommandData['say'] && guideScript && guideScript.length != 0) {
+        if (guideScript && guideScript.length != 0) {
             dispatch(messageAction.setReadOnly(true))
             guideSay(guideScript)
-        } else {
-            if (sendCommandList.length != 0) {
-                dispatch(commandAction.shiftSendCommandList())
-            }
         }
-            
     }, [guideScript])
 
 
@@ -189,7 +183,6 @@ const MainCommandTable = () => {
                 :
                     <div>readOnly false</div>
                 } 
-
             </div>
                 
         </div>

@@ -6,8 +6,8 @@
 
 // POST ---------------------------------------------
 
-export const SIGNUP_USER = 'http://localhost:3001/signup/signUpuser';
-export const SIGNIN_USER = 'http://localhost:3001/signin/signInUser';
+export const SIGNUP_USER = 'http://localhost:3001/signupApi/signupuser';
+export const SIGNIN_USER = 'http://localhost:3001/signinApi/signinUser';
 
 
 

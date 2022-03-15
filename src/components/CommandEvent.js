@@ -5,6 +5,7 @@ import { useCookies } from 'react-cookie';
 import * as boardTextAction from '../actions/boardText';
 import * as messageAction from '../actions/message';
 import * as commandAction from '../actions/command';
+import * as memoAction from '../actions/memo';
 import * as modeAction from '../actions/mode';
 
 import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios';
@@ -12,22 +13,24 @@ import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios';
 import { SERVER_CONNECT } from "../api/etcApiUrl";
 import * as textApi from '../api/textApiUrl';
 
-// import { serverConnect } from '../api/etcApi';
-// import * as textApi from '../api/textApi';
-
+import { findVer01 } from '../find/ver_01';
 
 const CommandEvent = () => {
 
     const dispatch = useDispatch()
     const [cookies, setCookie, removeCookie] = useCookies()    
-
-    const sendCommand     = useSelector((state) => state.command.sendCommand)
+    
     const sendCommandList = useSelector((state) => state.command.sendCommandList)
+    const next            = useSelector((state) => state.command.next)
     const runCommandData  = useSelector((state) => state.command.runCommandData)
     const commandCounter  = useSelector((state) => state.command.commandCounter)
 
     const boardText        = useSelector((state) => state.boardText.boardText)    
     const currentTextTitle = useSelector((state) => state.boardText.currentTextTitle)
+    const textTitleList    = useSelector((state) => state.boardText.textTitleList)
+
+    const memoUseTextList = useSelector((state) => state.memo.memoUseTextList)
+    const sortMode        = useSelector((state) => state.memo.sortMode)
 
     const normalTempo = useSelector((state) => state.message.normalTempo) 
 
@@ -48,7 +51,7 @@ const CommandEvent = () => {
     }
     // ===================================================
     // 서버 연결 확인하기
-    const pingCmd = useCallback(
+    const cmdPing = useCallback(
         () => {
             
             sendAxiosGet(
@@ -69,28 +72,11 @@ const CommandEvent = () => {
                 false
             )
 
-            // serverConnect(
-            //     (response) => {
-            //         let script = [
-            //             { say: 'connect', tempo: 0, last: true },
-            //         ]
-            //         dispatch(messageAction.setGuideScript(script))
-            //     },
-            //     (error) => {
-            //         let script = [
-            //             { say: 'connect failed', tempo: 0, last: true },
-            //         ]
-            //         dispatch(messageAction.setGuideScript(script))
-            //         console.log(error)
-            //     },
-            //     false
-            // )
-
         }, [commandCounter['ping']]
     )
     // ===================================================
     // axios post 
-    const loadTextCmd = useCallback(
+    const cmdLoadText = useCallback(
         () => {
             
             let script = [
@@ -133,38 +119,11 @@ const CommandEvent = () => {
                 false
             )
 
-
-            // textApi.getTextByTextTitle(
-            //     dataContainer,
-            //     (response) => {
-            //         const text = response.data[0]['text_content']
-                    
-            //         dispatch(boardTextAction.setBoardText(text))
-            //         dispatch(boardTextAction.setCurrentTextTitle(loadTextTitle))
-
-            //         let script = [
-            //             { say: '!@!@!@!@!@!@!@!@!@!', tempo: 1000, last: true },
-            //         ]
-            //         if (runCommandData['say']) {
-            //             dispatch(messageAction.setGuideScript(script))
-            //         }  
-            //     },
-            //     (error) => {
-            //         console.log(error)
-            //         let script = [
-            //             { say: 'failed', tempo: 0, last: true },
-            //         ]
-            //         dispatch(messageAction.setGuideScript(script))
-                    
-            //     },
-            //     false
-            // )
-
         }, [commandCounter['load+text']]
     )
     // ===================================================
     // 
-    const getTextListCmd = useCallback(
+    const cmdGetTextList = useCallback(
         () => {
 
             const dataContainer = {
@@ -193,32 +152,11 @@ const CommandEvent = () => {
                 false
             )
 
-            // textApi.getTextList(
-            //     dataContainer,
-            //     (response) => {
-            //         dispatch(boardTextAction.setTextTitleList(response.data))
-            //         let script = [
-            //             { say: 'Completed', tempo: 0 + 600, last: false },
-            //             { say: '!@!!@!@!@21', tempo: normalTempo + 600, last: true },
-            //         ]
-            //         dispatch(messageAction.setGuideScript(script))
-            //     },
-            //     (error) => {
-            //         console.log(error)
-            //         let script = [
-            //             { say: 'failed', tempo: 0, last: false },
-            //             { say: '!@!!@!@!@21', tempo: normalTempo, last: true },
-            //         ]
-            //         dispatch(messageAction.setGuideScript(script))
-            //     },
-            //     false
-            // )
-
         }, [commandCounter['get+textlist']]
     )
     // ===================================================
     // 
-    const saveCmd = useCallback(
+    const cmdSave = useCallback(
         () => {
             let script = [
                 {say: 'Saving...', tempo: 0, last: false}
@@ -255,34 +193,12 @@ const CommandEvent = () => {
 
             )
 
-
-            // textApi.saveText(
-            //     dataContainer,
-            //     (response) => {
-            //         let script = [
-            //             { say: 'Save Completed', tempo: 0, last: true },
-            //         ]
-            //         dispatch(messageAction.setGuideScript(script))
-                    
-            //         dispatch(commandAction.sendCommand('get textlist', false))  
-            //     },
-            //     (error) => {
-            //         let script = [
-            //             { say: 'Save failed.', tempo: 0, last: true },
-            //         ]
-            //         dispatch(messageAction.setGuideScript(script))
-                    
-            //         console.log(error)
-            //     },
-            //     false
-            // )
-
         }, [commandCounter['save']]
     )
 
     // ===================================================
     // 
-    const saveAsCmd = useCallback(
+    const cmdSaveAs = useCallback(
         () => {
             if (runCommandData['parameter'][0] == 'current') {
                 let script = [
@@ -324,49 +240,292 @@ const CommandEvent = () => {
                     false
                 )
 
-                // textApi.saveAsText(
-                //     dataContainer,
-                //     (response) => {
-                //         let script = [
-                //             { say: 'Save as Completed.', tempo: 0, last: true},
-                //         ]
-                //         dispatch(messageAction.setGuideScript(script))
-                //         dispatch(commandAction.sendCommand('get textlist', false))
-                //     },
-                //     (error) => {
-                //         let script = [
-                //             { say: 'Save as failed.', tempo: 0, last: true},
-                //         ]
-                //         dispatch(messageAction.setGuideScript(script))
-                //         console.log(error)
-                //     },
-                //     false
-                // )
             }
 
         }, [commandCounter['save+as']]
     )
     // ===================================================
     //
-    const useTextCmd = useCallback(
+    const cmdSetMemoText = useCallback(
         () => {
 
-            for (let index = 0; index < runCommandData['parameter'].length; index++) {
-                
+            if (runCommandData['parameter'].length == 0) {
+
+                let script = [
+                    { say: '???', tempo: normalTempo, last: true },
+                ]
+                dispatch(messageAction.setGuideScript(script))
+            
+            } else {
+    
+                let textTitleList2 = []
+                for (let index = 0; index < textTitleList.length; index++) {
+                    textTitleList2.push(textTitleList[index]['text_title'])
+                }
+
+                let sendTextTitleList = runCommandData['parameter']
+                let notExistedTitleList = []
+                for (let index = 0; index < sendTextTitleList.length; index++) {
+                    if (!textTitleList2.includes(sendTextTitleList[index])) {
+                        notExistedTitleList.push(sendTextTitleList[index])
+                    }                    
+                }
+
+                if (notExistedTitleList.length != 0) {
+
+                    let script = [
+                        { say: 'Hmm...', tempo: normalTempo, last: false },
+                    ]
+                    for (let index = 0; index < notExistedTitleList.length; index++) {
+                        script.push({ say: notExistedTitleList[index], tempo: normalTempo, last: false })
+                    }
+
+                    script.push({ say: 'These don\'t exist. --;;', tempo: normalTempo, last: true })
+                    dispatch(messageAction.setGuideScript(script))
+
+                } else {
+
+                    const dataContainer = {
+                        userId: cookies['user_id'],
+                        textTitleList: sendTextTitleList
+                    }
+        
+                    sendAxiosPost(
+                        textApi.GET_TEXT_LIST,
+                        dataContainer,
+                        (response) => {
+                            dispatch(memoAction.setMemoUseTextList(response.data))
+                                    
+                            let script = [
+                                { say: 'Completed', tempo: normalTempo, last: true },
+                            ]
+                            dispatch(messageAction.setGuideScript(script))
+                            
+                            const MemoDataList = setMemoDataList(response.data)
+
+                            dispatch(memoAction.setMemoUseTextList(MemoDataList))
+                            // dispatch(commandAction.sendCommand('sort memo (desc, normal, false)', true))
+                        },
+                        (error) => {
+                            let script = [
+                                { say: 'failed', tempo: normalTempo, last: true },
+                            ]
+                            dispatch(messageAction.setGuideScript(script))
+                            console.log(error)
+                        },
+                        false                
+                    )
+
+                }
             }
 
-        }, [commandCounter['use+text']]
-    )    
+        }, [commandCounter['set+memo+text']]
+    )
+
+    const setMemoDataList = (data) => {
+        
+        let memoDataList = []
+        let textList = data.slice()
+
+        for (let index = 0; index < textList.length; index++) {
+            const textTitle = textList[index]['text_title']
+
+            let textContent = textList[index]['text_content']
+            textContent = textContent.replace(findVer01['global']['baseLine']['weekLine'], '')
+            
+            let dayTextList = textContent.split(findVer01['global']['baseLine']['dateEndLine'])
+            dayTextList.pop()
+            for (let index1 = 0; index1 < dayTextList.length; index1++) {
+                let dayText = dayTextList[index1]
+
+                if (/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g.test(dayText)) { // ?????????
+                    
+                    let dayData = {
+                        title   : textTitle,
+                        date    : "",
+                        day     : -1,
+                        planList: [],
+                        etc     : [],
+                    }
+
+                    let date = dayText.match(findVer01['global']['find']['date'])
+                    let day = new Date(date).getDay()
+                    
+                    let etcList = dayText.split(findVer01['global']['rules']['etc'])
+                    etcList.shift()
+                    etcList.forEach(etc => {
+                        dayText = dayText.replace('+' + etc, "")                  
+                    })
+                   
+                    let planDataList = []
+                    let planTextList = dayText.split(findVer01['global']['rules']['plan'])
+                    planTextList.shift()
+                    for (let index2 = 0; index2 < planTextList.length; index2++) {
+                        
+                        let planText = planTextList[index2]
+                        let planData = {
+                            plan: "",
+                            state: 0,
+                            info: [],
+                            conclusion: [],
+                        }
+                        
+                        let infoList = planText.split(findVer01['global']['rules']['info'])
+                        infoList.shift()
+                        planText = planText.replace(findVer01['global']['rules']['info'], "")
+                        infoList.forEach(info => {
+                            planText = planText.replace(info, "")
+                        })
+    
+                        let conclusionList = planText.split(findVer01['global']['rules']['conclusion'])
+                        conclusionList.shift()
+                        planText = planText.replace(findVer01['global']['rules']['conclusion'], "")
+                        conclusionList.forEach(conclusion => {
+                            planText = planText.replace(conclusion, "")
+                        })
+
+                        let state = 0
+                        if (findVer01['global']['find']['planSuccess'].test(planText)) {
+                            state = 1
+                            planText = planText.replace(findVer01['global']['find']['planSuccess'], "")
+                        } else if (findVer01['global']['find']['planFailed'].test(planText)) {
+                            state = 2
+                            planText = planText.replace(findVer01['global']['find']['planFailed'], "")
+                        } else if (findVer01['global']['find']['planDelay'].test(planText)) {
+                            state = 3
+                            planText = planText.replace(findVer01['global']['find']['planDelay'], "")
+                        } else if (findVer01['global']['find']['planSomeday'].test(planText)) {
+                            state = 4
+                            planText = planText.replace(findVer01['global']['find']['planSomeday'], "")
+                        }
+
+                        planData['plan']       = planText
+                        planData['state']      = state
+                        planData['info']       = infoList 
+                        planData['conclusion'] = conclusionList
+                        
+                        planDataList.push(planData)
+                    }
+
+
+                    dayData['date'] = date[0]
+                    dayData['day'] = day
+                    dayData['planList'] = planDataList
+                    dayData['etc'] = etcList
+
+                    memoDataList.push(dayData)
+                }        
+            }
+        }
+        return memoDataList
+    }
+
     // ===================================================
     //
-    const sortMemoCmd = useCallback(
+    const cmdCheckMemoText = useCallback(
         () => {
+
+        }, [commandCounter['check+memo+text']]
+    )
+    // ===================================================
+    //
+    const cmdSortMemo = useCallback(
+        () => {
+            
+            let weekOrderBy = runCommandData['parameter'][0]
+            let daySortMode = runCommandData['parameter'][1]
+            let dayReverse  = JSON.parse(runCommandData['parameter'][2].toLowerCase()) 
+
+            let sortedMemoDataList = []
+            sortedMemoDataList = memoUseTextList.slice()
+
+            // 날짜 정렬하고
+            sortedMemoDataList = sortedMemoDataList.sort((a, b) => new Date(a.date) - new Date(b.date)) 
+            
+            // 일주일로 나누고
+            let weekList = []
+            let weekNum = 0
+            let oneWeek = [false, false, false, false, false, false, false]
+        
+            for (let index = 0; index < sortedMemoDataList.length; index++) {
+
+                if (index == 0) {
+
+                    switch (daySortMode) {
+                        case 'normal':
+                            weekList.push(new Array())
+                            weekList[0].push(sortedMemoDataList[0])
+                            break;
+
+                        case 'calendar':
+                            weekList.push(oneWeek.slice())
+                            weekList[0][sortedMemoDataList[0]['day']] = sortedMemoDataList[0]
+                            break;
+                    }
+
+                } else {
+                    const previousData = sortedMemoDataList[index-1]
+                    const currentData = sortedMemoDataList[index]
+                    
+                    const min = new Date(previousData['date']) < new Date(currentData['date']) ? previousData : currentData
+                    const max = new Date(previousData['date']) < new Date(currentData['date']) ? currentData : previousData
+                
+                    if (Math.ceil(new Date(max['date']).getTime() / (1000*60*60*24)) - (Math.ceil(new Date(min['date']).getTime() / (1000*60*60*24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) > 0) {
+                        
+                        switch (daySortMode) {
+                            case 'normal':
+                                weekList.push(new Array())   
+                                break;
+    
+                            case 'calendar':
+                                if (dayReverse) {
+                                    weekList[weekNum] = weekList[weekNum].reverse()
+                                }
+                                weekList.push(oneWeek.slice())
+                                break;
+                        }                   
+    
+                        weekNum += 1
+                    }
+    
+                    switch (daySortMode) {
+                        case 'normal':
+                            if (dayReverse) {
+                                weekList[weekNum].unshift(currentData)
+                            } else {
+                                weekList[weekNum].push(currentData)
+                            }
+                            break;
+    
+                        case 'calendar':
+                            weekList[weekNum][currentData['day']] = currentData
+                            break;
+                        
+                    }
+    
+                }
+
+            }
+
+            sortedMemoDataList = weekList
+
+            if (weekOrderBy == 'desc') {
+                sortedMemoDataList = sortedMemoDataList.reverse()
+            }      
+
+            console.log(sortedMemoDataList)
+
+            
+            let script = [
+                { say: 'sorttttt', tempo: normalTempo - 200, last: true },
+            ]
+            dispatch(messageAction.setGuideScript(script))
 
         }, [commandCounter['sort+memo']]
     )
     // ===================================================
     // 
-    const renameTextTitleCmd = useCallback(
+    const cmdRenameTextTitle = useCallback(
         () => {
             let textTitle    = runCommandData['parameter'][0]
             let newTextTitle = runCommandData['parameter'][1]
@@ -408,32 +567,13 @@ const CommandEvent = () => {
                     false
                 )
 
-
-                // textApi.renameTextTitle(
-                //     dataContainer,
-                //     (response) => {
-                //         let script = [
-                //             { say: 'Completed', tempo: 0, last: true },
-                //         ]
-                //         dispatch(messageAction.setGuideScript(script))
-                //         dispatch(commandAction.sendCommand('get textlist', false))
-                //     },
-                //     (error) => {
-                //         console.log(error)
-                //         let script = [
-                //             { say: 'failed', tempo: 0, last: true },
-                //         ]
-                //         dispatch(messageAction.setGuideScript(script))
-                //     },
-                //     false
-                // )
             }
 
         }, [commandCounter['rename+text+title']]
     )
     // ===================================================
     // 
-    const showTitleCmd = useCallback(
+    const cmdShowTitle = useCallback(
         () => {
             const script = [
                 { say: currentTextTitle, tempo: normalTempo, last: true },
@@ -443,14 +583,14 @@ const CommandEvent = () => {
     )
     // ===================================================
     // 
-    const showUseTextCmd = useCallback(
+    const cmdShowUseText = useCallback(
         () => {
             
         }, [commandCounter['show+use+text']]
     )
     // ===================================================
     // mainContent에 있는 component 바꾸기/ mode 바꾸기
-    const setModeCmd = useCallback(
+    const cmdSetMode = useCallback(
         () => {
 
             let notExist = true;
@@ -475,7 +615,7 @@ const CommandEvent = () => {
     // ===================================================
     // return 현재 시간 
     // ex) PM 02:08:33
-    const nowCmd = useCallback(
+    const cmdNow = useCallback(
         () => {
 
             let getToday = new Date()
@@ -500,7 +640,7 @@ const CommandEvent = () => {
     // ===================================================
     // return 현재 날짜
     // ex) 2021-08-30 THU
-    const todayCmd = useCallback(
+    const cmdToday = useCallback(
         () => {
 
             let today = new Date()
@@ -521,7 +661,7 @@ const CommandEvent = () => {
     // input : get week (year, month, date)
     // return 특정 날짜의 요일 
     // ex) 2021-08-30 was... / THU
-    const getWeekCmd = useCallback(
+    const cmdGetWeek = useCallback(
         () => {
 
             let that_date = runCommandData['parameter']
@@ -564,101 +704,70 @@ const CommandEvent = () => {
         }, [commandCounter['get+week']]
     ) 
 
-    const IsCommand = (command) => {
 
-        let commandType = command.match(/[a-zA-z\.+\?+]+|\(.+\)/g)
-        let parameter = []
+    // ===================================================
+    // useEffect -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-        const pr = /^\(.*\)$/g;
-        if (pr.test(commandType[commandType.length -1])) {
-            parameter = commandType.pop()
-            parameter = parameter.replace(/\(|\)/g, "")
-            parameter = parameter.split(/,/g)
-        }
-
-        for (let index = 0; index < parameter.length; index++) {
-            parameter[index] = parameter[index].trim() 
+    useEffect(() => {
+        if (next && sendCommandList.length != 0) {
+            
+            dispatch(commandAction.setNext(false))
+            dispatch(commandAction.runCommand(sendCommandList[0]['commandType'], sendCommandList[0]['parameter'], sendCommandList[0]['say']))
+            dispatch(commandAction.countCommand(sendCommandList[0]['commandType']))
+            dispatch(commandAction.shiftSendCommandList())
+             
         } 
-
-        commandType = commandType.join('+')
-
-        if (commandType in commandCounter) {
-            return {'commandType': commandType, 'parameter': parameter}        
-        } else {
-            return false;
-        
-        }
-    }
-
-    useEffect(() => {
-        if (sendCommandList.length != 0) {
-            dispatch(commandAction.sendCommand(sendCommandList[0]['command'], sendCommandList[0]['say']))
-        }
-    }, [sendCommandList])
-
-    useEffect(() => {
-        if (sendCommand['command'] != undefined) {
-            let send = IsCommand(sendCommand['command'])
-
-            if (send != false) {
-                dispatch(commandAction.runCommand(send['commandType'], send['parameter'], sendCommand['say']))
-                dispatch(commandAction.countCommand(send['commandType']))
-            }
-        }
-
-    }, [sendCommand])
+    }, [next, sendCommandList])
 
     useEffect(() => {
         if (runCommandData['commandType'] != undefined) {
             switch (runCommandData['commandType']) {
-                case 'now': nowCmd()
+                case 'now': cmdNow()
                     break;
-                case 'today': todayCmd()
+                case 'today': cmdToday()
                     break;
 
-                case 'ping': pingCmd()
+                case 'ping': cmdPing()
                     break;
 
                 // get
-                case 'get+week': getWeekCmd()
+                case 'get+week': cmdGetWeek()
                     break;
-                case 'get+textlist': getTextListCmd()
+                case 'get+textlist': cmdGetTextList()
                     break;
 
                 // load 
-                case 'load+text': loadTextCmd()
+                case 'load+text': cmdLoadText()
                     break;
 
                 // set
-                case 'set+mode': setModeCmd()
+                case 'set+memo+text': cmdSetMemoText()
+                    break;
+                case 'set+mode': cmdSetMode()
                     break;
 
                 // save
-                case 'save': saveCmd()
+                case 'save': cmdSave()
                     break;
-                case 'save+as': saveAsCmd()
+                case 'save+as': cmdSaveAs()
                     break;
 
                 // sort
-                case 'sort+memo': sortMemoCmd()
+                case 'sort+memo': cmdSortMemo()
                     break;
 
                 // show
-                case 'show+title': showTitleCmd()
+                case 'show+title': cmdShowTitle()
                     break;
 
                 // rename
-                case 'rename+text+title': renameTextTitleCmd()
+                case 'rename+text+title': cmdRenameTextTitle()
                     break;
 
                 case 'test': 
-                    let commandList = []
-
-                    commandList.push({command: 'ping', say: true})
-                    commandList.push({command: 'load text', say: true})
-                    commandList.push({command: 'get textlist', say: true})
-
-                    dispatch(commandAction.sendCommandList(commandList))
+                    dispatch(commandAction.sendCommand('ping', true))
+                    dispatch(commandAction.sendCommand('load text', true))
+                    dispatch(commandAction.sendCommand('get textlist', true))        
                 break;
 
             }

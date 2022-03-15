@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import ReactModal from 'react-modal';
 
 
-const weekDataBoxes = (weekDataList, weekBoxLineUp, memoBoxLineUp, memoBoxReverse, oneWeek) =>{
+const weekBoxeList = (weekDataList, weekBoxLineUp, memoBoxLineUp, memoBoxReverse, oneWeek) =>{
     const boxes = weekDataList.map((weekData) => {
 
         return (
@@ -17,7 +17,7 @@ const weekDataBoxes = (weekDataList, weekBoxLineUp, memoBoxLineUp, memoBoxRevers
     return boxes;
 }
 
-const dayDataBox = (dayData) => {
+const dayBox = (dayData) => {
     const boxModel = (data) => {
         
         return (
@@ -136,10 +136,6 @@ const MemoTable2 = () => {
     const dispatch = useDispatch();
 
     const weekDataList = useSelector((state) => state.boardText.weekDataList)
-
-    const weekBoxLineUp  = useSelector((state) => state.memo.weekBoxLineUp);
-    const memoBoxLineUp  = useSelector((state) => state.memo.memoBoxLineUp);
-    const memoBoxReverse = useSelector((state) => state.memo.memoBoxReverse)
 
     const oneWeek = useSelector((state) => state.astronaut.oneWeek)
 

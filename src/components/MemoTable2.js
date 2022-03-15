@@ -10,41 +10,17 @@ const MemoTable2 = () => {
 
     const dispatch = useDispatch();
     
-    const weekDataList = useSelector((state) => state.boardText.weekDataList)
-
-    // const weekDataBoxLineUp  = useSelector((state) => state.memo.weekBoxLineUp)
-    const [weekDataBoxLineUp, setWeekDataBoxLineUp] = useState(0)
-    const memoBoxLineUp  = useSelector((state) => state.memo.memoBoxLineUp)
-    const memoBoxReverse = useSelector((state) => state.memo.memoBoxReverse)
-
-    // const oneWeek = useSelector((state) => state.astronaut.oneWeek)
+    const memoUseTextList = useSelector((state) => state.memo.memoUseTextList)
     const week = useSelector((state) => state.astronaut.week)
 
     const [dayDataModalOpen, setDayDataModalOpen] = useState(false)
     const [dayDataModalData, setDayDataModalData] = useState(false)
 
-
     const weekDataBoxContainer = useCallback(
         (weekDataList) => {
             const containerModel = (dataList) => {
-                let lineUpClassName = ""
-
-                switch (weekDataBoxLineUp) {
-                    case 0:
-                        lineUpClassName = "desc"
-                        break;
-                    case 1:
-                        lineUpClassName = "asc"
-                        break;
-
-                    default:
-                        lineUpClassName = "asc"
-
-                        break;
-                }    
-
                 return (
-                    <div className={"week-data-box-container " + lineUpClassName}>
+                    <div className={"week-data-box-container "}>
                         { weekDataBoxes(dataList) }
                     </div>
                 ) 
@@ -54,7 +30,7 @@ const MemoTable2 = () => {
 
             return container;
 
-        }, [weekDataList, weekDataBoxLineUp, memoBoxLineUp, memoBoxReverse]
+        }, []
     )
 
     const weekDataBoxes = useCallback(
@@ -67,27 +43,6 @@ const MemoTable2 = () => {
                     lineUp.push(weekData[index])
                 }
 
-                switch (memoBoxLineUp) {
-                    case 0:
-                        break;
-                    case 1:
-                        let oneWeek = {1: false, 2: false, 3: false, 4: false, 5: false} 
-                        
-                        for (let index = 0; index < lineUp.length; index++) {
-                            oneWeek[lineUp[index]['day']] = lineUp[index]                        
-                        }
-                        lineUp = Object.values(oneWeek)
-                        
-                        break; 
-                    
-        
-                    default: 
-                        break;     
-                }
-
-                if (memoBoxReverse) {
-                    lineUp.reverse()
-                }
                                 
                 return (
                     <div className="week-data-box">
@@ -102,7 +57,7 @@ const MemoTable2 = () => {
             })    
 
             return boxes;
-        }, [weekDataList, weekDataBoxLineUp, memoBoxLineUp, memoBoxReverse]
+        }, 
     ) 
 
     const dayDataBox = (dayData) => {
@@ -275,14 +230,9 @@ const MemoTable2 = () => {
 
 
     return (
-        <div className="MemoTable">
-
-            <div>
-                <button onClick={() => {setWeekDataBoxLineUp(0)}}>000</button>
-                <button onClick={() => {setWeekDataBoxLineUp(1)}}>111</button>
-            </div>            
+        <div className="MemoTable">      
             <br /><br />
-            { weekDataBoxContainer(weekDataList) }
+            { weekDataBoxContainer(memoUseTextList) }
 
             {dayDataModal(dayDataModalData)}
             

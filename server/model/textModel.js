@@ -19,26 +19,11 @@ exports.createCurrentText = async function (userId) {
 exports.getTextByTitle = async function (userId, textTitle) {
     
     var data = await knex('text')
+        .select('text_content', 'created_at', 'updated_at')
         .where({
             user_id: userId,
             text_title: textTitle
         })
-        .select('text_content', 'created_at', 'updated_at')
-
-    return data;
-}
-
-exports.getTextList = async function (userId) {
-
-    var data = await knex('text')
-        .where({
-            user_id: userId,
-        })
-        .select('text_title',
-            knex.raw('date_format(created_at, \'%Y.%m.%d %T\') as created_at'),
-            knex.raw('date_format(updated_at, \'%Y.%m.%d %T\') as updated_at')
-        )
-        .orderBy('created_at', 'desc')
 
     return data;
 }
@@ -46,10 +31,33 @@ exports.getTextList = async function (userId) {
 exports.getTextTitleList = async function (userId) {
 
     var data = await knex('text')
+        .select('text_title',
+            knex.raw('date_format(created_at, \'%Y.%m.%d %T\') as created_at'),
+            knex.raw('date_format(updated_at, \'%Y.%m.%d %T\') as updated_at')
+        )
         .where({
             user_id: userId,
         })
-        .select('text_title', 'text_content')
+        .orderBy('created_at', 'desc')
+
+    return data;
+}
+
+exports.getTextList = async function (userId, textTitleList) {
+
+    var data = await knex('text')
+        .select('text_title', 
+            'text_content',
+            knex.raw('date_format(created_at, \'%Y.%m.%d %T\') as created_at'),
+            knex.raw('date_format(updated_at, \'%Y.%m.%d %T\') as updated_at')
+        )
+        .where('user_id', '=', userId)
+        .where(function () {
+            this.where('text_title', '=', textTitleList[0])
+            for (let index = 1; index < textTitleList.length; index++) {
+                this.orWhere('text_title', '=', textTitleList[index])
+            }
+        })
         .orderBy('created_at', 'desc')
 
     return data;
@@ -58,12 +66,12 @@ exports.getTextTitleList = async function (userId) {
 exports.saveText = async function (userId, text, textTitle) {
     
     var saveText = await knex('text')
-        .where('user_id', userId)
-        .andWhere('text_title', textTitle)
         .update({
             text_content: text,
             updated_at: knex.raw('NOW()') 
         })
+        .where('user_id', userId)
+        .andWhere('text_title', textTitle)
 
     return saveText;
 }
@@ -71,13 +79,13 @@ exports.saveText = async function (userId, text, textTitle) {
 exports.saveAsText = async function (userId, text, textTitle) {
 
     var saveAsText = await knex('text')
-        .where('user_id', userId)
-        .andWhere('text_title', 'current')
         .update({
             text_content: text,
             text_title  : textTitle,
             updated_at  : knex.raw('now()')
         })
+        .where('user_id', userId)
+        .andWhere('text_title', 'current')
     
     return saveAsText;
 }
@@ -85,11 +93,11 @@ exports.saveAsText = async function (userId, text, textTitle) {
 exports.updateTextTitle = async function (userId, textTitle, newTextTitle) {
     
     var updateTextTitle = await knex('text')
-        .where('user_id', userId)
-        .andWhere('text_title', textTitle)
         .update({
             text_title: newTextTitle
         })
+        .where('user_id', userId)
+        .andWhere('text_title', textTitle)
 
     return updateTextTitle;
 }
