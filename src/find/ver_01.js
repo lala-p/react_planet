@@ -4,8 +4,6 @@ export const findVer01 = {
             weekLine     : /(?<=-{35})\s*-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-\s*(?=\={3}\s\d{4}\/\d{2}\/\d{2}\s\={20})/g,
             dateStartLine: /={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g,
             dateEndLine  : /\-{35}/g,
-            planLine     : /\d{1,2}\.{1}\s{1}/g, // 지우기 
-            etcLine      : /\+{1}/g, // 지우기
         },
         rules: {
             plan      : /\d{1,2}\.{1}\s{1}/g,

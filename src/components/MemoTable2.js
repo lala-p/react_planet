@@ -9,17 +9,19 @@ const MemoTable2 = () => {
 
     const dispatch = useDispatch();
     
-    const sortedMemoDataList = useSelector((state) => state.memo.sortedMemoDataList)
-    const weekFormat      = useSelector((state) => state.astronaut.weekFormat)
+    const weekFormat         = useSelector((state) => state.astronaut.weekFormat)
 
+    const sortedMemoDataList = useSelector((state) => state.memo.sortedMemoDataList)
+    
     const [dayDataModalOpen, setDayDataModalOpen] = useState(false)
     const [dayDataModalData, setDayDataModalData] = useState(false)
 
     const weekDataBoxContainer = useCallback(
         (weekDataList) => {
             const containerModel = (dataList) => {
+            
                 return (
-                    <div className={"week-data-box-container "}>
+                    <div className={'week-data-box-container'}>
                         { weekDataBoxes(dataList) }
                     </div>
                 ) 
@@ -35,22 +37,13 @@ const MemoTable2 = () => {
     const weekDataBoxes = useCallback(
         (weekDataList) => {
             const boxes = weekDataList.map((weekData) => {
-
-                let lineUp = []
-
-                for (let index = 0; index < weekData.length; index++) {
-                    lineUp.push(weekData[index])
-                }
-
-                                
+                            
                 return (
                     <div className="week-data-box">
                         <div className={"box-container"}>
-                            { dayMemoBoxes(lineUp) }
+                            { dayMemoBoxes(weekData) }
                         </div>
-                        <div className={"line"}>
-                            line
-                        </div>
+                        <div className={"line"}></div>
                     </div>
                 )
             })    
@@ -126,8 +119,9 @@ const MemoTable2 = () => {
                     >
                         { dayData['date'] } - { weekFormat[dayData['day']] }
                         <br />
-                        plan count: { dayData['planList'].length }
+                        TITLE : { dayData['title'] }
                         <br />
+                        plan count: { dayData['planList'].length }
                         <br />
                         etc count: { dayData['etc'].length }
                     </div>

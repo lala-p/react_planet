@@ -106,6 +106,7 @@ const MainCommandTable = () => {
                 }
             }    
         } else {
+            dispatch(commandAction.setNext(true))
             dispatch(messageAction.setReadOnly(false))
         }
 
@@ -123,10 +124,11 @@ const MainCommandTable = () => {
 
         if (cookies['user_id']) {
             
-            dispatch(commandAction.sendCommand('ping', true))
-            dispatch(commandAction.sendCommand('load text', true))
+            dispatch(commandAction.sendCommand('ping', false))
+            dispatch(commandAction.sendCommand('load text', false))
             dispatch(commandAction.sendCommand('get textlist', false))
-
+            dispatch(commandAction.sendCommand('use text (current)', false))
+        
         } else {
             history.push("/")
         }
@@ -148,6 +150,7 @@ const MainCommandTable = () => {
             dispatch(messageAction.setReadOnly(true))
             guideSay(guideScript)
         }
+
     }, [guideScript])
 
 

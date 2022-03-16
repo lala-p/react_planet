@@ -1,13 +1,13 @@
-export const SET_MEMO_USE_TEXT_LIST    = 'SET_MEMO_USE_TEXT_LIST';
+export const SET_USE_TEXT_LIST         = 'SET_USE_TEXT_LIST';
 export const SET_MEMO_DATA_LIST        = 'SET_MEMO_DATA';
 export const SET_SORTED_MEMO_DATA_LIST = 'SET_SORTED_MEMO_DATA';
 export const SET_SORT_MODE             = 'SET_SORT_MODE';
 export const SET_USE_DAYS              = 'SET_USE_DAYS';
 
 
-export const setMemoUseTextList = (textList) => {
+export const setUseTextList = (textList) => {
     return {
-        type: SET_MEMO_USE_TEXT_LIST,
+        type: SET_USE_TEXT_LIST,
         payload: textList,
     }
 }

@@ -41,6 +41,7 @@ const initialStates = {
 
         // show
         'show+title': 0,
+        'show+use+text': 0,
         
         // rename
         'rename+text+title': 0,
