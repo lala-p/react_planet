@@ -106,7 +106,6 @@ const CommandEvent = () => {
                     
                     dispatch(boardTextAction.setBoardText(text))
                     dispatch(boardTextAction.setCurrentTextTitle(loadTextTitle))
-
                     let script = [
                         { say: '!@!@!@!@!@!@!@!@!@!', tempo: 1000, last: true },
                     ]
@@ -322,7 +321,7 @@ const CommandEvent = () => {
                             ]
                             dispatch(messageAction.setGuideScript(script))
                             
-                            const MemoDataList = setMemoDataList(response.data)
+                            const MemoDataList = getMemoDataList(response.data)
                             console.log(MemoDataList)
                             dispatch(memoAction.setMemoDataList(MemoDataList))
                             dispatch(commandAction.sendCommand(`sort memo (${sortMode['week']['orderBy']}, ${sortMode['day']['sort']}, ${sortMode['day']['reverse']})`, false))
@@ -343,7 +342,7 @@ const CommandEvent = () => {
         }, [commandCounter['use+text']]
     )
 
-    const setMemoDataList = (data) => {
+    const getMemoDataList = (data) => {
         
         let memoDataList = []
         let textList = data.slice()
@@ -359,8 +358,7 @@ const CommandEvent = () => {
             for (let index1 = 0; index1 < dayTextList.length; index1++) {
                 let dayText = dayTextList[index1]
 
-                if (/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/g.test(dayText)) { // ?????????
-                    
+                if (new RegExp(findVer01['global']['baseLine']['dateStartLine']).test(dayText)) { // ?????????
                     let dayData = {
                         title   : textTitle,
                         date    : "",
@@ -469,7 +467,7 @@ const CommandEvent = () => {
                     week: { orderBy: weekOrderBy, },
                     day : { sort: daySortMode, reverse: dayReverse },
                 },))
-    
+                console.log()
     
                 let sortedMemoDataList = []
                 sortedMemoDataList = memoDataList.slice()
@@ -658,24 +656,22 @@ const CommandEvent = () => {
     // mainContent에 있는 component 바꾸기/ mode 바꾸기
     const cmdSetMode = useCallback(
         () => {
-
-            let notExist = true;
             let changeMode = runCommandData['parameter'][0]
+            let script = []
 
-            for (let index = 0; index < mode.length; index++) {
-                if (changeMode == mode[index]) {
-                    dispatch(modeAction.setMode(index))
-                    notExist = false
-                }
-            }
-            
-            if (notExist) {
-                let script = [
+            if (changeMode in mode) {
+                dispatch(modeAction.setMode(changeMode))
+                script = [
+                    { say: 'change!', tempo: normalTempo, last: true }, 
+                ]
+                
+            } else {
+                script = [
                     { say: changeMode + ' mode does not exist.', tempo: normalTempo, last: true }, 
                 ]
-                dispatch(messageAction.setGuideScript(script))
             }
-        
+
+            dispatch(messageAction.setGuideScript(script))
         }, [commandCounter['set+mode']]
     )
     // ===================================================

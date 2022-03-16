@@ -1,16 +1,17 @@
 import produce from 'immer';
+import _ from 'lodash';
 
 import * as modeAction from '../actions/mode';
 
 
 const initialStates = {
 
-    mode: [
-        'board', 
-        'memoTable',
-        'textTable', 
-        'help',
-    ],
+    mode: {
+        'board'    : 0,
+        'memoTable': 1,
+        'textTable': 2,
+        'help'     : 3,
+    },
     currentMode: 0,
 
 }
@@ -21,15 +22,16 @@ const reducers = (state = initialStates, actions) => {
     switch (actions.type) {
         case modeAction.SET_MODE: {
             return produce(state, draft => {
-                draft.currentMode = actions.payload;
+                if (actions.payload in draft.mode) {
+                    draft.currentMode = draft.mode[actions.payload]
+                }
             })
         }
-        case modeAction.RANGE_CONTROL: {
+        case modeAction.MOVE_CURRENT_MODE: {
             return produce(state, draft => {
-                if (draft.currentMode + actions.payload >= 0 && draft.currentMode + actions.payload < draft.mode.length) {
-                    draft.currentMode += actions.payload;
-                } else {
-
+                let afterMoved = draft.currentMode + actions.payload
+                if (Object.values(draft.mode).includes(afterMoved)) {
+                    draft.currentMode += actions.payload
                 }
             })
         }

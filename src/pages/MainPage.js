@@ -21,7 +21,7 @@ const MainPage = () => {
     const dispatch = useDispatch()
 
     const currentMode = useSelector((state) => state.mode.currentMode)
-
+    
     const modeHandler = () => {
 
         switch (currentMode) {
@@ -37,12 +37,8 @@ const MainPage = () => {
         }
     }
 
-    useHotkeys('shift+up', ()=> dispatch(modeAction.rangeControl(-1)))
-    useHotkeys('shift+down', ()=> dispatch(modeAction.rangeControl(1)))
-
-    useEffect(() => {
-       
-    }, [])
+    useHotkeys('shift+up', ()=> dispatch(modeAction.moveCurrentMode(-1)))
+    useHotkeys('shift+down', ()=> dispatch(modeAction.moveCurrentMode(1)))
 
 
     return(
@@ -64,7 +60,7 @@ const MainPage = () => {
                 &nbsp;&nbsp;&nbsp;
                 &nbsp;&nbsp;&nbsp;
 
-                <div><button onClick={()=> dispatch(modeAction.rangeControl(-1))} style={{height: "100%"}}>&lt;</button></div>
+                <div><button onClick={()=> dispatch(modeAction.moveCurrentMode(-1))} style={{height: "100%"}}>&lt;</button></div>
                 &nbsp;&nbsp;&nbsp;
                 <div style={{display: "flex", width: "1400px"}}>   
                     <div style={currentMode != 0 ? {display: "none"} : null}>
@@ -74,7 +70,7 @@ const MainPage = () => {
                     {modeHandler()}
                 </div>
                 &nbsp;&nbsp;&nbsp;
-                <div><button onClick={()=> dispatch(modeAction.rangeControl(1))} style={{height: "100%"}}>&gt;</button></div>
+                <div><button onClick={()=> dispatch(modeAction.moveCurrentMode(1))} style={{height: "100%"}}>&gt;</button></div>
                 
             </div>
         </div>

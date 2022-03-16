@@ -1,19 +1,17 @@
-export const SET_MODE = 'SET_MODE';
-export const RANGE_CONTROL = 'RANGE_CONTROL';
+export const SET_MODE          = 'SET_MODE';
+export const MOVE_CURRENT_MODE = 'MOVE_CURRENT_MODE';
 
-
-export const setMode = (currentMode) => {
+export const setMode = (mode) => {
     return {
-        type: SET_MODE,
-        payload: currentMode,
+        type   : SET_MODE,
+        payload: mode,
     }
-};
+}
 
-export const rangeControl = (num) => {
+export const moveCurrentMode = (move) => {
     return {
-        type: RANGE_CONTROL,
-        payload: num,
+        type   : MOVE_CURRENT_MODE,
+        payload: move,
     }
-};
-
+}
 

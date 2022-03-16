@@ -1,6 +1,6 @@
 // GET ----------------------------------------------
 // export const serverConnect = "http://localhost:3001/" 
-export const SERVER_CONNECT = 'http://localhost:3001/';
+export const SERVER_CONNECT = '/';
 
 
 
