@@ -1,89 +1,72 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useHotkeys } from 'react-hotkeys-hook';
-import { useHistory } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
+import React, { useState, useRef, useEffect, useCallback } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { useHotkeys } from 'react-hotkeys-hook'
+import { useCookies } from 'react-cookie'
 
-import Editor from "@monaco-editor/react";
-import ToggleSwitch from 'react-switch';
+import Editor from '@monaco-editor/react'
+import ToggleSwitch from 'react-switch'
 
-import * as boardTextAction from '../actions/boardText';
-import * as commandAction from '../actions/command';
+import * as boardTextAction from '../actions/boardText'
+import * as commandAction from '../actions/command'
 
 const MainBoard = () => {
-
-    const history = useHistory()
-
     const dispatch = useDispatch()
-    const boardText             = useSelector((state) => state.boardText.boardText)
+    const boardText = useSelector((state) => state.boardText.boardText)
     const currentTextTitle = useSelector((state) => state.boardText.currentTextTitle)
-    const fontSize              = useSelector((state) => state.boardText.fontSize)
-    
-    const [cookies, setCookie, removeCookie] = useCookies()    
+    const fontSize = useSelector((state) => state.boardText.fontSize)
+
+    const [cookies, setCookie, removeCookie] = useCookies()
 
     const sendCommandList = useSelector((state) => state.command.sendCommandList)
 
     const editorRef = useRef(null)
     const btnRef = useRef(null)
-    
+
     const [removeSpace, setRemoveSpace] = useState(false)
 
-
     const eMount = (editor, monaco) => {
-
-        monaco.languages.register({id: 'planet'})
+        monaco.languages.register({ id: 'planet' })
         monaco.languages.setMonarchTokensProvider('planet', {
             tokenizer: {
                 root: [
                     [/-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-/, 'week-line'],
                     [/={3}\s\d{4}\/\d{2}\/\d{2}\s\={20}/, 'date-start-line'],
                     [/\-{35}/, 'date-end-line'],
-                ]
-            }
-        });
+                ],
+            },
+        })
         monaco.languages.registerCompletionItemProvider('planet', {
             provideCompletionItems: () => {
-                var suggestions = [{
+                var suggestions = [
+                    {
                         label: 'weekLine',
                         kind: monaco.languages.CompletionItemKind.Text,
-                        insertText: '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-'
+                        insertText: '-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-',
                     },
                     {
                         label: 'date-start-line',
                         kind: monaco.languages.CompletionItemKind.Keyword,
                         insertText: '=== ${1:0000}/${2:00}/${3:00} ====================',
-                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
                     },
                     {
                         label: 'date-end-line',
                         kind: monaco.languages.CompletionItemKind.Text,
-                        insertText: '-----------------------------------'
+                        insertText: '-----------------------------------',
                     },
                     {
                         label: 'one-date-plan',
                         kind: monaco.languages.CompletionItemKind.Keyword,
-                        insertText: [
-                            '=== ${1:0000}/${2:00}/${3:00} ====================', 
-                            '', 
-                            '', 
-                            '1. ', 
-                            '2. ', 
-                            '3. ', 
-                            '', 
-                            '',
-                            '-----------------------------------',
-                        ].join('\n'),  
-                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet
+                        insertText: ['=== ${1:0000}/${2:00}/${3:00} ====================', '', '', '1. ', '2. ', '3. ', '', '', '-----------------------------------'].join('\n'),
+                        insertTextRules: monaco.languages.CompletionItemInsertTextRule.InsertAsSnippet,
                     },
-
-                ];
+                ]
 
                 return {
-                    suggestions: suggestions
-                };
-            }
-        });
-
+                    suggestions: suggestions,
+                }
+            },
+        })
 
         monaco.editor.defineTheme('planet-theme', {
             base: 'vs-dark',
@@ -91,45 +74,43 @@ const MainBoard = () => {
             rules: [
                 {
                     token: 'week-line',
-                    foreground: '808080'
+                    foreground: '808080',
                 },
                 {
                     token: 'date-start-line',
                     foreground: 'ffffff',
-                    fontStyle: 'bold'
+                    fontStyle: 'bold',
                 },
                 {
                     token: 'date-end-line',
-                    foreground: 'FFA500'
+                    foreground: 'FFA500',
                 },
             ],
             colors: {
                 'editor.foreground': '#FFFFFF',
-            }
-        });
+            },
+        })
         monaco.editor.setTheme('planet-theme')
 
-
-        editor.addCommand(monaco.KeyCode.Escape , () => {
+        editor.addCommand(monaco.KeyCode.Escape, () => {
             btnRef.current.focus()
-            console.log("Escape!@!")
+            console.log('Escape!@!')
         })
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S , () => {
+        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
             dispatch(commandAction.sendCommand('save', true))
         })
-
 
         editorRef.current = editor
     }
 
     const [options, setOptions] = useState({
         minimap: {
-            enabled: true
+            enabled: true,
         },
         quickSuggestions: {
-            "other": false,
-            "comments": false,
-            "strings": false
+            other: false,
+            comments: false,
+            strings: false,
         },
         fontSize: fontSize,
     })
@@ -137,10 +118,10 @@ const MainBoard = () => {
     // ===================================================
     // 단축키 설정 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
     useHotkeys('insert', () => {
-        editorRef.current.focus()    
+        editorRef.current.focus()
     })
 
-    return(
+    return (
         <div className="MainBoard">
             <div>
                 <div>
@@ -156,20 +137,21 @@ const MainBoard = () => {
                         onMount={eMount}
                         options={options}
                     />
-
                     {/* <button onClick={()=>{history.push('/loading')}}>asdf</button> */}
-                    <button ref={btnRef} onFocus={()=> {btnRef.current.blur()}}></button>
-
-                    <br /> 
+                    <button
+                        ref={btnRef}
+                        onFocus={() => {
+                            btnRef.current.blur()
+                        }}
+                    ></button>
                     <br />
-                    removeSpace &nbsp; &nbsp; 
+                    <br />
+                    removeSpace &nbsp; &nbsp;
                     <ToggleSwitch onChange={(checked) => setRemoveSpace(checked)} checked={removeSpace} />
-                    
-                    <h1>총 {removeSpace? boardText.replace(/\s/ig, "").length : boardText.length}자</h1>
-
-                    { sendCommandList.map((command,index) => (
+                    <h1>총 {removeSpace ? boardText.replace(/\s/gi, '').length : boardText.length}자</h1>
+                    {sendCommandList.map((command, index) => (
                         <h5>{command['command']}</h5>
-                    )) }
+                    ))}
                     <h2>{currentTextTitle}</h2>
                     {/* <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.length}자</h1> */}
                     {/* <h1>총  {removeSpace ? boardText.replace(/\s/ig, "").length : boardText.replace(/\r?\n|\r/g, "").length}자</h1> 
@@ -180,4 +162,4 @@ const MainBoard = () => {
     )
 }
 
-export default MainBoard;
+export default MainBoard
