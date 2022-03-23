@@ -11,6 +11,7 @@ import * as commandAction from '../actions/command'
 
 const MainBoard = () => {
 	const dispatch = useDispatch()
+
 	const boardText = useSelector(state => state.boardText.boardText)
 	const currentTextTitle = useSelector(state => state.boardText.currentTextTitle)
 	const fontSize = useSelector(state => state.boardText.fontSize)

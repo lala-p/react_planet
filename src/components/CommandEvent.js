@@ -417,6 +417,14 @@ const CommandEvent = () => {
 
 			switch (daySortMode) {
 				case 'normal':
+					let maxWeekDays = 0
+
+					for (let index = 0; index < 7; index++) {
+						if (useDays[index]) {
+							maxWeekDays += 1
+						}
+					}
+
 					weekList.push(new Array())
 					weekList[0].push(sortedMemoDataList[0])
 
@@ -433,6 +441,12 @@ const CommandEvent = () => {
 							0
 
 						if (!isSameWeek) {
+							if (weekList[weekNum].length != maxWeekDays) {
+								for (let index = weekList[weekNum].length; index < maxWeekDays; index++) {
+									weekList[weekNum].push(false)
+								}
+							}
+
 							weekList.push(new Array())
 							weekNum += 1
 						}
@@ -446,12 +460,18 @@ const CommandEvent = () => {
 						}
 					}
 
+					if (weekList[weekNum].length != maxWeekDays) {
+						for (let index = weekList[weekNum].length; index < maxWeekDays; index++) {
+							weekList[weekNum].push(false)
+						}
+					}
+
 					break
 
 				case 'calendar':
 					let oneWeek = _.cloneDeep(useDays)
 					for (let index = 0; index < 7; index++) {
-						if (oneWeek[index]) {
+						if (useDays[index]) {
 							oneWeek[index] = false
 						} else {
 							delete oneWeek[index]
@@ -512,7 +532,7 @@ const CommandEvent = () => {
 			}
 
 			sortedMemoDataList = weekList
-
+			console.log(sortedMemoDataList)
 			dispatch(memoAction.setSortedMemoDataList(sortedMemoDataList))
 
 			script = [{ say: 'sorttttttttt', tempo: normalTempo, last: true }]
@@ -635,10 +655,9 @@ const CommandEvent = () => {
 	// return 특정 날짜의 요일
 	// ex) 2021-08-30 was... / THU
 	const cmdGetWeek = useCallback(() => {
-		let that_date = runCommandData['parameter']
-		let year = that_date[0]
-		let month = that_date[1]
-		let date = that_date[2]
+		let year = runCommandData['parameter'][0]
+		let month = runCommandData['parameter'][1]
+		let date = runCommandData['parameter'][2]
 
 		const that_day = new Date()
 		that_day.setFullYear(year)
