@@ -7,7 +7,7 @@ const initialStates = {
 		board: 0,
 		memoTable: 1,
 		textTable: 2,
-		help: 3,
+		help: 3, // help는 무조건 마지막에 두기
 	},
 	currentMode: 0,
 }

@@ -10,35 +10,28 @@ const TestPage = () => {
 
 
 
-    const blablaList = blabla.map((blabla, index) => (<div> 
-                                                        {blabla.substr(0, 3) === 'me:' ? <div key={index} style={{float: "right"}}>{blabla.substr(3)}</div> : 
-                                                                                      <div key={index} style={{float: "left"}}>{blabla.substr(3)}</div> } 
-                                                      <br /> </div>))
+    const blablaList = blabla.map((blabla, index) => (<div>
+        {blabla.substr(0, 3) === 'me:' ? <div key={index} style={{ float: "right" }}>{blabla.substr(3)}</div> :
+            <div key={index} style={{ float: "left" }}>{blabla.substr(3)}</div>}
+        <br /> </div>))
 
 
     const addblabla = (e) => {
 
-        if(e.key == 'Enter'){
-
+        if (e.key == 'Enter') {
 
             setBlabla(blabla.concat('me:' + e.target.value))
             console.log(e.target.value)
             console.log(blabla)
             setHaha("")
-            
 
         }
-
-
-
     }
 
-
-
-    return(
+    return (
         <div>
 
-            <input type="text" onKeyPress={addblabla} value={haha} onChange={(e)=> setHaha(e.target.value)} />
+            <input type="text" onKeyPress={addblabla} value={haha} onChange={(e) => setHaha(e.target.value)} />
 
 
 

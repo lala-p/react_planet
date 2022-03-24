@@ -36,6 +36,7 @@ const MainBoard = () => {
 				],
 			},
 		})
+
 		monaco.languages.registerCompletionItemProvider('planet', {
 			provideCompletionItems: () => {
 				var suggestions = [
@@ -143,7 +144,7 @@ const MainBoard = () => {
 						onFocus={() => {
 							btnRef.current.blur()
 						}}
-						style={{ display: 'none' }}
+					// style={{ visibility: 'hidden' }}
 					></button>
 					<br />
 					<br />

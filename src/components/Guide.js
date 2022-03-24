@@ -3,13 +3,13 @@ import React, { useState } from 'react';
 
 const MainGuide = () => {
 
-    
 
-    return(
+
+    return (
         <div className="MainGuide">
             <div>
 
-                <div style={{backgroundColor: "blue", height: "320px"}}>
+                <div style={{ backgroundColor: "blue", height: "320px" }}>
 
                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                     <br />

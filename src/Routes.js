@@ -7,10 +7,10 @@ import MainPage from './pages/MainPage';
 
 import TestPage from './pages/TestPage';
 
-class Routes extends React.Component{
+class Routes extends React.Component {
 
-    render(){
-        return(
+    render() {
+        return (
 
             <Router>
                 <Switch>

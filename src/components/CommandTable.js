@@ -145,7 +145,6 @@ const MainCommandTable = () => {
 
 	const msgList = msgHistory.map((msg, index) => (
 		<div key={index}>
-			{' '}
 			{msg.substr(0, 3) === 'me:' ? (
 				<div style={{ minHeight: '25px', overflow: 'hidden', wordBreak: 'break-all', backgroundColor: 'pink' }}>
 					&lt;{cookies['user_id']}&gt; {msg.substr(3)}

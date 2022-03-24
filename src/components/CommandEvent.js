@@ -17,6 +17,16 @@ import { findVer01 } from '../find/ver_01'
 
 import _ from 'lodash'
 
+
+const wordFill = (str, len, word) => {
+	let returnWord = str
+	for (let index = str.length; index < len; index++) {
+		returnWord = word + returnWord
+	}
+
+	return returnWord
+}
+
 const CommandEvent = () => {
 	const dispatch = useDispatch()
 	const [cookies, setCookie, removeCookie] = useCookies()
@@ -38,19 +48,11 @@ const CommandEvent = () => {
 
 	const normalTempo = useSelector(state => state.message.normalTempo)
 
-	const week = useSelector(state => state.astronaut.week)
+	const week = useSelector(state => state.astronaut.weekFormat)
 
 	const mode = useSelector(state => state.mode.mode)
 
-	// ===================================================
-	const wordFill = (str, len, word) => {
-		let returnWord = str
-		for (let index = str.length; index < len; index++) {
-			returnWord = word + returnWord
-		}
 
-		return returnWord
-	}
 	// ===================================================
 	// API 서버 연결 확인하기
 	const cmdPing = useCallback(() => {
@@ -268,28 +270,28 @@ const CommandEvent = () => {
 
 	const getMemoDataList = data => {
 		/* 
-        input => 
-            === 2022/03/16 ====================
+		input => 
+			=== 2022/03/16 ====================
 
 
-            1. a 
-            2. b
-            3. c
+			1. a 
+			2. b
+			3. c
     
-            
-            -----------------------------------
-            ...
+		    
+			-----------------------------------
+			...
 
-        return => 
-            [{
-                title   : {titie}
-                date    : {2022/03/16}
-                day     : 3
-                planList: Array(3)
-                etc     : Array(0) 
-            }, 
-            ...]
-    */
+		return => 
+			[{
+				title   : {titie}
+				date    : {2022/03/16}
+				day     : 3
+				planList: Array(3)
+				etc     : Array(0) 
+			}, 
+			...]
+	*/
 
 		let memoDataList = []
 		let textList = data.slice()
@@ -437,7 +439,7 @@ const CommandEvent = () => {
 
 						const isSameWeek =
 							Math.ceil(new Date(max['date']).getTime() / (1000 * 60 * 60 * 24)) -
-								(Math.ceil(new Date(min['date']).getTime() / (1000 * 60 * 60 * 24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <=
+							(Math.ceil(new Date(min['date']).getTime() / (1000 * 60 * 60 * 24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <=
 							0
 
 						if (!isSameWeek) {
@@ -483,7 +485,7 @@ const CommandEvent = () => {
 					let address = 0
 					while (address < sortedMemoDataList.length) {
 						if (useDays[sortedMemoDataList[address]['day']]) {
-							weekList[0][sortedMemoDataList[address]['day']] = sortedMemoDataList[0]
+							weekList[0][sortedMemoDataList[address]['day']] = sortedMemoDataList[address]
 							break
 						} else {
 							address += 1
@@ -499,7 +501,7 @@ const CommandEvent = () => {
 
 						const isSameWeek =
 							Math.ceil(new Date(max['date']).getTime() / (1000 * 60 * 60 * 24)) -
-								(Math.ceil(new Date(min['date']).getTime() / (1000 * 60 * 60 * 24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <=
+							(Math.ceil(new Date(min['date']).getTime() / (1000 * 60 * 60 * 24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <=
 							0
 
 						if (!isSameWeek) {
