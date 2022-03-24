@@ -48,7 +48,7 @@ const CommandEvent = () => {
 
 	const normalTempo = useSelector(state => state.message.normalTempo)
 
-	const week = useSelector(state => state.astronaut.weekFormat)
+	const weekFormat = useSelector(state => state.astronaut.weekFormat)
 
 	const mode = useSelector(state => state.mode.mode)
 
@@ -645,7 +645,7 @@ const CommandEvent = () => {
 		let year = today.getFullYear()
 		let month = wordFill((today.getMonth() + 1).toString(), 2, '0')
 		let date = wordFill(today.getDate().toString(), 2, '0')
-		let day = week[today.getDay()]
+		let day = weekFormat[today.getDay()]
 
 		today = year + '-' + month + '-' + date + ' ' + day
 
@@ -673,7 +673,7 @@ const CommandEvent = () => {
 		let script = []
 
 		script[0] = {}
-		script[1] = { say: week[that_day.getDay()], tempo: normalTempo, last: true }
+		script[1] = { say: weekFormat[that_day.getDay()], tempo: normalTempo, last: true }
 
 		const now = new Date()
 
@@ -709,7 +709,7 @@ const CommandEvent = () => {
 	useEffect(() => {
 		if (runCommandData['commandType'] != undefined) {
 			switch (runCommandData['commandType']) {
-				case 'now':
+				case 'now': s
 					cmdNow()
 					break
 				case 'today':
