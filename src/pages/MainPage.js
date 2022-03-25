@@ -5,6 +5,8 @@ import { useHotkeys } from 'react-hotkeys-hook'
 
 import * as modeAction from '../actions/mode'
 
+import useCommandEvent from '../hooks/useCommandEvent'
+
 import TextBoard from '../components/TextBoard'
 import MemoTable from '../components/MemoTable'
 import MemoTable2 from '../components/MemoTable2'
@@ -12,7 +14,6 @@ import CommandTable from '../components/CommandTable'
 import Gudie from '../components/Guide'
 import TextTable from '../components/TextTable'
 import Help from '../components/Help'
-import CommandEvent from '../components/CommandEvent'
 
 const MainPage = () => {
     const history = useHistory()
@@ -36,6 +37,8 @@ const MainPage = () => {
     useHotkeys('shift+up', () => dispatch(modeAction.moveCurrentMode(-1)))
     useHotkeys('shift+down', () => dispatch(modeAction.moveCurrentMode(1)))
 
+    useCommandEvent()
+
     return (
         <div className="MainPage">
             <div style={{ display: 'flex', paddingTop: '20px', paddingLeft: '20px' }}>
@@ -44,7 +47,6 @@ const MainPage = () => {
                         <Gudie></Gudie>
                     </div>
                     <div>
-                        <CommandEvent />
                         <CommandTable></CommandTable>
                     </div>
                     현재 currentMode = {currentMode}

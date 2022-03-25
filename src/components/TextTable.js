@@ -1,39 +1,33 @@
-import React, { useEffect, useCallback } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { useCookies } from 'react-cookie';
-
+import React, { useEffect, useCallback } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { useCookies } from 'react-cookie'
 
 const TextTable = () => {
+	const dispatch = useDispatch()
+	const textTitleListData = useSelector(state => state.text.textTitleList)
 
+	const [cookies, setCookie, removeCookie] = useCookies()
 
-    const dispatch = useDispatch()
-    const textTitleListData = useSelector((state) => state.boardText.textTitleList)
-    
-    const [cookies, setCookie, removeCookie] = useCookies()    
+	const textTitleList = textTitleListData.map((textData, index) => (
+		<tr>
+			<td>{textData['text_title']}</td>
+			<td>{textData['created_at']}</td>
+			<td>{textData['updated_at']}</td>
+		</tr>
+	))
 
-
-    const textTitleList = textTitleListData.map((textData, index) => (
-        <tr>
-            <td>{textData['text_title']}</td> 
-            <td>{textData['created_at']}</td>
-            <td>{textData['updated_at']}</td>
-        </tr>
-    ))  
-
-    return (
-        <div>
-            <table border="1">
-                <tr>
-                    <th>title</th>
-                    <th>created_at</th>
-                    <th>updated_at</th>
-                </tr>
-                {textTitleList}
-
-            </table>
-
-        </div>
-    )
+	return (
+		<div>
+			<table border="1">
+				<tr>
+					<th>title</th>
+					<th>created_at</th>
+					<th>updated_at</th>
+				</tr>
+				{textTitleList}
+			</table>
+		</div>
+	)
 }
 
-export default TextTable;
+export default TextTable

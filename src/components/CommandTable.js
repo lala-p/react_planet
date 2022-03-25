@@ -98,6 +98,7 @@ const MainCommandTable = () => {
 				}
 			}
 		} else {
+			await sleep(20)
 			dispatch(commandAction.setNext(true))
 			dispatch(messageAction.setReadOnly(false))
 		}

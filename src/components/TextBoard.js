@@ -6,15 +6,15 @@ import { useCookies } from 'react-cookie'
 import Editor from '@monaco-editor/react'
 import ToggleSwitch from 'react-switch'
 
-import * as boardTextAction from '../actions/boardText'
+import * as textAction from '../actions/text'
 import * as commandAction from '../actions/command'
 
 const MainBoard = () => {
 	const dispatch = useDispatch()
 
-	const boardText = useSelector(state => state.boardText.boardText)
-	const currentTextTitle = useSelector(state => state.boardText.currentTextTitle)
-	const fontSize = useSelector(state => state.boardText.fontSize)
+	const boardText = useSelector(state => state.text.boardText)
+	const currentTextTitle = useSelector(state => state.text.currentTextTitle)
+	const fontSize = useSelector(state => state.text.fontSize)
 
 	const [cookies, setCookie, removeCookie] = useCookies()
 
@@ -135,7 +135,7 @@ const MainBoard = () => {
 						value={boardText}
 						theme="planet-theme"
 						loading="hello...?"
-						onChange={(newValue, e) => dispatch(boardTextAction.setBoardText(newValue))}
+						onChange={(newValue, e) => dispatch(textAction.setBoardText(newValue))}
 						onMount={eMount}
 						options={options}
 					/>
@@ -144,7 +144,7 @@ const MainBoard = () => {
 						onFocus={() => {
 							btnRef.current.blur()
 						}}
-					// style={{ visibility: 'hidden' }}
+						// style={{ visibility: 'hidden' }}
 					></button>
 					<br />
 					<br />
