@@ -1,50 +1,35 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-
+import React, { useEffect, useState } from 'react'
+import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios'
+import { SERVER_CONNECT } from '../api/etcApiUrl'
 
 const TestPage = () => {
+	const [haha, setHaha] = useState(0)
 
+	const gaga = () => {
+		sendAxiosGet(
+			SERVER_CONNECT,
+			response => {
+				setHaha(haha + 1)
+			},
+			error => {
+				console.log(error)
+			},
+			() => {
+				setHaha(haha + 3)
+			},
+		)
+	}
 
-    const [haha, setHaha] = useState("")
-    const [blabla, setBlabla] = useState(['me:asd1f', 'me:as2df', 'ch:asdf3', 'ch:4', 'ch:55555', 'ch:6666666'])
+	useEffect(() => {
+		console.log(haha)
+	}, [haha])
 
-
-
-    const blablaList = blabla.map((blabla, index) => (<div>
-        {blabla.substr(0, 3) === 'me:' ? <div key={index} style={{ float: "right" }}>{blabla.substr(3)}</div> :
-            <div key={index} style={{ float: "left" }}>{blabla.substr(3)}</div>}
-        <br /> </div>))
-
-
-    const addblabla = (e) => {
-
-        if (e.key == 'Enter') {
-
-            setBlabla(blabla.concat('me:' + e.target.value))
-            console.log(e.target.value)
-            console.log(blabla)
-            setHaha("")
-
-        }
-    }
-
-    return (
-        <div>
-
-            <input type="text" onKeyPress={addblabla} value={haha} onChange={(e) => setHaha(e.target.value)} />
-
-
-
-            <div style={{ width: "270px", backgroundColor: "coral" }}>
-
-                {blablaList}
-
-            </div>
-
-        </div>
-
-    )
-
+	return (
+		<div>
+			<input type="text" value={haha} onChange={e => setHaha(e.target.value)} />
+			<button onClick={e => gaga()}>asdf</button>
+		</div>
+	)
 }
 
-export default TestPage;
+export default TestPage

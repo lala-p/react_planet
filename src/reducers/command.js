@@ -72,6 +72,29 @@ const reducers = (state = initialStates, actions) => {
 				}
 			})
 		}
+		case commandAction.NEXT_COMMAND: {
+			return produce(state, draft => {
+				const commandList = Array.isArray(actions.payload) ? actions.payload : new Array(actions.payload)
+				let nextCommandList = new Array()
+
+				for (let index = 0; index < commandList.length; index++) {
+					const command = commandList[index].command.length != 0 ? isCommand(commandList[index].command) : false
+
+					if (command != false) {
+						nextCommandList.push({
+							commandType: command['commandType'],
+							parameter: command['parameter'],
+							say: actions.payload2,
+							at: new Date(),
+						})
+					}
+				}
+
+				if (nextCommandList.length != 0) {
+					draft.sendCommandList.unshift(...nextCommandList)
+				}
+			})
+		}
 		case commandAction.SHIFT_SEND_COMMAND_LIST: {
 			return produce(state, draft => {
 				draft.sendCommandList.shift()
@@ -121,7 +144,7 @@ const isCommand = command => {
 
 	commandType = commandType.join('+')
 
-	if (commandType in initialStates['commandCounter']) {
+	if (commandType in initialStates.commandCounter) {
 		return { commandType: commandType, parameter: parameter }
 	} else {
 		return false

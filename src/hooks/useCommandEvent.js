@@ -2,6 +2,8 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 import { useCookies } from 'react-cookie'
 
+import _ from 'lodash'
+
 import * as textAction from '../actions/text'
 import * as messageAction from '../actions/message'
 import * as commandAction from '../actions/command'
@@ -13,10 +15,6 @@ import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios'
 import { SERVER_CONNECT } from '../api/etcApiUrl'
 import * as textApi from '../api/textApiUrl'
 
-import { findVer01 } from '../find/ver_01'
-
-import _ from 'lodash'
-
 const wordFill = (str, len, word) => {
 	let returnWord = str
 	for (let index = str.length; index < len; index++) {
@@ -24,125 +22,6 @@ const wordFill = (str, len, word) => {
 	}
 
 	return returnWord
-}
-
-const getMemoDataList = data => {
-	/* 
-    input => 
-        === 2022/03/16 ====================
-
-
-        1. a 
-        2. b
-        3. c
-
-    	
-        -----------------------------------
-        ...
-
-    return => 
-        [{
-            title   : {titie}
-            date    : {2022/03/16}
-            day     : 3
-            planList: Array(3)
-            etc     : Array(0) 
-        }, 
-        ...]
-*/
-
-	let memoDataList = []
-	let textList = data.slice()
-
-	for (let index = 0; index < textList.length; index++) {
-		const textTitle = textList[index]['text_title']
-
-		let textContent = textList[index]['text_content']
-		textContent = textContent.replace(findVer01['global']['baseLine']['weekLine'], '')
-
-		let dayTextList = textContent.split(findVer01['global']['baseLine']['dateEndLine'])
-		dayTextList.pop()
-		for (let index1 = 0; index1 < dayTextList.length; index1++) {
-			let dayText = dayTextList[index1]
-
-			if (new RegExp(findVer01['global']['baseLine']['dateStartLine']).test(dayText)) {
-				// ?????????
-				let dayData = {
-					title: textTitle,
-					date: '',
-					day: -1,
-					planList: [],
-					etc: [],
-				}
-
-				let date = dayText.match(findVer01['global']['find']['date'])
-				let day = new Date(date).getDay()
-
-				let etcList = dayText.split(findVer01['global']['rules']['etc'])
-				etcList.shift()
-				etcList.forEach(etc => {
-					dayText = dayText.replace('+' + etc, '')
-				})
-
-				let planDataList = []
-				let planTextList = dayText.split(findVer01['global']['rules']['plan'])
-				planTextList.shift()
-				for (let index2 = 0; index2 < planTextList.length; index2++) {
-					let planText = planTextList[index2]
-					let planData = {
-						plan: '',
-						state: 0,
-						info: [],
-						conclusion: [],
-					}
-
-					let infoList = planText.split(findVer01['global']['rules']['info'])
-					infoList.shift()
-					planText = planText.replace(findVer01['global']['rules']['info'], '')
-					infoList.forEach(info => {
-						planText = planText.replace(info, '')
-					})
-
-					let conclusionList = planText.split(findVer01['global']['rules']['conclusion'])
-					conclusionList.shift()
-					planText = planText.replace(findVer01['global']['rules']['conclusion'], '')
-					conclusionList.forEach(conclusion => {
-						planText = planText.replace(conclusion, '')
-					})
-
-					let state = 0
-					if (findVer01['global']['find']['planSuccess'].test(planText)) {
-						state = 1
-						planText = planText.replace(findVer01['global']['find']['planSuccess'], '')
-					} else if (findVer01['global']['find']['planFailed'].test(planText)) {
-						state = 2
-						planText = planText.replace(findVer01['global']['find']['planFailed'], '')
-					} else if (findVer01['global']['find']['planDelay'].test(planText)) {
-						state = 3
-						planText = planText.replace(findVer01['global']['find']['planDelay'], '')
-					} else if (findVer01['global']['find']['planSomeday'].test(planText)) {
-						state = 4
-						planText = planText.replace(findVer01['global']['find']['planSomeday'], '')
-					}
-
-					planData['plan'] = planText
-					planData['state'] = state
-					planData['info'] = infoList
-					planData['conclusion'] = conclusionList
-
-					planDataList.push(planData)
-				}
-
-				dayData['date'] = date[0]
-				dayData['day'] = day
-				dayData['planList'] = planDataList
-				dayData['etc'] = etcList
-
-				memoDataList.push(dayData)
-			}
-		}
-	}
-	return memoDataList
 }
 
 const useCommandEvent = () => {
@@ -159,10 +38,7 @@ const useCommandEvent = () => {
 	const textTitleList = useSelector(state => state.text.textTitleList)
 
 	const useTextList = useSelector(state => state.memo.useTextList)
-	const memoDataList = useSelector(state => state.memo.memoDataList)
 	const definedSortMode = useSelector(state => state.memo.definedSortMode)
-	const sortMode = useSelector(state => state.memo.sortMode)
-	const useDays = useSelector(state => state.memo.useDays)
 
 	const guideScript = useSelector(state => state.message.guideScript)
 	const normalTempo = useSelector(state => state.message.normalTempo)
@@ -197,12 +73,10 @@ const useCommandEvent = () => {
 		sendAxiosGet(
 			SERVER_CONNECT,
 			response => {
-				let script = [{ say: 'connect', tempo: 0, last: true }]
-				dispatch(messageAction.setGuideScript(script))
+				dispatch(messageAction.setGuideScript(new Array({ say: 'connect', tempo: 0, last: true })))
 			},
 			error => {
-				let script = [{ say: 'connect failed', tempo: 0, last: true }]
-				dispatch(messageAction.setGuideScript(script))
+				dispatch(messageAction.setGuideScript(new Array({ say: 'connect failed', tempo: 0, last: true })))
 				console.log(error)
 			},
 			false,
@@ -287,22 +161,20 @@ const useCommandEvent = () => {
 			textApi.SAVE,
 			dataContainer,
 			response => {
-				let script = [{ say: 'Save Completed', tempo: 0, last: true }]
-				dispatch(messageAction.setGuideScript(script))
-
-				dispatch(commandAction.sendCommand('get textlist', false))
-
+				let nextCommandList = new Array()
+				nextCommandList.push({ command: 'get textlist', say: false })
 				if (useTextList == undefined || useTextList.length == 0) {
-					dispatch(commandAction.sendCommand('use text (current)', false))
+					nextCommandList.push({ command: 'use text (current)', say: false })
 				} else {
 					let parameterStr = getUseTextTitleList().join(',')
-					dispatch(commandAction.sendCommand(`use text (${parameterStr})`, false))
+					nextCommandList.push({ command: `use text (${parameterStr})`, say: false })
 				}
+				dispatch(commandAction.nextCommand(nextCommandList))
+
+				dispatch(messageAction.setGuideScript(new Array({ say: 'Save Completed', tempo: 0, last: true })))
 			},
 			error => {
-				let script = [{ say: 'Save failed.', tempo: 0, last: true }]
-				dispatch(messageAction.setGuideScript(script))
-
+				dispatch(messageAction.setGuideScript(new Array({ say: 'Save failed.', tempo: 0, last: true })))
 				console.log(error)
 			},
 			false,
@@ -329,17 +201,21 @@ const useCommandEvent = () => {
 				textApi.SAVE_AS,
 				dataContainer,
 				response => {
-					let script = [{ say: 'Save as Completed.', tempo: 0, last: true }]
-					dispatch(messageAction.setGuideScript(script))
-					dispatch(commandAction.sendCommand('get textlist', false))
+					let nextCommandList = new Array()
+
+					nextCommandList.push({ command: 'get textlist', say: false })
 
 					if (useTextList == undefined || useTextList.length == 0) {
-						dispatch(commandAction.sendCommand('use text (current)', false))
+						nextCommandList.push({ command: 'use text (current)', say: false })
 					} else {
 						let parameterStr = getUseTextTitleList().join(',')
 						parameterStr += ',' + runCommandData['parameter'][0]
-						dispatch(commandAction.sendCommand(`use text (${parameterStr})`, false))
+						nextCommandList.push({ command: `use text (${parameterStr})`, say: false })
 					}
+					dispatch(commandAction.nextCommand(nextCommandList))
+
+					let script = [{ say: 'Save as Completed.', tempo: 0, last: true }]
+					dispatch(messageAction.setGuideScript(script))
 				},
 				error => {
 					let script = [{ say: 'Save as failed.', tempo: 0, last: true }]
@@ -376,10 +252,12 @@ const useCommandEvent = () => {
 				textApi.RENAME_TEXT_TITLE,
 				dataContainer,
 				response => {
+					dispatch(memoAction.updateUseTextTitle(textTitle, newTextTitle))
+
+					dispatch(commandAction.nextCommand({ command: 'get textlist', say: false }))
+
 					let script = [{ say: 'Completed', tempo: 0, last: true }]
 					dispatch(messageAction.setGuideScript(script))
-					dispatch(commandAction.sendCommand('get textlist', false))
-					dispatch(memoAction.updateUseTextTitle(textTitle, newTextTitle))
 				},
 				error => {
 					console.log(error)
@@ -429,10 +307,6 @@ const useCommandEvent = () => {
 
 						let script = [{ say: 'Completeddddd', tempo: normalTempo, last: true }]
 						dispatch(messageAction.setGuideScript(script))
-
-						const MemoDataList = getMemoDataList(response.data)
-						dispatch(memoAction.setMemoDataList(MemoDataList))
-						dispatch(commandAction.sendCommand(`sort memo (${sortMode['week']['orderBy']}, ${sortMode['day']['sort']}, ${sortMode['day']['reverse']})`, false))
 					},
 					error => {
 						let script = [{ say: 'failed', tempo: normalTempo, last: true }]
@@ -482,10 +356,6 @@ const useCommandEvent = () => {
 					dispatch(memoAction.setUseTextList(addedUseTextList))
 
 					dispatch(messageAction.setGuideScript(script))
-
-					const MemoDataList = getMemoDataList(addedUseTextList)
-					dispatch(memoAction.setMemoDataList(MemoDataList))
-					dispatch(commandAction.sendCommand(`sort memo (${sortMode['week']['orderBy']}, ${sortMode['day']['sort']}, ${sortMode['day']['reverse']})`, false))
 				},
 				error => {
 					let script = [{ say: 'failed', tempo: normalTempo, last: true }]
@@ -510,9 +380,6 @@ const useCommandEvent = () => {
 		const removedUseTextList = useTextList.filter(removeFilter)
 
 		dispatch(memoAction.setUseTextList(removedUseTextList))
-		const MemoDataList = getMemoDataList(removedUseTextList)
-		dispatch(memoAction.setMemoDataList(MemoDataList))
-		dispatch(commandAction.sendCommand(`sort memo (${sortMode['week']['orderBy']}, ${sortMode['day']['sort']}, ${sortMode['day']['reverse']})`, false))
 	}, [commandCounter['remove+use+text']])
 	// ===================================================
 	// sort memo ({weekOrderBy}, {daySortMode}, {dayReverse}) => memoTable에서 보여질 데이터들을 사용자가 보기 쉽게 정렬을 바꿔줌
@@ -536,135 +403,6 @@ const useCommandEvent = () => {
 					day: { sort: daySortMode, reverse: dayReverse },
 				}),
 			)
-			console.log()
-
-			let sortedMemoDataList = []
-			sortedMemoDataList = memoDataList.slice()
-			sortedMemoDataList = sortedMemoDataList.sort((a, b) => new Date(a.date) - new Date(b.date))
-
-			let weekList = []
-			let weekNum = 0
-
-			switch (daySortMode) {
-				case 'normal':
-					let maxWeekDays = 0
-
-					for (let index = 0; index < 7; index++) {
-						if (useDays[index]) {
-							maxWeekDays += 1
-						}
-					}
-
-					weekList.push(new Array())
-					weekList[0].push(sortedMemoDataList[0])
-
-					for (let index = 1; index < sortedMemoDataList.length; index++) {
-						const previousData = sortedMemoDataList[index - 1]
-						const currentData = sortedMemoDataList[index]
-
-						const min = new Date(previousData['date']) < new Date(currentData['date']) ? previousData : currentData
-						const max = new Date(previousData['date']) < new Date(currentData['date']) ? currentData : previousData
-
-						const isSameWeek =
-							Math.ceil(new Date(max['date']).getTime() / (1000 * 60 * 60 * 24)) -
-								(Math.ceil(new Date(min['date']).getTime() / (1000 * 60 * 60 * 24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <=
-							0
-
-						if (!isSameWeek) {
-							if (weekList[weekNum].length != maxWeekDays) {
-								for (let index = weekList[weekNum].length; index < maxWeekDays; index++) {
-									weekList[weekNum].push(false)
-								}
-							}
-
-							weekList.push(new Array())
-							weekNum += 1
-						}
-
-						if (useDays[currentData['day']]) {
-							if (dayReverse) {
-								weekList[weekNum].unshift(currentData)
-							} else {
-								weekList[weekNum].push(currentData)
-							}
-						}
-					}
-
-					if (weekList[weekNum].length != maxWeekDays) {
-						for (let index = weekList[weekNum].length; index < maxWeekDays; index++) {
-							weekList[weekNum].push(false)
-						}
-					}
-
-					break
-
-				case 'calendar':
-					let oneWeek = _.cloneDeep(useDays)
-					for (let index = 0; index < 7; index++) {
-						if (useDays[index]) {
-							oneWeek[index] = false
-						} else {
-							delete oneWeek[index]
-						}
-					}
-
-					weekList.push(_.cloneDeep(oneWeek))
-
-					let address = 0
-					while (address < sortedMemoDataList.length) {
-						if (useDays[sortedMemoDataList[address]['day']]) {
-							weekList[0][sortedMemoDataList[address]['day']] = sortedMemoDataList[address]
-							break
-						} else {
-							address += 1
-						}
-					}
-
-					for (let index = address + 1; index < sortedMemoDataList.length; index++) {
-						const previousData = sortedMemoDataList[index - 1]
-						const currentData = sortedMemoDataList[index]
-
-						const min = new Date(previousData['date']) < new Date(currentData['date']) ? previousData : currentData
-						const max = new Date(previousData['date']) < new Date(currentData['date']) ? currentData : previousData
-
-						const isSameWeek =
-							Math.ceil(new Date(max['date']).getTime() / (1000 * 60 * 60 * 24)) -
-								(Math.ceil(new Date(min['date']).getTime() / (1000 * 60 * 60 * 24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <=
-							0
-
-						if (!isSameWeek) {
-							weekList[weekNum] = Object.values(weekList[weekNum])
-							if (dayReverse) {
-								weekList[weekNum] = weekList[weekNum].reverse()
-							}
-
-							weekList.push(_.cloneDeep(oneWeek))
-							weekNum += 1
-						}
-
-						if (useDays[currentData['day']]) {
-							weekList[weekNum][currentData['day']] = currentData
-						}
-					}
-
-					if (!Array.isArray(weekList[weekList.length - 1])) {
-						weekList[weekNum] = Object.values(weekList[weekNum])
-						if (dayReverse) {
-							weekList[weekNum] = weekList[weekNum].reverse()
-						}
-					}
-
-					break
-			}
-
-			if (weekOrderBy == 'desc') {
-				weekList = weekList.reverse()
-			}
-
-			sortedMemoDataList = weekList
-			console.log(sortedMemoDataList)
-			dispatch(memoAction.setSortedMemoDataList(sortedMemoDataList))
-
 			script = [{ say: 'sorttttttttt', tempo: normalTempo, last: true }]
 		}
 
@@ -790,7 +528,79 @@ const useCommandEvent = () => {
 
 	// ===================================================
 
-	function sleep(ms) {
+	const noneParameter = useCallback(
+		parameter => {
+			if (parameter.length != 0) {
+				const script = new Array()
+				dispatch(messageAction.setGuideScript(script))
+				return false
+			} else {
+				return true
+			}
+		},
+		[runCommandData['parameter']],
+	)
+
+	const parametersExisted = useCallback(
+		parameter => {
+			if (parameter.length <= 0) {
+				const script = new Array()
+				dispatch(messageAction.setGuideScript(script))
+				return false
+			} else {
+				return true
+			}
+		},
+		[runCommandData['parameter']],
+	)
+
+	const parametersRange = useCallback(
+		(parameter, min, max) => {
+			if (parameter.length < min || parameter.length > max) {
+				let script = new Array()
+
+				if (parameter.length < min) {
+					script.push()
+				} else if (parameter.length > max) {
+					script.push()
+				}
+
+				dispatch(messageAction.setGuideScript(script))
+				return false
+			} else {
+				return true
+			}
+		},
+		[runCommandData['parameter']],
+	)
+
+	const correctNumOfParameters = useCallback(
+		(parameter, ...rightNum) => {
+			if (!rightNum.includes(parameter.length)) {
+				let script = new Array()
+				dispatch(messageAction.setGuideScript(script))
+
+				return false
+			} else {
+				return true
+			}
+		},
+		[runCommandData['parameter']],
+	)
+
+	const parameterFilter = useCallback(
+		(commandType, parameter) => {
+			switch (commandType) {
+				case '':
+					break
+			}
+		},
+		[runCommandData['commandType'], runCommandData['parameter']],
+	)
+
+	// ===================================================
+
+	const sleep = ms => {
 		return new Promise((resolve, reject) => {
 			setTimeout(resolve, ms)
 		})

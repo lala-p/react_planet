@@ -18,8 +18,6 @@ const MainBoard = () => {
 
 	const [cookies, setCookie, removeCookie] = useCookies()
 
-	const sendCommandList = useSelector(state => state.command.sendCommandList)
-
 	const editorRef = useRef(null)
 	const btnRef = useRef(null)
 
@@ -98,7 +96,8 @@ const MainBoard = () => {
 			btnRef.current.focus()
 			console.log('Escape!@!')
 		})
-		editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KEY_S, () => {
+		editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS, () => {
+			console.log('asd')
 			dispatch(commandAction.sendCommand('save', true))
 		})
 
