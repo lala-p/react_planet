@@ -682,14 +682,14 @@ const useCommandEvent = () => {
 		let script = []
 		let useTextTitleList = getUseTextTitleList()
 
-		if (useTextList.length == 0) {
+		if (useTextTitleList.length == 0) {
 			script.push({ say: '"empty."', tempo: normalTempo, last: true })
 		} else {
-			for (let index = 0; index < useTextList.length; index++) {
-				if (index == useTextList.length - 1) {
-					script.push({ say: useTextList[index]['text_title'], tempo: normalTempo, last: true })
+			for (let index = 0; index < useTextTitleList.length; index++) {
+				if (index == useTextTitleList.length - 1) {
+					script.push({ say: useTextTitleList[index], tempo: normalTempo, last: true })
 				} else {
-					script.push({ say: useTextList[index]['text_title'], tempo: normalTempo, last: false })
+					script.push({ say: useTextTitleList[index], tempo: normalTempo, last: false })
 				}
 			}
 		}
