@@ -75,34 +75,6 @@ const MainCommandTable = () => {
 			}
 		}
 	}
-	// ===================================================
-
-	function sleep(ms) {
-		return new Promise((resolve, reject) => {
-			setTimeout(resolve, ms)
-		})
-	}
-
-	const guideSay = async script => {
-		if (runCommandData['say']) {
-			for (let index = 0; index < script.length; index++) {
-				await sleep(script[index]['tempo'])
-				dispatch(messageAction.addMsgHistory('gu:' + script[index]['say']))
-
-				if (script[index]['last']) {
-					dispatch(commandAction.setNext(true))
-
-					if (sendCommandList.length <= 1) {
-						dispatch(messageAction.setReadOnly(false))
-					}
-				}
-			}
-		} else {
-			await sleep(20)
-			dispatch(commandAction.setNext(true))
-			dispatch(messageAction.setReadOnly(false))
-		}
-	}
 
 	// ===================================================
 	// 단축키 설정 -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
@@ -130,13 +102,6 @@ const MainCommandTable = () => {
 			setUserInput(inputHistory[inputHistoryCurrentAddress])
 		}
 	}, [inputHistoryCurrentAddress])
-
-	useEffect(() => {
-		if (guideScript && guideScript.length != 0) {
-			dispatch(messageAction.setReadOnly(true))
-			guideSay(guideScript)
-		}
-	}, [guideScript])
 
 	useEffect(() => {
 		const scroll = tableRef.current.scrollHeight - tableRef.current.clientHeight

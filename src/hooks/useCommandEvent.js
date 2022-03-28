@@ -164,6 +164,7 @@ const useCommandEvent = () => {
 	const sortMode = useSelector(state => state.memo.sortMode)
 	const useDays = useSelector(state => state.memo.useDays)
 
+	const guideScript = useSelector(state => state.message.guideScript)
 	const normalTempo = useSelector(state => state.message.normalTempo)
 
 	const weekFormat = useSelector(state => state.astronaut.weekFormat)
@@ -426,7 +427,7 @@ const useCommandEvent = () => {
 					response => {
 						dispatch(memoAction.setUseTextList(response.data))
 
-						let script = [{ say: 'Completed', tempo: normalTempo, last: true }]
+						let script = [{ say: 'Completeddddd', tempo: normalTempo, last: true }]
 						dispatch(messageAction.setGuideScript(script))
 
 						const MemoDataList = getMemoDataList(response.data)
@@ -467,8 +468,6 @@ const useCommandEvent = () => {
 
 				script.push({ say: `${title}, ${state}`, tempo: normalTempo, last: false })
 			})
-
-			dispatch(messageAction.setGuideScript(script))
 
 			const dataContainer = {
 				userId: cookies['user_id'],
@@ -683,11 +682,15 @@ const useCommandEvent = () => {
 		let script = []
 		let useTextTitleList = getUseTextTitleList()
 
-		for (let index = 0; index < useTextTitleList.length; index++) {
-			if (index == useTextList.length - 1) {
-				script.push({ say: useTextTitleList[index], tempo: normalTempo, last: true })
-			} else {
-				script.push({ say: useTextTitleList[index], tempo: normalTempo, last: false })
+		if (useTextList.length == 0) {
+			script.push({ say: '"empty."', tempo: normalTempo, last: true })
+		} else {
+			for (let index = 0; index < useTextList.length; index++) {
+				if (index == useTextList.length - 1) {
+					script.push({ say: useTextList[index]['text_title'], tempo: normalTempo, last: true })
+				} else {
+					script.push({ say: useTextList[index]['text_title'], tempo: normalTempo, last: false })
+				}
 			}
 		}
 
@@ -786,7 +789,39 @@ const useCommandEvent = () => {
 	}, [commandCounter['get+week']])
 
 	// ===================================================
+
+	function sleep(ms) {
+		return new Promise((resolve, reject) => {
+			setTimeout(resolve, ms)
+		})
+	}
+
+	const guideSay = async script => {
+		for (let index = 0; index < script.length; index++) {
+			if (runCommandData['say']) {
+				await sleep(script[index]['tempo'])
+				dispatch(messageAction.addMsgHistory('gu:' + script[index]['say']))
+			}
+
+			if (script[index]['last']) {
+				dispatch(commandAction.setNext(true))
+
+				if (sendCommandList.length <= 1) {
+					dispatch(messageAction.setReadOnly(false))
+				}
+			}
+		}
+	}
+
+	// ===================================================
 	// useEffect -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
+
+	useEffect(() => {
+		if (guideScript && guideScript.length != 0) {
+			dispatch(messageAction.setReadOnly(true))
+			guideSay(guideScript)
+		}
+	}, [guideScript])
 
 	useEffect(() => {
 		if (next && sendCommandList.length != 0) {

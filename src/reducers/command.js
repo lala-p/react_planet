@@ -3,7 +3,7 @@ import produce from 'immer'
 import * as commandAction from '../actions/command'
 
 const initialStates = {
-	sendCommandList: [],
+	sendCommandList: new Array(),
 	next: false,
 	runCommandData: {
 		commandType: undefined,
