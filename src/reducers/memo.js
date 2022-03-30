@@ -50,11 +50,6 @@ const reducers = (state = initialStates, actions) => {
 				draft.sortedMemoDataList = getSortedMemoDataList(dataList, draft.sortMode.week.orderBy, draft.sortMode.day.sort, draft.sortMode.day.reverse)
 			})
 		}
-		// case memoAction.SET_SORTED_MEMO_DATA_LIST: {
-		// 	return produce(state, draft => {
-		// 		draft.sortedMemoDataList = actions.payload
-		// 	})
-		// }
 		case memoAction.SET_SORT_MODE: {
 			return produce(state, draft => {
 				draft.sortMode = actions.payload

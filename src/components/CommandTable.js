@@ -87,8 +87,8 @@ const MainCommandTable = () => {
 	useEffect(() => {
 		if (cookies['user_id']) {
 			dispatch(commandAction.sendCommand('ping', false))
-			dispatch(commandAction.sendCommand('load text', false))
 			dispatch(commandAction.sendCommand('get textlist', false))
+			dispatch(commandAction.sendCommand('load text', false))
 			dispatch(commandAction.sendCommand('use text (current)', false))
 		} else {
 			history.push('/')

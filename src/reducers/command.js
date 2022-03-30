@@ -12,13 +12,14 @@ const initialStates = {
 		at: '',
 	},
 	commandCounter: {
+		say: 0,
 		now: 0,
 		today: 0,
 
 		ping: 0,
 
 		// get
-		'get+week': 0,
+		'get+day': 0,
 		'get+textlist': 0,
 
 		// load
