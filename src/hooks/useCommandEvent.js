@@ -4,6 +4,8 @@ import { useCookies } from 'react-cookie'
 
 import _ from 'lodash'
 
+import useGuideEvent from './useGuideEvent'
+
 import * as textAction from '../actions/text'
 import * as messageAction from '../actions/message'
 import * as commandAction from '../actions/command'
@@ -24,12 +26,6 @@ const wordFill = (str, len, word) => {
 	return returnWord
 }
 
-const sleep = ms => {
-	return new Promise((resolve, reject) => {
-		setTimeout(resolve, ms)
-	})
-}
-
 const useCommandEvent = () => {
 	const dispatch = useDispatch()
 	const [cookies, setCookie, removeCookie] = useCookies()
@@ -46,7 +42,6 @@ const useCommandEvent = () => {
 	const useTextList = useSelector(state => state.memo.useTextList)
 	const definedSortMode = useSelector(state => state.memo.definedSortMode)
 
-	const guideScript = useSelector(state => state.message.guideScript)
 	const normalTempo = useSelector(state => state.message.normalTempo)
 
 	const weekFormat = useSelector(state => state.astronaut.weekFormat)
@@ -263,7 +258,6 @@ const useCommandEvent = () => {
 	// use text ({textTitle}, ...) =>  memoTable에서 보여질 텍스트 데이터들를 불러옴
 	const cmdUseText = useCallback(
 		(...sendTextTitleList) => {
-			console.log(sendTextTitleList)
 			const dataContainer = {
 				userId: cookies['user_id'],
 				textTitleList: sendTextTitleList,
@@ -676,33 +670,9 @@ const useCommandEvent = () => {
 	)
 
 	// ===================================================
-
-	const guideSay = async script => {
-		for (let index = 0; index < script.length; index++) {
-			if (runCommandData['say']) {
-				await sleep(script[index]['tempo'])
-				dispatch(messageAction.addMsgHistory('gu:' + script[index]['say']))
-			}
-
-			if (script[index]['last']) {
-				dispatch(commandAction.setNext(true))
-
-				if (sendCommandList.length <= 1) {
-					dispatch(messageAction.setReadOnly(false))
-				}
-			}
-		}
-	}
-
-	// ===================================================
 	// useEffect -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
 
-	useEffect(() => {
-		if (guideScript && guideScript.length != 0) {
-			dispatch(messageAction.setReadOnly(true))
-			guideSay(guideScript)
-		}
-	}, [guideScript])
+	useGuideEvent()
 
 	useEffect(() => {
 		if (next && sendCommandList.length != 0) {
@@ -779,7 +749,7 @@ const useCommandEvent = () => {
 
 				// sort
 				case 'sort+memo':
-					if (correctNumOfParameters(1) && isSortMode()) cmdSortMemo(...prmt)
+					if (correctNumOfParameters(3) && isSortMode()) cmdSortMemo(...prmt)
 					break
 
 				// show

@@ -9,14 +9,10 @@ import * as commandAction from '../actions/command'
 
 import { useHotkeys } from 'react-hotkeys-hook'
 
-const MainCommandTable = () => {
+const CommandTable = () => {
 	const dispatch = useDispatch()
 
-	const sendCommandList = useSelector(state => state.command.sendCommandList)
-	const runCommandData = useSelector(state => state.command.runCommandData)
-
 	const msgHistory = useSelector(state => state.message.msgHistory)
-	const guideScript = useSelector(state => state.message.guideScript)
 	const readOnly = useSelector(state => state.message.readOnly)
 
 	const history = useHistory()
@@ -25,7 +21,9 @@ const MainCommandTable = () => {
 
 	const tableRef = useRef(null)
 	const inputRef = useRef(null)
+
 	const [userInput, setUserInput] = useState('')
+	const [answer, setAnswer] = useState('')
 
 	const [inputHistory, setInputHistory] = useState([])
 	const [inputHistoryCurrentAddress, setInputHistoryCurrentAddress] = useState(-100)
@@ -109,21 +107,30 @@ const MainCommandTable = () => {
 		setUserInput('')
 	}, [msgHistory])
 
-	const msgList = msgHistory.map((msg, index) => (
-		<div key={index}>
-			{msg.substr(0, 3) === 'me:' ? (
-				<div style={{ minHeight: '25px', overflow: 'hidden', wordBreak: 'break-all', backgroundColor: 'pink' }}>
-					&lt;{cookies['user_id']}&gt; {msg.substr(3)}
-				</div>
-			) : (
-				<div
-					dangerouslySetInnerHTML={{ __html: msg.substr(3) }}
-					key={index}
-					style={{ minHeight: '25px', overflow: 'hidden', wordBreak: 'break-all', backgroundColor: 'pink' }}
-				></div>
-			)}
-		</div>
-	))
+	const msgList = msgHistory.map((msg, index) => {
+		let msgBox = null
+
+		switch (msg.substr(0, 3)) {
+			case 'me:':
+				msgBox = (
+					<div key={index} style={{ minHeight: '25px', overflow: 'hidden', wordBreak: 'break-all', backgroundColor: 'pink' }}>
+						&lt;{cookies['user_id']}&gt; {msg.substr(3)}
+					</div>
+				)
+				break
+			case 'gu:':
+				msgBox = (
+					<div
+						key={index}
+						dangerouslySetInnerHTML={{ __html: msg.substr(3) }}
+						style={{ minHeight: '25px', overflow: 'hidden', wordBreak: 'break-all', backgroundColor: 'pink' }}
+					></div>
+				)
+				break
+		}
+
+		return <div key={index}>{msgBox}</div>
+	})
 
 	return (
 		<div className="MainCommandTable">
@@ -158,4 +165,4 @@ const MainCommandTable = () => {
 	)
 }
 
-export default MainCommandTable
+export default CommandTable

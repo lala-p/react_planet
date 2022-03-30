@@ -19,12 +19,14 @@ const TextTable = () => {
 	return (
 		<div>
 			<table border="1">
-				<tr>
-					<th>title</th>
-					<th>created_at</th>
-					<th>updated_at</th>
-				</tr>
-				{textTitleList}
+				<tbody>
+					<tr>
+						<th>title</th>
+						<th>created_at</th>
+						<th>updated_at</th>
+					</tr>
+					{textTitleList}
+				</tbody>
 			</table>
 		</div>
 	)
