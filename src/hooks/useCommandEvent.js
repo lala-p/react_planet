@@ -71,27 +71,33 @@ const useCommandEvent = () => {
 	// ===================================================
 	// API 서버 연결 확인하기
 	const cmdPing = useCallback(() => {
+		let script = new Array()
+
 		sendAxiosGet(
 			SERVER_CONNECT,
 			response => {
-				dispatch(messageAction.setGuideScript(new Array({ say: 'connect', tempo: 0, last: true })))
+				script.push({ say: 'connect', tempo: 0 })
 			},
 			error => {
-				dispatch(messageAction.setGuideScript(new Array({ say: 'connect failed', tempo: 0, last: true })))
 				console.log(error)
+				script.push({ say: 'connect failed', tempo: 0 })
 			},
-			false,
+			() => {
+				script.push(false)
+				dispatch(messageAction.setGuideScript(script))
+			},
 		)
 	}, [commandCounter['ping']])
 	// ===================================================
 	// load text | load text ({textTitle}) => 불러온 텍스트 boardText에 넣어줌
 	const cmdLoadText = useCallback(
-		textTitle => {
-			let script = [{ say: 'loading...', tempo: 600, last: false }]
+		loadTextTitle => {
+			let script = new Array()
+			script.push({ say: 'loading...', tempo: 600 })
+
 			dispatch(messageAction.setGuideScript(script))
 			dispatch(textAction.setBoardText('loading...'))
-
-			const loadTextTitle = textTitle
+			script = new Array()
 
 			const dataContainer = {
 				userId: cookies['user_id'],
@@ -107,15 +113,16 @@ const useCommandEvent = () => {
 					dispatch(textAction.setBoardText(text))
 					dispatch(textAction.setCurrentTextTitle(loadTextTitle))
 
-					let script = [{ say: '!@!@!@!@!@!@!@!@!@!', tempo: 1000, last: true }]
-					dispatch(messageAction.setGuideScript(script))
+					script.push({ say: '!@!@!@!@!@!@!@!@!@!', tempo: 1000 })
 				},
 				error => {
 					console.log(error)
-					let script = [{ say: 'failed', tempo: 0, last: true }]
+					script.push({ say: 'failed', tempo: 0 })
+				},
+				() => {
+					script.push(false)
 					dispatch(messageAction.setGuideScript(script))
 				},
-				false,
 			)
 		},
 		[commandCounter['load+text']],
@@ -123,6 +130,8 @@ const useCommandEvent = () => {
 	// ===================================================
 	// get textlist => 사용자의 모든 텍스트 데이터를 불러옴
 	const cmdGetTextList = useCallback(() => {
+		let script = new Array()
+
 		const dataContainer = {
 			userId: cookies['user_id'],
 		}
@@ -132,27 +141,30 @@ const useCommandEvent = () => {
 			dataContainer,
 			response => {
 				dispatch(textAction.setTextTitleList(response.data))
-				let script = [
-					{ say: 'Completed', tempo: 0 + 600, last: false },
-					{ say: '!@!!@!@!@21', tempo: normalTempo + 600, last: true },
-				]
-				dispatch(messageAction.setGuideScript(script))
+
+				script.push({ say: 'Completed', tempo: 0 + 600 })
+				script.push({ say: '!@!!@!@!@21', tempo: normalTempo + 600 })
 			},
 			error => {
 				console.log(error)
-				let script = [
-					{ say: 'failed', tempo: 0, last: false },
-					{ say: '!@!!@!@!@21', tempo: normalTempo, last: true },
-				]
+
+				script.push({ say: 'failed', tempo: 0 })
+				script.push({ say: '!@!!@!@!@21', tempo: normalTempo })
+			},
+			() => {
+				script.push(false)
 				dispatch(messageAction.setGuideScript(script))
 			},
-			false,
 		)
 	}, [commandCounter['get+textlist']])
 	// ===================================================
 	// save => 현재 textBoard에 있는 내용을 db에 저장
 	const cmdSave = useCallback(() => {
-		dispatch(messageAction.setGuideScript(new Array({ say: 'Saving...', tempo: 0, last: false })))
+		let script = new Array()
+		script.push({ say: 'Saving...', tempo: 0 })
+
+		dispatch(messageAction.setGuideScript(script))
+		script = new Array()
 
 		const dataContainer = {
 			userId: cookies['user_id'],
@@ -175,13 +187,16 @@ const useCommandEvent = () => {
 				}
 				dispatch(commandAction.nextCommand(nextCommandList))
 
-				dispatch(messageAction.setGuideScript(new Array({ say: 'Save Completed', tempo: 0, last: true })))
+				script.push({ say: 'Save Completed', tempo: 0 })
 			},
 			error => {
-				dispatch(messageAction.setGuideScript(new Array({ say: 'Save failed.', tempo: 0, last: true })))
 				console.log(error)
+				script.push({ say: 'Save failed.', tempo: 0 })
 			},
-			false,
+			() => {
+				script.push(false)
+				dispatch(messageAction.setGuideScript(script))
+			},
 		)
 	}, [commandCounter['save']])
 
@@ -189,6 +204,8 @@ const useCommandEvent = () => {
 	// save as ({textTitle}) => current가 {textTitle}로 바뀌어서 db에 저장되고 또 다른 current가 생성됨.
 	const cmdSaveAs = useCallback(
 		textTitle => {
+			let script = new Array()
+
 			const dataContainer = {
 				userId: cookies['user_id'],
 				text: boardText,
@@ -211,13 +228,16 @@ const useCommandEvent = () => {
 					}
 					dispatch(commandAction.nextCommand(nextCommandList))
 
-					dispatch(messageAction.setGuideScript(new Array({ say: 'Save as Completed.', tempo: 0, last: true })))
+					script.push({ say: 'Save as Completed', tempo: 0 })
 				},
 				error => {
-					dispatch(messageAction.setGuideScript(new Array({ say: 'Save as failed.', tempo: 0, last: true })))
 					console.log(error)
+					script.push({ say: 'Save as failed.', tempo: 0 })
 				},
-				false,
+				() => {
+					script.push(false)
+					dispatch(messageAction.setGuideScript(script))
+				},
 			)
 		},
 		[commandCounter['save+as']],
@@ -227,6 +247,8 @@ const useCommandEvent = () => {
 	// {textTitle}, {newTextTitle} 모두 current는 사용할 수 없음
 	const cmdRenameTextTitle = useCallback(
 		(textTitle, newTextTitle) => {
+			let script = new Array()
+
 			const dataContainer = {
 				userId: cookies['user_id'],
 				textTitle: textTitle,
@@ -238,18 +260,18 @@ const useCommandEvent = () => {
 				dataContainer,
 				response => {
 					dispatch(memoAction.updateUseTextTitle(textTitle, newTextTitle))
-
 					dispatch(commandAction.nextCommand({ command: 'get textlist', say: false }))
 
-					let script = [{ say: 'Completed', tempo: 0, last: true }]
-					dispatch(messageAction.setGuideScript(script))
+					script.push({ say: 'Completed', tempo: 0 })
 				},
 				error => {
 					console.log(error)
-					let script = [{ say: 'failed', tempo: 0, last: true }]
+					script.push({ say: 'failed', tempo: 0 })
+				},
+				() => {
+					script.push(false)
 					dispatch(messageAction.setGuideScript(script))
 				},
-				false,
 			)
 		},
 		[commandCounter['rename+text+title']],
@@ -258,6 +280,8 @@ const useCommandEvent = () => {
 	// use text ({textTitle}, ...) =>  memoTable에서 보여질 텍스트 데이터들를 불러옴
 	const cmdUseText = useCallback(
 		(...sendTextTitleList) => {
+			let script = new Array()
+
 			const dataContainer = {
 				userId: cookies['user_id'],
 				textTitleList: sendTextTitleList,
@@ -268,16 +292,16 @@ const useCommandEvent = () => {
 				dataContainer,
 				response => {
 					dispatch(memoAction.setUseTextList(response.data))
-
-					let script = [{ say: 'Completeddddd', tempo: normalTempo, last: true }]
-					dispatch(messageAction.setGuideScript(script))
+					script.push({ say: 'Completeddddddddd', tempo: 0 })
 				},
 				error => {
-					let script = [{ say: 'failed', tempo: normalTempo, last: true }]
-					dispatch(messageAction.setGuideScript(script))
 					console.log(error)
+					script.push({ say: 'failed', tempo: 0 })
 				},
-				false,
+				() => {
+					script.push(false)
+					dispatch(messageAction.setGuideScript(script))
+				},
 			)
 		},
 		[commandCounter['use+text']],
@@ -286,12 +310,12 @@ const useCommandEvent = () => {
 	//
 	const cmdAddUseText = useCallback(
 		(...addTextTitleList) => {
+			let script = new Array()
+
 			const dataContainer = {
 				userId: cookies['user_id'],
 				textTitleList: addTextTitleList,
 			}
-
-			let script = new Array()
 
 			sendAxiosPost(
 				textApi.GET_TEXT_LIST,
@@ -300,15 +324,16 @@ const useCommandEvent = () => {
 					const addedUseTextList = useTextList.concat(response.data)
 					dispatch(memoAction.setUseTextList(addedUseTextList))
 
-					script.push({ say: 'Completedasdsad', tempo: normalTempo, last: true })
-					dispatch(messageAction.setGuideScript(script))
+					script.push({ say: 'Completedasdf', tempo: 0 })
 				},
 				error => {
-					script.push({ say: 'failed', tempo: normalTempo, last: true })
-					dispatch(messageAction.setGuideScript(script))
 					console.log(error)
+					script.push({ say: 'failed', tempo: 0 })
 				},
-				false,
+				() => {
+					script.push(false)
+					dispatch(messageAction.setGuideScript(script))
+				},
 			)
 		},
 		[commandCounter['add+use+text']],
@@ -317,6 +342,8 @@ const useCommandEvent = () => {
 	//
 	const cmdRemoveUseText = useCallback(
 		(...removeTitleList) => {
+			let script = new Array()
+
 			const removeFilter = useText => {
 				return !removeTitleList.includes(useText['text_title'])
 			}
@@ -324,6 +351,10 @@ const useCommandEvent = () => {
 			const removedUseTextList = useTextList.filter(removeFilter)
 
 			dispatch(memoAction.setUseTextList(removedUseTextList))
+
+			script.push({ say: 'remove Completed', tempo: 0 })
+			script.push(false)
+			dispatch(messageAction.setGuideScript(script))
 		},
 		[commandCounter['remove+use+text']],
 	)
@@ -339,8 +370,8 @@ const useCommandEvent = () => {
 					day: { sort: daySortMode, reverse: JSON.parse(dayReverse.toLowerCase()) },
 				}),
 			)
-			script.push({ say: 'sorttttttttt', tempo: normalTempo, last: true })
-
+			script.push({ say: 'sorttttttttt', tempo: normalTempo })
+			script.push(false)
 			dispatch(messageAction.setGuideScript(script))
 		},
 		[commandCounter['sort+memo']],
@@ -348,37 +379,40 @@ const useCommandEvent = () => {
 	// ===================================================
 	// show title => say-현재 textBoard에 들어있는 덱스트 데이터 title
 	const cmdShowTitle = useCallback(() => {
-		let script = new Array({ say: currentTextTitle, tempo: normalTempo, last: true })
-		script = dispatch(messageAction.setGuideScript(script))
+		let script = new Array()
+
+		script.push({ say: currentTextTitle, tempo: normalTempo })
+		script.push(false)
+
+		dispatch(messageAction.setGuideScript(script))
 	}, [commandCounter['show+title']])
 	// ===================================================
 	// show use text => 현재 memoTable에서 사용하고 있는 덱스트 데이터 Title들을 보여줌.
 	const cmdShowUseText = useCallback(() => {
-		let script = []
+		let script = new Array()
 		let useTextTitleList = getUseTextTitleList()
 
 		if (useTextTitleList.length == 0) {
-			script.push({ say: '"empty."', tempo: normalTempo, last: true })
+			script.push({ say: '"empty."', tempo: normalTempo })
 		} else {
-			for (let index = 0; index < useTextTitleList.length; index++) {
-				if (index == useTextTitleList.length - 1) {
-					script.push({ say: useTextTitleList[index], tempo: normalTempo, last: true })
-				} else {
-					script.push({ say: useTextTitleList[index], tempo: normalTempo, last: false })
-				}
-			}
+			useTextTitleList.forEach(useTextTitle => {
+				script.push({ say: useTextTitle, tempo: normalTempo })
+			})
 		}
 
+		script.push(false)
 		dispatch(messageAction.setGuideScript(script))
 	}, [commandCounter['show+use+text']])
 	// ===================================================
 	// mainContent에 있는 component 바꾸기/ mode 바꾸기
 	const cmdSetMode = useCallback(
 		changeMode => {
+			let script = new Array()
+
 			dispatch(modeAction.setCurrentMode(changeMode))
 
-			let script = new Array()
-			script.push({ say: 'change!', tempo: normalTempo, last: true })
+			script.push({ say: 'change!', tempo: normalTempo })
+			script.push(false)
 			dispatch(messageAction.setGuideScript(script))
 		},
 		[commandCounter['set+mode']],
@@ -387,6 +421,8 @@ const useCommandEvent = () => {
 	// return 현재 시간
 	// ex) PM 02:08:33
 	const cmdNow = useCallback(() => {
+		let script = new Array()
+
 		let getToday = new Date()
 
 		let hours = getToday.getHours()
@@ -400,13 +436,16 @@ const useCommandEvent = () => {
 
 		let now = ampm + '  ' + hours + ':' + minutes + ':' + seconds
 
-		let script = [{ say: now, tempo: normalTempo, last: true }]
+		script.push({ say: now, tempo: normalTempo })
+		script.push(false)
 		dispatch(messageAction.setGuideScript(script))
 	}, [commandCounter['now']])
 	// ===================================================
 	// return 현재 날짜
 	// ex) 2021-08-30 THU
 	const cmdToday = useCallback(() => {
+		let script = new Array()
+
 		let today = new Date()
 		let year = today.getFullYear()
 		let month = wordFill((today.getMonth() + 1).toString(), 2, '0')
@@ -415,7 +454,8 @@ const useCommandEvent = () => {
 
 		today = year + '-' + month + '-' + date + ' ' + day
 
-		let script = [{ say: today, tempo: normalTempo, last: true }]
+		script.push({ say: today, tempo: normalTempo })
+		script.push(false)
 		dispatch(messageAction.setGuideScript(script))
 	}, [commandCounter['today']])
 	// ===================================================
@@ -424,6 +464,8 @@ const useCommandEvent = () => {
 	// ex) 2021-08-30 was... / THU
 	const cmdGetDay = useCallback(
 		(year, month, date) => {
+			let script = new Array()
+
 			const that_day = new Date()
 			that_day.setFullYear(year)
 			that_day.setMonth(month - 1)
@@ -433,27 +475,27 @@ const useCommandEvent = () => {
 			month = wordFill((that_day.getMonth() + 1).toString(), 2, '0')
 			date = wordFill(that_day.getDate().toString(), 2, '0')
 
-			let script = []
+			const today = new Date()
 
-			script[0] = {}
-			script[1] = { say: weekFormat[that_day.getDay()], tempo: normalTempo, last: true }
+			today.setFullYear(new Date().getFullYear())
+			today.setMonth(new Date().getMonth() - 1)
+			today.setDate(new Date().getDate())
 
-			const now = new Date()
-
-			if (now.getFullYear() <= that_day.getFullYear() && now.getMonth() <= that_day.getMonth() && now.getDate() < that_day.getDate()) {
-				script[0] = { say: `${year}-${month}-${date} is...`, tempo: normalTempo, last: false }
-			} else if (now.getFullYear() === that_day.getFullYear() && now.getMonth() === that_day.getMonth() && now.getDate() === that_day.getDate()) {
-				script[0] = { say: `${year}-${month}-${date} today is...`, tempo: normalTempo, last: false }
-			} else if (that_day.getFullYear() < 0) {
-				script[0] = {
+			if (that_day.getFullYear() < 0) {
+				script.push({
 					say: `B.C. &nbsp;${wordFill(Math.abs(that_day.getFullYear()).toString(), 4, '0')}-${month}-${date} was...`,
 					tempo: normalTempo,
-					last: false,
-				}
-			} else {
-				script[0] = { say: `${year}-${month}-${date} was...`, tempo: normalTempo, last: false }
+				})
+			} else if (today - that_day === 0) {
+				script.push({ say: `${year}-${month}-${date} today is...`, tempo: normalTempo })
+			} else if (today - that_day < 0) {
+				script.push({ say: `${year}-${month}-${date} is...`, tempo: normalTempo })
+			} else if (today - that_day > 0) {
+				script.push({ say: `${year}-${month}-${date} was...`, tempo: normalTempo })
 			}
 
+			script.push({ say: weekFormat[that_day.getDay()], tempo: normalTempo })
+			script.push(false)
 			dispatch(messageAction.setGuideScript(script))
 		},
 		[commandCounter['get+day']],
@@ -465,6 +507,20 @@ const useCommandEvent = () => {
 			sayScript.forEach(say => {
 				dispatch(messageAction.addMsgHistory('me:' + say))
 			})
+
+			// dispatch(
+			// 	commandAction.checkWhether(
+			// 		['Y', 'y'],
+			// 		() => {
+			// 			sayScript.forEach(say => {
+			// 				dispatch(messageAction.addMsgHistory('me:' + say))
+			// 			})
+			// 		},
+			// 		() => {
+			// 			dispatch(messageAction.addMsgHistory('me: asdfasdfasdfasdfasdfsdf'))
+			// 		},
+			// 	),
+			// )
 		},
 		[commandCounter['say']],
 	)

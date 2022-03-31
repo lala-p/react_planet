@@ -20,17 +20,15 @@ const useGuideEvent = () => {
 
 	const guideSay = async script => {
 		for (let index = 0; index < script.length; index++) {
-			if (runCommandData['say']) {
-				await sleep(script[index]['tempo'])
-				dispatch(messageAction.addMsgHistory('gu:' + script[index]['say']))
-			}
-
-			if (script[index]['last']) {
+			if (typeof script[index] === 'boolean' && !script[index]) {
 				dispatch(commandAction.setNext(true))
 
 				if (sendCommandList.length <= 1) {
 					dispatch(messageAction.setReadOnly(false))
 				}
+			} else if (runCommandData['say']) {
+				await sleep(script[index]['tempo'])
+				dispatch(messageAction.addMsgHistory('gu:' + script[index]['say']))
 			}
 		}
 	}

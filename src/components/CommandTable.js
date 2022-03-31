@@ -12,6 +12,9 @@ import { useHotkeys } from 'react-hotkeys-hook'
 const CommandTable = () => {
 	const dispatch = useDispatch()
 
+	const inputMode = useSelector(state => state.command.inputMode)
+	const checkWhether = useSelector(state => state.command.checkWhether)
+
 	const msgHistory = useSelector(state => state.message.msgHistory)
 	const readOnly = useSelector(state => state.message.readOnly)
 
@@ -21,13 +24,26 @@ const CommandTable = () => {
 
 	const tableRef = useRef(null)
 	const inputRef = useRef(null)
+	const answerRef = useRef(null)
 
 	const [userInput, setUserInput] = useState('')
-	const [answer, setAnswer] = useState('')
+	const [answerValue, setAnswerValue] = useState('')
 
 	const [inputHistory, setInputHistory] = useState([])
 	const [inputHistoryCurrentAddress, setInputHistoryCurrentAddress] = useState(-100)
 
+	const AnswerKeyDownHandler = e => {
+		if (e.keyCode === 13) {
+			if (checkWhether.trueAnswer != undefined && answerValue === checkWhether.trueAnswer) {
+				checkWhether.trueCallback()
+			} else if (checkWhether.trueAnswer != undefined && answerValue !== checkWhether.trueAnswer) {
+				checkWhether.falseCallback()
+			}
+
+			dispatch(commandAction.setInputMode('command'))
+			setAnswerValue('')
+		}
+	}
 	// ===================================================
 	const keyDownHandler = e => {
 		if (!readOnly) {
@@ -132,6 +148,20 @@ const CommandTable = () => {
 		return <div key={index}>{msgBox}</div>
 	})
 
+	useEffect(() => {
+		switch (inputMode) {
+			case 'commnad':
+				inputRef.current.focus()
+				break
+			case 'answer':
+				answerRef.current.focus()
+				break
+
+			default:
+				break
+		}
+	}, [inputMode])
+
 	return (
 		<div className="MainCommandTable">
 			<div>
@@ -149,16 +179,27 @@ const CommandTable = () => {
 					<div>{msgList}</div>
 				</div>
 
-				<input
-					ref={inputRef}
-					type="text"
-					style={{ width: '310px', height: '25px' }}
-					onKeyDown={keyDownHandler}
-					value={userInput}
-					onChange={e => setUserInput(e.target.value)}
-					readOnly={readOnly}
-				/>
-
+				{inputMode == 'command' ? (
+					<input
+						ref={inputRef}
+						type="text"
+						style={{ width: '310px', height: '25px' }}
+						onKeyDown={keyDownHandler}
+						value={userInput}
+						onChange={e => setUserInput(e.target.value)}
+						readOnly={readOnly}
+					/>
+				) : (
+					<input
+						ref={answerRef}
+						type="text"
+						style={{ width: '310px', height: '25px' }}
+						value={answerValue}
+						onChange={e => setAnswerValue(e.target.value)}
+						onKeyDown={AnswerKeyDownHandler}
+					/>
+				)}
+				{inputMode}
 				{readOnly ? <div>readOnly true</div> : <div>readOnly false</div>}
 			</div>
 		</div>

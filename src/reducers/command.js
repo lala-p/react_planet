@@ -51,6 +51,13 @@ const initialStates = {
 		// rename
 		'rename+text+title': 0,
 	},
+	inputMode: 'command',
+	checkWhether: {
+		trueAnswer: undefined,
+		trueCallback: undefined,
+		falseCallback: undefined,
+		at: undefined,
+	},
 }
 
 const reducers = (state = initialStates, actions) => {
@@ -117,6 +124,20 @@ const reducers = (state = initialStates, actions) => {
 		case commandAction.COUNT_COMMAND: {
 			return produce(state, draft => {
 				draft.commandCounter[actions.payload] += 1
+			})
+		}
+		case commandAction.COMMAND_CHECK: {
+			return produce(state, draft => {
+				draft.checkWhether.trueAnswer = actions.payload1
+				draft.checkWhether.trueCallback = actions.payload2
+				draft.checkWhether.falseCallback = actions.payload3
+				draft.checkWhether.at = new Date()
+				draft.inputMode = 'answer'
+			})
+		}
+		case commandAction.SET_INPUT_MODE: {
+			return produce(state, draft => {
+				draft.inputMode = actions.payload
 			})
 		}
 

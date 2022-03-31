@@ -1,23 +1,30 @@
 import React, { useEffect, useState, useCallback } from 'react'
+import { useSelector, useDispatch } from 'react-redux'
+import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios'
+
+import { SERVER_CONNECT } from '../api/etcApiUrl'
 
 const TestPage = () => {
-	const [haha, setHaha] = useState(0)
 	const [lulu, setLulu] = useState(0)
 
-	const changeHaha = useCallback(() => {
-		setHaha(haha + 1)
-	}, [lulu])
+	const haha = e => {
+		let script = new Array()
 
-	const changeLulu = () => {
-		setLulu(lulu + 1)
+		sendAxiosGet(
+			SERVER_CONNECT,
+			response => {
+				console.log('res')
+			},
+			error => {},
+			() => {
+				console.log('then')
+			},
+		)
 	}
 
 	return (
 		<div>
-			<h1>haha : {haha}</h1>
-			<h1>lulu : {lulu}</h1>
-			<button onClick={e => changeHaha()}>haha</button>
-			<button onClick={e => changeLulu()}>lulu</button>
+			<button onClick={haha}>asdfasdfasdfasdfasdf</button>
 		</div>
 	)
 }
