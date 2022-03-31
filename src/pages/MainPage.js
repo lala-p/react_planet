@@ -16,65 +16,65 @@ import TextTable from '../components/TextTable'
 import Help from '../components/Help'
 
 const MainPage = () => {
-    const history = useHistory()
-    const dispatch = useDispatch()
+	const history = useHistory()
+	const dispatch = useDispatch()
 
-    const currentMode = useSelector((state) => state.mode.currentMode)
+	const currentMode = useSelector(state => state.mode.currentMode)
 
-    const modeHandler = () => {
-        switch (currentMode) {
-            case 0:
-                return null // TextBoard
-            case 1:
-                return <MemoTable2></MemoTable2>
-            case 2:
-                return <TextTable></TextTable>
-            default:
-                return <Help></Help>
-        }
-    }
+	const modeHandler = () => {
+		switch (currentMode) {
+			case 0:
+				return null // TextBoard
+			case 1:
+				return <MemoTable2></MemoTable2>
+			case 2:
+				return <TextTable></TextTable>
+			default:
+				return <Help></Help>
+		}
+	}
 
-    useHotkeys('shift+up', () => dispatch(modeAction.moveCurrentMode(-1)))
-    useHotkeys('shift+down', () => dispatch(modeAction.moveCurrentMode(1)))
+	useHotkeys('shift+up', () => dispatch(modeAction.moveCurrentMode(-1)))
+	useHotkeys('shift+down', () => dispatch(modeAction.moveCurrentMode(1)))
 
-    useCommandEvent()
+	useCommandEvent()
 
-    return (
-        <div className="MainPage">
-            <div style={{ display: 'flex', paddingTop: '20px', paddingLeft: '20px' }}>
-                <div style={{ width: '320px' }}>
-                    <div>
-                        <Gudie></Gudie>
-                    </div>
-                    <div>
-                        <CommandTable></CommandTable>
-                    </div>
-                    현재 currentMode = {currentMode}
-                    <br />
-                </div>
-                &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
-                <div>
-                    <button onClick={() => dispatch(modeAction.moveCurrentMode(-1))} style={{ height: '100%' }}>
-                        &lt;
-                    </button>
-                </div>
-                &nbsp;&nbsp;&nbsp;
-                <div style={{ display: 'flex', width: '1400px' }}>
-                    <div style={currentMode != 0 ? { display: 'none' } : null}>
-                        <TextBoard></TextBoard>
-                    </div>
+	return (
+		<div className="MainPage">
+			<div style={{ display: 'flex', paddingTop: '20px', paddingLeft: '20px' }}>
+				<div style={{ width: '320px' }}>
+					<div>
+						<Gudie></Gudie>
+					</div>
+					<div>
+						<CommandTable></CommandTable>
+					</div>
+					현재 currentMode = {currentMode}
+					<br />
+				</div>
+				&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;
+				<div>
+					<button onClick={() => dispatch(modeAction.moveCurrentMode(-1))} style={{ height: '100%' }}>
+						&lt;
+					</button>
+				</div>
+				&nbsp;&nbsp;&nbsp;
+				<div style={{ display: 'flex', width: '1400px' }}>
+					<div style={currentMode != 0 ? { display: 'none' } : null}>
+						<TextBoard></TextBoard>
+					</div>
 
-                    {modeHandler()}
-                </div>
-                &nbsp;&nbsp;&nbsp;
-                <div>
-                    <button onClick={() => dispatch(modeAction.moveCurrentMode(1))} style={{ height: '100%' }}>
-                        &gt;
-                    </button>
-                </div>
-            </div>
-        </div>
-    )
+					{modeHandler()}
+				</div>
+				&nbsp;&nbsp;&nbsp;
+				<div>
+					<button onClick={() => dispatch(modeAction.moveCurrentMode(1))} style={{ height: '100%' }}>
+						&gt;
+					</button>
+				</div>
+			</div>
+		</div>
+	)
 }
 
 export default MainPage

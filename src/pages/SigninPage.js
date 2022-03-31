@@ -1,124 +1,110 @@
-import React, {useState, useEffect, useRef} from 'react';
-import { useHistory } from 'react-router-dom';
-import { useCookies } from 'react-cookie';
+import React, { useState, useEffect, useRef } from 'react'
+import { useHistory } from 'react-router-dom'
+import { useCookies } from 'react-cookie'
 
-import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios';
+import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios'
 
-import { SIGNIN_USER } from '../api/signApiUrl';
-
+import apiUrl from '../api/apiUrl'
 
 const SigninPage = () => {
+	const history = useHistory()
 
-    const history = useHistory()
+	const [cookies, setCookie, removeCookie] = useCookies(['user_id'])
 
-    const [cookies, setCookie, removeCookie] = useCookies(['user_id'])
+	const [userId, setUserId] = useState('')
+	const [password, setPassword] = useState('')
+	const [msg, setMsg] = useState('')
 
-    const [userId, setUserId] = useState('')
-    const [password, setPassword] = useState('')
-    const [msg, setMsg] = useState('')
+	const userIdRef = useRef(null)
+	const passwordRef = useRef(null)
 
-    const userIdRef = useRef(null)
-    const passwordRef = useRef(null)
+	const EnterUserId = e => {
+		if (e.keyCode == 13) {
+			// enter
+			passwordRef.current.focus()
+		}
+	}
 
+	const EnterPassword = e => {
+		if (e.keyCode == 13) {
+			// enter
 
-    const EnterUserId = (e) => {
-        if (e.keyCode == 13) { // enter
-            passwordRef.current.focus()
-        }
-    }
+			const dataContainer = {
+				userId: userId,
+				userPassword: password,
+			}
 
-    const EnterPassword = (e) => {
+			sendAxiosPost(
+				apiUrl.sign.post.SIGNIN_USER,
+				dataContainer,
+				response => {
+					console.log(response.data)
 
-        if (e.keyCode == 13) { // enter
+					if (response.data) {
+						setCookie('user_id', userId, { path: '/' })
+						history.push('/main')
+					} else {
+						setUserId('')
+						setPassword('')
+						userIdRef.current.focus()
+						setMsg('wrong!@!')
+					}
+				},
+				error => {
+					setMsg('signin failed...')
+					console.log(error)
+				},
+				false,
+			)
 
-            const dataContainer = {
-                userId      : userId,
-                userPassword: password,
-            }
+			// signInUser(
+			//     signinData,
+			//     (response) => {
+			//         console.log(response.data)
 
-            sendAxiosPost(
-                SIGNIN_USER,
-                dataContainer,
-                (response) => {
-                    console.log(response.data)
-            
-                    if (response.data) {
-                        setCookie('user_id', userId, {path: '/'})
-                        history.push("/main")
+			//         if (response.data) {
+			//             setCookie('user_id', userId, {path: '/'})
+			//             history.push("/main")
 
-                    } else {
-                        setUserId('')
-                        setPassword('')
-                        userIdRef.current.focus()
-                        setMsg("wrong!@!")
+			//         } else {
+			//             setUserId('')
+			//             setPassword('')
+			//             userIdRef.current.focus()
+			//             setMsg("wrong!@!")
 
-                    }
+			//         }
 
-                },
-                (error) => {
-                    setMsg("signin failed...")
-                    console.log(error)                    
-                },
-                false
-            )
-            
+			//     },
+			//     (error) => {
+			//         setMsg("signin failed...")
+			//         console.log(error)
+			//     },
+			//     () => {
 
-            // signInUser(
-            //     signinData,
-            //     (response) => {
-            //         console.log(response.data)
-            
-            //         if (response.data) {
-            //             setCookie('user_id', userId, {path: '/'})
-            //             history.push("/main")
+			//     }
+			// )
+		}
+	}
 
-            //         } else {
-            //             setUserId('')
-            //             setPassword('')
-            //             userIdRef.current.focus()
-            //             setMsg("wrong!@!")
+	useEffect(() => {
+		if (cookies.user_id) {
+			history.push('/main')
+		} else {
+			userIdRef.current.focus()
+		}
+	}, [])
 
-            //         }
-
-            //     },
-            //     (error) => {
-            //         setMsg("signin failed...")
-            //         console.log(error)                    
-            //     },
-            //     () => {
-
-            //     }
-            // )
-
-        }
-
-    }
-
-    useEffect(() => {
-        
-        if (cookies.user_id) {
-            history.push("/main")
-        } else {
-            userIdRef.current.focus()
-        }
-
-    }, [])
-
-    return(
-
-        <div className="LoginPage">
-            <div>
-                <h3>Login</h3>
-                <input ref={userIdRef} type="text" id="userId" value={userId} onChange={(e) => setUserId(e.target.value)} onKeyDown={EnterUserId} placeholder="ID" />
-                <br />                
-                <input ref={passwordRef} type="text" id="password" value={password} onChange={(e) => setPassword(e.target.value)} onKeyDown={EnterPassword} placeholder="Password" />
-                <p>{msg}</p>
-            </div>
-
-        </div>
-
-    )
-
+	return (
+		<div className="LoginPage">
+			<div>
+				<h3>Login</h3>
+				<input ref={userIdRef} type="text" id="userId" value={userId} onChange={e => setUserId(e.target.value)} onKeyDown={EnterUserId} placeholder="ID" />
+				<br />
+				<input ref={passwordRef} type="text" id="password" value={password} onChange={e => setPassword(e.target.value)} onKeyDown={EnterPassword} placeholder="Password" />
+				<p>{msg}</p>
+			</div>
+		</div>
+	)
 }
 
-export default SigninPage;
+export default SigninPage

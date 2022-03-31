@@ -1,30 +1,31 @@
-import React, { useEffect, useState, useCallback } from 'react'
-import { useSelector, useDispatch } from 'react-redux'
-import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios'
-
-import { SERVER_CONNECT } from '../api/etcApiUrl'
+import React, { useEffect, useState, useRef, useCallback } from 'react'
 
 const TestPage = () => {
-	const [lulu, setLulu] = useState(0)
+	const [name, setName] = useState('gg')
+	const [msgList, setMsgList] = useState(new Array())
 
-	const haha = e => {
-		let script = new Array()
+	const msgBox = msgList.map((msg, index) => {
+		const text = `${name}, ${msg}`
 
-		sendAxiosGet(
-			SERVER_CONNECT,
-			response => {
-				console.log('res')
-			},
-			error => {},
-			() => {
-				console.log('then')
-			},
-		)
-	}
+		return <div key={index}>{text}</div>
+	})
 
 	return (
 		<div>
-			<button onClick={haha}>asdfasdfasdfasdfasdf</button>
+			<input
+				value={name}
+				onChange={e => {
+					setName(e.target.value)
+				}}
+			/>
+			<button
+				onClick={e => {
+					setMsgList(msgList.concat('Hi!@!'))
+				}}
+			>
+				add
+			</button>
+			{msgBox}
 		</div>
 	)
 }

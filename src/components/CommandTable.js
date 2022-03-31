@@ -24,28 +24,14 @@ const CommandTable = () => {
 
 	const tableRef = useRef(null)
 	const inputRef = useRef(null)
-	const answerRef = useRef(null)
 
 	const [userInput, setUserInput] = useState('')
-	const [answerValue, setAnswerValue] = useState('')
 
 	const [inputHistory, setInputHistory] = useState([])
 	const [inputHistoryCurrentAddress, setInputHistoryCurrentAddress] = useState(-100)
 
-	const AnswerKeyDownHandler = e => {
-		if (e.keyCode === 13) {
-			if (checkWhether.trueAnswer != undefined && answerValue === checkWhether.trueAnswer) {
-				checkWhether.trueCallback()
-			} else if (checkWhether.trueAnswer != undefined && answerValue !== checkWhether.trueAnswer) {
-				checkWhether.falseCallback()
-			}
-
-			dispatch(commandAction.setInputMode('command'))
-			setAnswerValue('')
-		}
-	}
 	// ===================================================
-	const keyDownHandler = e => {
+	const commandKeyDownHandler = e => {
 		if (!readOnly) {
 			switch (e.keyCode) {
 				case 9: // tab
@@ -87,6 +73,18 @@ const CommandTable = () => {
 				default:
 					break
 			}
+		}
+	}
+
+	const AnswerKeyDownHandler = e => {
+		if (e.keyCode === 13) {
+			if (checkWhether.trueAnswer != undefined && checkWhether.trueAnswer.includes(userInput)) {
+				checkWhether.trueCallback()
+			} else if (checkWhether.trueAnswer != undefined && !checkWhether.trueAnswer.includes(userInput)) {
+				checkWhether.falseCallback()
+			}
+			dispatch(messageAction.addMsgHistory('gu:& ' + userInput))
+			dispatch(commandAction.setInputMode('command'))
 		}
 	}
 
@@ -148,20 +146,6 @@ const CommandTable = () => {
 		return <div key={index}>{msgBox}</div>
 	})
 
-	useEffect(() => {
-		switch (inputMode) {
-			case 'commnad':
-				inputRef.current.focus()
-				break
-			case 'answer':
-				answerRef.current.focus()
-				break
-
-			default:
-				break
-		}
-	}, [inputMode])
-
 	return (
 		<div className="MainCommandTable">
 			<div>
@@ -179,26 +163,16 @@ const CommandTable = () => {
 					<div>{msgList}</div>
 				</div>
 
-				{inputMode == 'command' ? (
-					<input
-						ref={inputRef}
-						type="text"
-						style={{ width: '310px', height: '25px' }}
-						onKeyDown={keyDownHandler}
-						value={userInput}
-						onChange={e => setUserInput(e.target.value)}
-						readOnly={readOnly}
-					/>
-				) : (
-					<input
-						ref={answerRef}
-						type="text"
-						style={{ width: '310px', height: '25px' }}
-						value={answerValue}
-						onChange={e => setAnswerValue(e.target.value)}
-						onKeyDown={AnswerKeyDownHandler}
-					/>
-				)}
+				<input
+					ref={inputRef}
+					type="text"
+					style={{ width: '310px', height: '25px' }}
+					value={userInput}
+					onKeyDown={inputMode == 'command' ? commandKeyDownHandler : AnswerKeyDownHandler}
+					onChange={e => setUserInput(e.target.value)}
+					readOnly={inputMode == 'command' ? readOnly : false}
+				/>
+
 				{inputMode}
 				{readOnly ? <div>readOnly true</div> : <div>readOnly false</div>}
 			</div>

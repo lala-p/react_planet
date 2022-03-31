@@ -32,6 +32,9 @@ const initialStates = {
 		save: 0,
 		'save+as': 0,
 
+		// delete
+		delete: 0,
+
 		// use
 		'use+text': 0,
 

@@ -14,8 +14,7 @@ import * as modeAction from '../actions/mode'
 
 import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios'
 
-import { SERVER_CONNECT } from '../api/etcApiUrl'
-import * as textApi from '../api/textApiUrl'
+import apiUrl from '../api/apiUrl'
 
 const wordFill = (str, len, word) => {
 	let returnWord = str
@@ -74,7 +73,7 @@ const useCommandEvent = () => {
 		let script = new Array()
 
 		sendAxiosGet(
-			SERVER_CONNECT,
+			apiUrl.server.get.SERVER_CONNECT,
 			response => {
 				script.push({ say: 'connect', tempo: 0 })
 			},
@@ -101,11 +100,11 @@ const useCommandEvent = () => {
 
 			const dataContainer = {
 				userId: cookies['user_id'],
-				textTitle: loadTextTitle,
+				textTitleList: new Array(loadTextTitle),
 			}
 
 			sendAxiosPost(
-				textApi.GET_TEXT_BY_TEXT_TITLE,
+				apiUrl.text.post.GET_TEXT_LIST,
 				dataContainer,
 				response => {
 					const text = response.data[0]['text_content']
@@ -137,7 +136,7 @@ const useCommandEvent = () => {
 		}
 
 		sendAxiosPost(
-			textApi.GET_TEXT_TITLE_LIST,
+			apiUrl.text.post.GET_TEXT_TITLE_LIST,
 			dataContainer,
 			response => {
 				dispatch(textAction.setTextTitleList(response.data))
@@ -173,7 +172,7 @@ const useCommandEvent = () => {
 		}
 
 		sendAxiosPost(
-			textApi.SAVE,
+			apiUrl.text.post.SAVE,
 			dataContainer,
 			response => {
 				let nextCommandList = new Array()
@@ -213,7 +212,7 @@ const useCommandEvent = () => {
 			}
 
 			sendAxiosPost(
-				textApi.SAVE_AS,
+				apiUrl.text.post.SAVE_AS,
 				dataContainer,
 				response => {
 					let nextCommandList = new Array()
@@ -243,6 +242,62 @@ const useCommandEvent = () => {
 		[commandCounter['save+as']],
 	)
 	// ===================================================
+	//
+	const cmdDelete = useCallback(
+		textTitle => {
+			let script = new Array()
+			script.push({ say: 'are you serious? (Y/n)', tempo: 0 })
+
+			dispatch(messageAction.setGuideScript(script))
+			script = new Array()
+
+			dispatch(
+				commandAction.checkWhether(
+					['Y', 'y'],
+					() => {
+						const dataContainer = {
+							userId: cookies['user_id'],
+							textTitle: textTitle,
+						}
+
+						sendAxiosPost(
+							apiUrl.text.post.DELETE_TEXT_BY_TITLE,
+							dataContainer,
+							response => {
+								let nextCommandList = new Array()
+								if (currentTextTitle == textTitle) nextCommandList.push({ command: 'load text', say: true })
+								nextCommandList.push({ command: 'get textlist', say: false })
+
+								let getUseTextTitleList1 = getUseTextTitleList()
+								let parameterStr = ''
+
+								if (getUseTextTitleList1.includes(textTitle)) getUseTextTitleList1.splice(getUseTextTitleList1.indexOf(textTitle), 1)
+
+								parameterStr = getUseTextTitleList1.join(',')
+								nextCommandList.push({ command: `use text (${parameterStr})`, say: false })
+
+								dispatch(commandAction.nextCommand(nextCommandList))
+							},
+							error => {
+								console.log(error)
+								script.push({ say: 'delete failed.', tempo: 0 })
+							},
+							() => {
+								script.push(false)
+								dispatch(messageAction.setGuideScript(script))
+							},
+						)
+					},
+					() => {
+						script.push(false)
+						dispatch(messageAction.setGuideScript(script))
+					},
+				),
+			)
+		},
+		[commandCounter['delete']],
+	)
+	// ===================================================
 	// renam text title ({textTitle}, {newTextTitle}) => 텍스트 테이터 title을 바꿔줌
 	// {textTitle}, {newTextTitle} 모두 current는 사용할 수 없음
 	const cmdRenameTextTitle = useCallback(
@@ -256,7 +311,7 @@ const useCommandEvent = () => {
 			}
 
 			sendAxiosPost(
-				textApi.RENAME_TEXT_TITLE,
+				apiUrl.text.post.RENAME_TEXT_TITLE,
 				dataContainer,
 				response => {
 					dispatch(memoAction.updateUseTextTitle(textTitle, newTextTitle))
@@ -288,7 +343,7 @@ const useCommandEvent = () => {
 			}
 
 			sendAxiosPost(
-				textApi.GET_TEXT_LIST,
+				apiUrl.text.post.GET_TEXT_LIST,
 				dataContainer,
 				response => {
 					dispatch(memoAction.setUseTextList(response.data))
@@ -318,7 +373,7 @@ const useCommandEvent = () => {
 			}
 
 			sendAxiosPost(
-				textApi.GET_TEXT_LIST,
+				apiUrl.text.post.GET_TEXT_LIST,
 				dataContainer,
 				response => {
 					const addedUseTextList = useTextList.concat(response.data)
@@ -531,7 +586,8 @@ const useCommandEvent = () => {
 		const parameter = runCommandData['parameter']
 		if (parameter.length != 0) {
 			const script = new Array()
-			script.push({ say: 'this command none parameter.', tempo: normalTempo, last: true })
+			script.push({ say: 'this command none parameter.', tempo: normalTempo })
+			script.push(false)
 			dispatch(messageAction.setGuideScript(script))
 			return false
 		} else {
@@ -543,7 +599,8 @@ const useCommandEvent = () => {
 		const parameter = runCommandData['parameter']
 		if (parameter.length <= 0) {
 			const script = new Array()
-			script.push({ say: "where's parameter?", tempo: normalTempo, last: true })
+			script.push({ say: "where's parameter?", tempo: normalTempo })
+			script.push(false)
 			dispatch(messageAction.setGuideScript(script))
 			return false
 		} else {
@@ -577,7 +634,8 @@ const useCommandEvent = () => {
 			const parameter = runCommandData['parameter']
 			if (!rightNum.includes(parameter.length)) {
 				let script = new Array()
-				script.push({ say: `correct num of parameters ${rightNum.join(' or ')}`, tempo: normalTempo, last: true })
+				script.push({ say: `correct num of parameters ${rightNum.join(' or ')}`, tempo: normalTempo })
+				script.push(false)
 				dispatch(messageAction.setGuideScript(script))
 
 				return false
@@ -602,9 +660,10 @@ const useCommandEvent = () => {
 
 			if (isCurrent) {
 				let script = new Array()
-				script.push({ say: 'current', tempo: normalTempo, last: false })
-				script.push({ say: 'not', tempo: normalTempo, last: false })
-				script.push({ say: 'allowed.', tempo: normalTempo, last: true })
+				script.push({ say: 'current', tempo: normalTempo })
+				script.push({ say: 'not', tempo: normalTempo })
+				script.push({ say: 'allowed.', tempo: normalTempo })
+				script.push(false)
 				dispatch(messageAction.setGuideScript(script))
 				return false
 			} else {
@@ -617,7 +676,8 @@ const useCommandEvent = () => {
 	const currentTextIsCurrent = useCallback(() => {
 		if (currentTextTitle != 'current') {
 			let script = new Array()
-			script.push({ say: 'current text is not "current"', tempo: normalTempo, last: true })
+			script.push({ say: 'current text is not "current"', tempo: normalTempo })
+			script.push(false)
 			dispatch(messageAction.setGuideScript(script))
 		} else {
 			return true
@@ -645,7 +705,9 @@ const useCommandEvent = () => {
 
 		if (!isTrue) {
 			let script = new Array()
-			script.push({ say: 'is date false', tempo: normalTempo, last: true })
+			script.push({ say: 'is date false', tempo: normalTempo })
+			script.push(false)
+			dispatch(messageAction.setGuideScript(script))
 			dispatch(messageAction.setGuideScript(script))
 		}
 
@@ -663,12 +725,13 @@ const useCommandEvent = () => {
 			if (notExistedModeList.length != 0) {
 				let script = new Array()
 
-				script.push({ say: 'Hmm...', tempo: normalTempo, last: false })
+				script.push({ say: 'Hmm...', tempo: normalTempo })
 				for (let index = 0; index < notExistedModeList.length; index++) {
-					script.push({ say: notExistedModeList[index], tempo: normalTempo, last: false })
+					script.push({ say: notExistedModeList[index], tempo: normalTempo })
 				}
-				script.push({ say: 'not exist.', tempo: normalTempo, last: true })
+				script.push({ say: 'not exist.', tempo: normalTempo })
 
+				script.push(false)
 				dispatch(messageAction.setGuideScript(script))
 				return false
 			} else {
@@ -688,12 +751,15 @@ const useCommandEvent = () => {
 		let isTrue = false
 		let script = new Array()
 
-		if (!weekOrderBy in definedSortMode['week']['orderBy']) script.push({ say: `" ${weekOrderBy} " not definded`, tempo: normalTempo, last: true })
-		else if (!daySortMode in definedSortMode['day']['sort']) script.push({ say: `" ${daySortMode} " not definded`, tempo: normalTempo, last: true })
-		else if (!dayReverse in definedSortMode['day']['reverse']) script.push({ say: `" ${dayReverse} " not definded`, tempo: normalTempo, last: true })
+		if (!weekOrderBy in definedSortMode['week']['orderBy']) script.push({ say: `" ${weekOrderBy} " not definded`, tempo: normalTempo })
+		else if (!daySortMode in definedSortMode['day']['sort']) script.push({ say: `" ${daySortMode} " not definded`, tempo: normalTempo })
+		else if (!dayReverse in definedSortMode['day']['reverse']) script.push({ say: `" ${dayReverse} " not definded`, tempo: normalTempo })
 		else isTrue = true
 
-		if (!isTrue) dispatch(messageAction.setGuideScript(script))
+		if (!isTrue) {
+			script.push(false)
+			dispatch(messageAction.setGuideScript(script))
+		}
 
 		return isTrue
 	}, [runCommandData['parameter']])
@@ -710,12 +776,13 @@ const useCommandEvent = () => {
 			if (isExistedTitleList.length != 0) {
 				let script = new Array()
 
-				script.push({ say: 'Hmm...', tempo: normalTempo, last: false })
+				script.push({ say: 'Hmm...', tempo: normalTempo })
 				for (let index = 0; index < isExistedTitleList.length; index++) {
-					script.push({ say: isExistedTitleList[index], tempo: normalTempo, last: false })
+					script.push({ say: isExistedTitleList[index], tempo: normalTempo })
 				}
 
-				script.push({ say: isExist ? 'not exist. --;;' : 'already exist. TT;;', tempo: normalTempo, last: true })
+				script.push({ say: isExist ? 'not exist. --;;' : 'already exist. TT;;', tempo: normalTempo })
+				script.push(false)
 				dispatch(messageAction.setGuideScript(script))
 				return false
 			} else {
@@ -785,9 +852,13 @@ const useCommandEvent = () => {
 					if (noneParameter()) cmdSave()
 					break
 				case 'save+as':
-					if (correctNumOfParameters(2) && currentNotAllowed(0) && currentTextIsCurrent()) cmdSaveAs()
+					if (correctNumOfParameters(1) && currentNotAllowed(0) && currentTextIsCurrent()) cmdSaveAs(prmt[0])
 					break
 
+				// delete
+				case 'delete':
+					if (correctNumOfParameters(1) && isExistTextList(true, prmt[0])) cmdDelete(prmt[0])
+					break
 				// use
 				case 'use+text':
 					if (parametersExisted() && isExistTextList(true, ...prmt)) cmdUseText(...prmt)
