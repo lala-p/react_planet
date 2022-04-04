@@ -28,7 +28,7 @@ const useGuideEvent = () => {
 				}
 			} else if (runCommandData['say']) {
 				await sleep(script[index]['tempo'])
-				dispatch(messageAction.addMsgHistory('gu:' + script[index]['say']))
+				dispatch(messageAction.addMsgHistory({ who: 'guide', msgContent: script[index]['say'] }))
 			}
 		}
 	}

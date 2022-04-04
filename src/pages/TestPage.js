@@ -1,33 +1,12 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react'
 
+import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios'
+import apiUrl from '../api/apiUrl'
+
 const TestPage = () => {
-	const [name, setName] = useState('gg')
-	const [msgList, setMsgList] = useState(new Array())
+	const [num, setNum] = useState(0)
 
-	const msgBox = msgList.map((msg, index) => {
-		const text = `${name}, ${msg}`
-
-		return <div key={index}>{text}</div>
-	})
-
-	return (
-		<div>
-			<input
-				value={name}
-				onChange={e => {
-					setName(e.target.value)
-				}}
-			/>
-			<button
-				onClick={e => {
-					setMsgList(msgList.concat('Hi!@!'))
-				}}
-			>
-				add
-			</button>
-			{msgBox}
-		</div>
-	)
+	return <div></div>
 }
 
 export default TestPage

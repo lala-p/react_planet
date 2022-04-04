@@ -560,7 +560,7 @@ const useCommandEvent = () => {
 	const cmdSay = useCallback(
 		(...sayScript) => {
 			sayScript.forEach(say => {
-				dispatch(messageAction.addMsgHistory('me:' + say))
+				dispatch(messageAction.addMsgHistory({ who: 'me', msgContent: say }))
 			})
 
 			// dispatch(

@@ -42,7 +42,7 @@ const CommandTable = () => {
 					if (userInput == 'clear') {
 						dispatch(messageAction.clearMsgHistory())
 					} else {
-						dispatch(messageAction.addMsgHistory('me:' + userInput))
+						dispatch(messageAction.addMsgHistory({ who: 'me', msgContent: userInput }))
 						if (userInput.length != 0) {
 							dispatch(commandAction.sendCommand(userInput, true))
 						}
@@ -83,7 +83,7 @@ const CommandTable = () => {
 			} else if (checkWhether.trueAnswer != undefined && !checkWhether.trueAnswer.includes(userInput)) {
 				checkWhether.falseCallback()
 			}
-			dispatch(messageAction.addMsgHistory('gu:& ' + userInput))
+			dispatch(messageAction.addMsgHistory({ who: 'guide', msgContent: 'gu:& ' + userInput }))
 			dispatch(commandAction.setInputMode('command'))
 		}
 	}
@@ -121,24 +121,22 @@ const CommandTable = () => {
 		setUserInput('')
 	}, [msgHistory])
 
-	const msgList = msgHistory.map((msg, index) => {
+	const msgList = msgHistory.map((msgData, index) => {
 		let msgBox = null
 
-		switch (msg.substr(0, 3)) {
-			case 'me:':
+		switch (msgData.who) {
+			case 'me':
 				msgBox = (
 					<div key={index} style={{ minHeight: '25px', overflow: 'hidden', wordBreak: 'break-all', backgroundColor: 'pink' }}>
-						&lt;{cookies['user_id']}&gt; {msg.substr(3)}
+						&lt;{cookies['user_id']}&gt; {msgData.msgContent}
 					</div>
 				)
 				break
-			case 'gu:':
+			case 'guide':
 				msgBox = (
-					<div
-						key={index}
-						dangerouslySetInnerHTML={{ __html: msg.substr(3) }}
-						style={{ minHeight: '25px', overflow: 'hidden', wordBreak: 'break-all', backgroundColor: 'pink' }}
-					></div>
+					<div key={index} style={{ minHeight: '25px', overflow: 'hidden', wordBreak: 'break-all', backgroundColor: 'pink' }}>
+						{msgData.msgContent}
+					</div>
 				)
 				break
 		}
