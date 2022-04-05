@@ -16,7 +16,9 @@ const initialStates = {
 		week: { orderBy: 'desc' },
 		day: { sort: 'calendar', reverse: false },
 	},
-	useDays: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: true, 6: true },
+	useDays: { 0: false, 1: true, 2: true, 3: true, 4: true, 5: true, 6: false },
+	dayMemoModalOpen: false,
+	dayMemoModalData: {},
 }
 
 const reducers = (state = initialStates, actions) => {
@@ -54,6 +56,16 @@ const reducers = (state = initialStates, actions) => {
 			return produce(state, draft => {
 				draft.sortMode = actions.payload
 				draft.sortedMemoDataList = getSortedMemoDataList(draft.memoDataList, actions.payload.week.orderBy, actions.payload.day.sort, actions.payload.day.reverse)
+			})
+		}
+		case memoAction.SET_DAY_MEMO_MODAL_OPEN: {
+			return produce(state, draft => {
+				draft.dayMemoModalOpen = actions.payload
+			})
+		}
+		case memoAction.SET_DAY_MEMO_MODAL_DATA: {
+			return produce(state, draft => {
+				draft.dayMemoModalData = actions.payload
 			})
 		}
 
@@ -192,125 +204,129 @@ const getSortedMemoDataList = (memoDataList, weekOrderBy, daySortMode, dayRevers
 	let weekList = []
 	let weekNum = 0
 
-	switch (daySortMode) {
-		case 'normal':
-			let maxWeekDays = 0
+	if (memoDataList.length != 0) {
+		switch (daySortMode) {
+			case 'normal':
+				let maxWeekDays = 0
 
-			for (let index = 0; index < 7; index++) {
-				if (initialStates.useDays[index]) {
-					maxWeekDays += 1
+				for (let index = 0; index < 7; index++) {
+					if (initialStates.useDays[index]) {
+						maxWeekDays += 1
+					}
 				}
-			}
 
-			weekList.push(new Array())
-			weekList[0].push(sortedMemoDataList[0])
+				weekList.push(new Array())
+				weekList[0].push(sortedMemoDataList[0])
 
-			for (let index = 1; index < sortedMemoDataList.length; index++) {
-				const previousData = sortedMemoDataList[index - 1]
-				const currentData = sortedMemoDataList[index]
+				for (let index = 1; index < sortedMemoDataList.length; index++) {
+					const previousData = sortedMemoDataList[index - 1]
+					const currentData = sortedMemoDataList[index]
 
-				const min = new Date(previousData['date']) < new Date(currentData['date']) ? previousData : currentData
-				const max = new Date(previousData['date']) < new Date(currentData['date']) ? currentData : previousData
+					const min = new Date(previousData['date']) < new Date(currentData['date']) ? previousData : currentData
+					const max = new Date(previousData['date']) < new Date(currentData['date']) ? currentData : previousData
 
-				const isSameWeek =
-					Math.ceil(new Date(max['date']).getTime() / (1000 * 60 * 60 * 24)) -
-						(Math.ceil(new Date(min['date']).getTime() / (1000 * 60 * 60 * 24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <=
-					0
+					const isSameWeek =
+						Math.ceil(new Date(max['date']).getTime() / (1000 * 60 * 60 * 24)) -
+							(Math.ceil(new Date(min['date']).getTime() / (1000 * 60 * 60 * 24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <=
+						0
 
-				if (!isSameWeek) {
-					if (weekList[weekNum].length != maxWeekDays) {
-						for (let index = weekList[weekNum].length; index < maxWeekDays; index++) {
-							weekList[weekNum].push(false)
+					if (!isSameWeek) {
+						if (weekList[weekNum].length != maxWeekDays) {
+							for (let index = weekList[weekNum].length; index < maxWeekDays; index++) {
+								weekList[weekNum].push(false)
+							}
+						}
+
+						weekList.push(new Array())
+						weekNum += 1
+					}
+
+					if (initialStates.useDays[currentData['day']]) {
+						if (dayReverse) {
+							weekList[weekNum].unshift(currentData)
+						} else {
+							weekList[weekNum].push(currentData)
 						}
 					}
-
-					weekList.push(new Array())
-					weekNum += 1
 				}
 
-				if (initialStates.useDays[currentData['day']]) {
-					if (dayReverse) {
-						weekList[weekNum].unshift(currentData)
-					} else {
-						weekList[weekNum].push(currentData)
+				if (weekList[weekNum].length != maxWeekDays) {
+					for (let index = weekList[weekNum].length; index < maxWeekDays; index++) {
+						weekList[weekNum].push(false)
 					}
 				}
-			}
 
-			if (weekList[weekNum].length != maxWeekDays) {
-				for (let index = weekList[weekNum].length; index < maxWeekDays; index++) {
-					weekList[weekNum].push(false)
+				break
+
+			case 'calendar':
+				let oneWeek = _.cloneDeep(initialStates.useDays)
+				for (let index = 0; index < 7; index++) {
+					if (initialStates.useDays[index]) {
+						oneWeek[index] = false
+					} else {
+						delete oneWeek[index]
+					}
 				}
-			}
 
-			break
+				weekList.push(_.cloneDeep(oneWeek))
 
-		case 'calendar':
-			let oneWeek = _.cloneDeep(initialStates.useDays)
-			for (let index = 0; index < 7; index++) {
-				if (initialStates.useDays[index]) {
-					oneWeek[index] = false
-				} else {
-					delete oneWeek[index]
+				let address = 0
+				while (address < sortedMemoDataList.length) {
+					if (initialStates.useDays[sortedMemoDataList[address]['day']]) {
+						weekList[0][sortedMemoDataList[address]['day']] = sortedMemoDataList[address]
+						break
+					} else {
+						address += 1
+					}
 				}
-			}
 
-			weekList.push(_.cloneDeep(oneWeek))
+				for (let index = address + 1; index < sortedMemoDataList.length; index++) {
+					const previousData = sortedMemoDataList[index - 1]
+					const currentData = sortedMemoDataList[index]
 
-			let address = 0
-			while (address < sortedMemoDataList.length) {
-				if (initialStates.useDays[sortedMemoDataList[address]['day']]) {
-					weekList[0][sortedMemoDataList[address]['day']] = sortedMemoDataList[address]
-					break
-				} else {
-					address += 1
+					const min = new Date(previousData['date']) < new Date(currentData['date']) ? previousData : currentData
+					const max = new Date(previousData['date']) < new Date(currentData['date']) ? currentData : previousData
+
+					const isSameWeek =
+						Math.ceil(new Date(max['date']).getTime() / (1000 * 60 * 60 * 24)) -
+							(Math.ceil(new Date(min['date']).getTime() / (1000 * 60 * 60 * 24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <=
+						0
+
+					if (!isSameWeek) {
+						weekList[weekNum] = Object.values(weekList[weekNum])
+						if (dayReverse) {
+							weekList[weekNum] = weekList[weekNum].reverse()
+						}
+
+						weekList.push(_.cloneDeep(oneWeek))
+						weekNum += 1
+					}
+
+					if (initialStates.useDays[currentData['day']]) {
+						weekList[weekNum][currentData['day']] = currentData
+					}
 				}
-			}
 
-			for (let index = address + 1; index < sortedMemoDataList.length; index++) {
-				const previousData = sortedMemoDataList[index - 1]
-				const currentData = sortedMemoDataList[index]
-
-				const min = new Date(previousData['date']) < new Date(currentData['date']) ? previousData : currentData
-				const max = new Date(previousData['date']) < new Date(currentData['date']) ? currentData : previousData
-
-				const isSameWeek =
-					Math.ceil(new Date(max['date']).getTime() / (1000 * 60 * 60 * 24)) -
-						(Math.ceil(new Date(min['date']).getTime() / (1000 * 60 * 60 * 24)) + (7 - (min['day'] == 0 ? 7 : min['day']))) <=
-					0
-
-				if (!isSameWeek) {
+				if (!Array.isArray(weekList[weekList.length - 1])) {
 					weekList[weekNum] = Object.values(weekList[weekNum])
 					if (dayReverse) {
 						weekList[weekNum] = weekList[weekNum].reverse()
 					}
-
-					weekList.push(_.cloneDeep(oneWeek))
-					weekNum += 1
 				}
 
-				if (initialStates.useDays[currentData['day']]) {
-					weekList[weekNum][currentData['day']] = currentData
-				}
-			}
+				break
+		}
 
-			if (!Array.isArray(weekList[weekList.length - 1])) {
-				weekList[weekNum] = Object.values(weekList[weekNum])
-				if (dayReverse) {
-					weekList[weekNum] = weekList[weekNum].reverse()
-				}
-			}
+		if (weekOrderBy == 'desc') {
+			weekList = weekList.reverse()
+		}
 
-			break
+		sortedMemoDataList = weekList
+		console.log(sortedMemoDataList)
+		return sortedMemoDataList
+	} else {
+		return []
 	}
-
-	if (weekOrderBy == 'desc') {
-		weekList = weekList.reverse()
-	}
-
-	sortedMemoDataList = weekList
-	console.log(sortedMemoDataList)
-	return sortedMemoDataList
 }
 
 export default reducers

@@ -1,0 +1,96 @@
+@import '../base.scss';
+
+.MemoTable {
+	.week-box-container {
+		display: flex;
+		width: 84rem;
+		height: 53rem;
+		overflow: scroll;
+		margin: auto;
+		flex-direction: column;
+		background-color: rgba(90, 90, 90, 0.349);
+
+		.week-box {
+			.day-box-container {
+				display: flex;
+				height: 10rem;
+				align-items: center;
+				background-color: green;
+
+				.day-box {
+					width: 15rem;
+					height: 9rem;
+					margin-left: 0.7rem;
+					background-color: skyblue;
+				}
+
+				.day-box-empty {
+					width: 15rem;
+					height: 9rem;
+					margin-left: 0.7rem;
+				}
+			}
+
+			.line {
+				height: 1.5rem;
+			}
+		}
+	}
+}
+
+// .MemoTable {
+
+//     .week-data-box-container {
+
+//         display: flex;
+//         width: 84rem;
+//         height: 53rem;
+//         overflow: scroll;
+//         margin: auto;
+//         flex-direction: column;
+//         background-color: rgba(90, 90, 90, 0.349);
+
+//         .week-data-box {
+//             .box-container {
+//                 display: flex;
+//                 height: 10rem;
+//                 align-items: center;
+//                 // background-color: green;
+
+//                 .day-memo-box {
+//                     width: 15rem;
+//                     height: 9rem;
+//                     margin-left: 0.7rem;
+//                     background-color: skyblue;
+//                 }
+
+//                 .day-memo-box-empty {
+//                     width: 15rem;
+//                     height: 9rem;
+//                     margin-left: 0.7rem;
+//                 }
+
+//             }
+
+//             .line {
+//                 height: 1.5rem;
+//             }
+
+//         }
+
+//     }
+// }
+
+// .plan-box {
+//     .plan-state-box {
+//         background-color: red;
+//     }
+
+//     .plan-info-box {
+//         background-color: orange;
+//     }
+
+//     .plan-conclusion-box {
+//         background-color: yellow;
+//     }
+// }

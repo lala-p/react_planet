@@ -562,20 +562,6 @@ const useCommandEvent = () => {
 			sayScript.forEach(say => {
 				dispatch(messageAction.addMsgHistory({ who: 'me', msgContent: say }))
 			})
-
-			// dispatch(
-			// 	commandAction.checkWhether(
-			// 		['Y', 'y'],
-			// 		() => {
-			// 			sayScript.forEach(say => {
-			// 				dispatch(messageAction.addMsgHistory('me:' + say))
-			// 			})
-			// 		},
-			// 		() => {
-			// 			dispatch(messageAction.addMsgHistory('me: asdfasdfasdfasdfasdfsdf'))
-			// 		},
-			// 	),
-			// )
 		},
 		[commandCounter['say']],
 	)

@@ -9,7 +9,7 @@ import * as commandAction from '../actions/command'
 
 import { useHotkeys } from 'react-hotkeys-hook'
 
-const CommandTable = () => {
+const CommandTable = props => {
 	const dispatch = useDispatch()
 
 	const inputMode = useSelector(state => state.command.inputMode)
