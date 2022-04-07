@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
 
 import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios'
@@ -7,7 +7,7 @@ import { sendAxiosGet, sendAxiosPost } from '../api/sendAxios'
 import apiUrl from '../api/apiUrl'
 
 const SigninPage = () => {
-	const history = useHistory()
+	const navigate = useNavigate()
 
 	const [cookies, setCookie, removeCookie] = useCookies(['user_id'])
 
@@ -42,7 +42,7 @@ const SigninPage = () => {
 
 					if (response.data) {
 						setCookie('user_id', userId, { path: '/' })
-						history.push('/main')
+						navigate('/main')
 					} else {
 						setUserId('')
 						setPassword('')
@@ -64,7 +64,7 @@ const SigninPage = () => {
 
 			//         if (response.data) {
 			//             setCookie('user_id', userId, {path: '/'})
-			//             history.push("/main")
+			//             navigate("/main")
 
 			//         } else {
 			//             setUserId('')
@@ -88,7 +88,7 @@ const SigninPage = () => {
 
 	useEffect(() => {
 		if (cookies.user_id) {
-			history.push('/main')
+			navigate('/main')
 		} else {
 			userIdRef.current.focus()
 		}

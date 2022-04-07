@@ -43,7 +43,6 @@ router.post('/saveAs', async (req, res) => {
 	let text = req.body.text
 	let textTitle = req.body.textTitle
 
-	console.log('adsfasdfasdfasdfasdf       ' + textTitle)
 	var saveAs = await textModel.saveAsText(userId, text, textTitle)
 	console.log(saveAs)
 

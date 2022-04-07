@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react'
 import { useSelector, useDispatch } from 'react-redux'
 
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useCookies } from 'react-cookie'
 
 import * as messageAction from '../actions/message'
@@ -18,7 +18,7 @@ const CommandTable = props => {
 	const msgHistory = useSelector(state => state.message.msgHistory)
 	const readOnly = useSelector(state => state.message.readOnly)
 
-	const history = useHistory()
+	const navigate = useNavigate()
 
 	const [cookies, setCookie, removeCookie] = useCookies()
 
@@ -103,7 +103,7 @@ const CommandTable = props => {
 			dispatch(commandAction.sendCommand('load text', false))
 			dispatch(commandAction.sendCommand('use text (current)', false))
 		} else {
-			history.push('/')
+			navigate('/')
 		}
 	}, [])
 

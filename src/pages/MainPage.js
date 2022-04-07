@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react'
-import { useHistory } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useSelector, useDispatch } from 'react-redux'
 import { useHotkeys } from 'react-hotkeys-hook'
 
@@ -37,7 +37,7 @@ const CurrentModeContainer = props => {
 }
 
 const MainPage = () => {
-	const history = useHistory()
+	const navigate = useNavigate()
 	const dispatch = useDispatch()
 
 	const currentMode = useSelector(state => state.mode.currentMode)
