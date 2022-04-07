@@ -11,7 +11,11 @@ const WeekBoxList = props => {
 		<div className="week-box-container">
 			{props.dataList.map((weekDataList, index) => (
 				<div className="week-box">
-					<DayBoxList dataList={weekDataList} />
+					<div className="day-box-container">
+						{weekDataList.map((dayData, index) => (
+							<DayBox data={dayData} />
+						))}
+					</div>
 					<div className="line"></div>
 				</div>
 			))}
@@ -45,16 +49,6 @@ const DayBox = props => {
 			</div>
 		)
 	}
-}
-
-const DayBoxList = props => {
-	return (
-		<div className="day-box-container">
-			{props.dataList.map((data, index) => (
-				<DayBox data={data} />
-			))}
-		</div>
-	)
 }
 
 const PlanBoxList = props => {
