@@ -399,11 +399,11 @@ const useCommandEvent = () => {
 		(...removeTitleList) => {
 			let script = new Array()
 
-			const removeFilter = useText => {
-				return !removeTitleList.includes(useText['text_title'])
-			}
+			// const removeFilter = useText => {
+			// 	return !removeTitleList.includes(useText['text_title'])
+			// }
 
-			const removedUseTextList = useTextList.filter(removeFilter)
+			const removedUseTextList = useTextList.filter(useText => !removeTitleList.includes(useText['text_title']))
 
 			dispatch(memoAction.setUseTextList(removedUseTextList))
 
